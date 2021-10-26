@@ -1,0 +1,213 @@
+---
+openapi: 3.0.0
+info:
+  title: todo
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/dadepu/game_service_api/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /games:
+    get:
+      summary: Returns all games
+      description: todo
+      responses:
+        "200":
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+    post:
+      summary: Creates a new game
+      description: todo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/makeGame'
+        required: true
+      responses:
+        "201":
+          description: Game successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/game'
+        "400":
+          description: Invalid input, object invalid
+  /games/{game-id}/time:
+    get:
+      summary: Returns the current roundtime
+      description: todo
+      parameters:
+      - name: game-id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      responses:
+        "200":
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: string
+                description: todo
+                example: ??
+  /games/{game-id}/admins:
+    post:
+      summary: todo
+      description: todo
+      parameters:
+      - name: game-id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+              - "."
+              - X
+              - O
+        required: true
+      responses:
+        "200":
+          description: todo
+          content: {}
+  /games/{game-id}/players:
+    post:
+      summary: todo
+      description: todo
+      parameters:
+      - name: game-id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+              - "."
+              - X
+              - O
+        required: true
+      responses:
+        "201":
+          description: todo
+          content: {}
+        "400":
+          description: todo
+  /games/{game-id}/commands:
+    post:
+      summary: Creates a new command for the specified robot.
+      description: A new command is created, which is forwarded and processed at the next possible time. A duplicate command overwrites the previous one.
+      parameters:
+      - name: game-id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/makeCommand'
+        required: true
+      responses:
+        "201":
+          description: Returns the UUID of the newly created command.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/uuid'
+        "400":
+          description: Invalid input, requestbody invalid
+        "503":
+          description: The server could not accept the command for unknown reasons
+components:
+  schemas:
+    uuid:
+      type: string
+      format: uuid
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    command:
+      type: string
+    command-type:
+      type: string
+      enum:
+      - "."
+      - X
+      - O
+    makeGame:
+      required:
+      - number-of-max-players
+      - number-of-rounds
+      type: object
+      properties:
+        number-of-rounds:
+          minimum: 1
+          type: integer
+        number-of-max-players:
+          minimum: 1
+          type: integer
+    game:
+      required:
+      - game-id
+      - number-of-max-players
+      - number-of-rounds
+      type: object
+      properties:
+        game-id:
+          $ref: '#/components/schemas/uuid'
+        number-of-rounds:
+          type: integer
+          example: 58
+        number-of-max-players:
+          type: integer
+          example: 6
+    makeCommand:
+      required:
+      - command
+      - command-type
+      - item
+      - player-id
+      - robot-id
+      type: object
+      properties:
+        player-id:
+          $ref: '#/components/schemas/uuid'
+        robot-id:
+          $ref: '#/components/schemas/uuid'
+        command:
+          $ref: '#/components/schemas/command'
+        command-type:
+          $ref: '#/components/schemas/command-type'
+        item:
+          type: string
+  parameters:
+    game-id:
+      name: game-id
+      in: path
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/uuid'
