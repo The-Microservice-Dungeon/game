@@ -1,7 +1,7 @@
-package microservice.dungeon.game.services
+package microservice.dungeon.game.testingExample.services
 
-import microservice.dungeon.game.model.Article
-import microservice.dungeon.game.repository.ArticleRepository
+import microservice.dungeon.game.testingExample.model.Article
+import microservice.dungeon.game.testingExample.repository.ArticleRepository
 import org.springframework.stereotype.Service
 import java.util.*
 

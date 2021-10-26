@@ -1,7 +1,7 @@
-package microservice.dungeon.game.controller
+package microservice.dungeon.game.testingExample.controller
 
-import microservice.dungeon.game.model.Article
-import microservice.dungeon.game.services.ArticleService
+import microservice.dungeon.game.testingExample.model.Article
+import microservice.dungeon.game.testingExample.services.ArticleService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

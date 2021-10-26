@@ -1,4 +1,4 @@
-package microservice.dungeon.game.model
+package microservice.dungeon.game.testingExample.model
 
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
