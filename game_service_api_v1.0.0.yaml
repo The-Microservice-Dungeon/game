@@ -1,213 +1,199 @@
----
 openapi: 3.0.0
-info:
-  title: todo
-  version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/dadepu/game_service_api/1.0.0
-  description: SwaggerHub API Auto Mocking
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/dadepu/game_service_api/1.0.0
+info:
+  version: 1.0.0
+  title: todo
 paths:
-  /games:
-    get:
-      summary: Returns all games
-      description: todo
-      responses:
-        "200":
-          description: todo
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/game'
+  /game:
     post:
       summary: Creates a new game
-      description: todo
+      description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/makeGame'
-        required: true
+              $ref: "#/components/schemas/game"
       responses:
         "201":
-          description: Game successfully created
+          description: A new game has been successfully created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/game'
+                $ref: "#/components/schemas/game"
         "400":
-          description: Invalid input, object invalid
-  /games/{game-id}/time:
+          description: Invalid input, object invalid.
+        "405":
+          description: A active game already exists at the moment.
+
+  /game/time:
     get:
-      summary: Returns the current roundtime
-      description: todo
-      parameters:
-      - name: game-id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/uuid'
+      summary: Returns the current time
+      description: Returns the current time once the game has been started.
       responses:
         "200":
-          description: todo
+          description: Returns the current time.
           content:
             application/json:
               schema:
-                type: string
-                description: todo
-                example: ??
-  /games/{game-id}/admins:
+                $ref: "#/components/schemas/roundTime"
+        "405":
+          description: No game exists at the moment.
+
+  /admins:
     post:
-      summary: todo
-      description: todo
-      parameters:
-      - name: game-id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/uuid'
+      summary: Creates a new admin to join the current game
+      description: Once a new game is created, admins can join it. Joining is possible at any given time.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: string
-              enum:
-              - "."
-              - X
-              - O
-        required: true
+              $ref: "#/components/schemas/admin"
       responses:
         "200":
-          description: todo
-          content: {}
-  /games/{game-id}/players:
+          description: The admin has been successfully registered to the game.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/admin"
+        "400":
+          description: Invalid input, requestbody invalid.
+        "405":
+          description: The admin could not be registred. No game exists at the moment.
+
+  /players:
     post:
-      summary: todo
-      description: todo
-      parameters:
-      - name: game-id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/uuid'
+      summary: Creates a new player to join the current game
+      description: Once a new game is created, players can register to join it. Players are registered in the context of a game. Once the game has been started the registration is closed.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: string
-              enum:
-              - "."
-              - X
-              - O
-        required: true
+              $ref: "#/components/schemas/player"
       responses:
         "201":
-          description: todo
-          content: {}
+          description: The player has been successfully registered for the game.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/player"
         "400":
-          description: todo
-  /games/{game-id}/commands:
+          description: Invalid input, requestbody invalid.
+        "405":
+          description: The player could not be registered. Either no game exists at the moment or it is already running, so registration for it is no longer possible.
+
+  /commands:
     post:
-      summary: Creates a new command for the specified robot.
-      description: A new command is created, which is forwarded and processed at the next possible time. A duplicate command overwrites the previous one.
-      parameters:
-      - name: game-id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/uuid'
+      summary: Creates a new command for the specified robot
+      description: A new command has been created for the specific robot and will be processed at the next possible time. Duplicate commands always replace the previous one.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/makeCommand'
-        required: true
+              $ref: "#/components/schemas/command"
       responses:
         "201":
           description: Returns the UUID of the newly created command.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/uuid'
+                $ref: "#/components/schemas/uuid"
         "400":
-          description: Invalid input, requestbody invalid
-        "503":
-          description: The server could not accept the command for unknown reasons
+          description: Invalid input, requestbody invalid.
+        "403":
+          description: The user misses credentials to access this ressource.
+        "405":
+          description: The command could not be accepted. Possible cause is that there is no running game at the moment.
+
+
 components:
   schemas:
     uuid:
       type: string
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0851
-    command:
-      type: string
     command-type:
+      #discussion
       type: string
-      enum:
-      - "."
-      - X
-      - O
-    makeGame:
-      required:
-      - number-of-max-players
-      - number-of-rounds
-      type: object
-      properties:
-        number-of-rounds:
-          minimum: 1
-          type: integer
-        number-of-max-players:
-          minimum: 1
-          type: integer
+    command-body:
+      #discussion
+      type: string
+    command-item:
+      #discussion
+      type: string
     game:
-      required:
-      - game-id
-      - number-of-max-players
-      - number-of-rounds
       type: object
+      required:
+        - number-of-rounds
+        - number-of-max-players
       properties:
         game-id:
-          $ref: '#/components/schemas/uuid'
+          $ref: "#/components/schemas/uuid"
         number-of-rounds:
           type: integer
           example: 58
         number-of-max-players:
           type: integer
           example: 6
-    makeCommand:
-      required:
-      - command
-      - command-type
-      - item
-      - player-id
-      - robot-id
+    roundTime:
       type: object
       properties:
+        game-time:
+          type: integer
+          example: 183
+          description: Elapsed time in seconds since the start of the game.
+        round-count:
+          type: integer
+          example: 4
+          description: Number of the current round.
+        round-time:
+          type: integer
+          example: 33
+          description: Elapsed time in seconds since the start of the round.
+    admin:
+      type: object
+      required:
+        - name
+      properties:
         player-id:
-          $ref: '#/components/schemas/uuid'
-        robot-id:
-          $ref: '#/components/schemas/uuid'
-        command:
-          $ref: '#/components/schemas/command'
-        command-type:
-          $ref: '#/components/schemas/command-type'
-        item:
+          $ref: "#/components/schemas/uuid"
+        name:
           type: string
-  parameters:
-    game-id:
-      name: game-id
-      in: path
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/uuid'
+          example: "Rigatoni"
+          description: The name the admin chooses to be displayed in the game.
+    player:
+      type: object
+      required:
+        - name
+      properties:
+        player-id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+          example: "Rigatoni"
+          description: The name the player chooses to be displayed in the game.
+    command:
+      type: object
+      required:
+        - player-id
+        - robot-id
+        - command-type
+        - command-body
+        - item
+      properties:
+        player-id:
+          $ref: "#/components/schemas/uuid"
+        robot-id:
+          $ref: "#/components/schemas/uuid"
+        command-type:
+          $ref: "#/components/schemas/command-type"
+        command-body:
+          $ref: "#/components/schemas/command-body"
+        item:
+          $ref: "#/components/schemas/command-item"
