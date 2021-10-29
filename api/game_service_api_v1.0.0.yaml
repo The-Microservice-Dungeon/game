@@ -43,6 +43,30 @@ paths:
         "405":
           description: No game exists at the moment.
 
+  /game/commands/start:
+    post:
+      summary: Starts the game.
+      description: Gives the command to start the game. Only administrators are privileged to start the game. It can be executed only when a new game has been created and is waiting for the game to start.
+      responses:
+        "201":
+          description: The command has been accepted and the game is about to start.
+        "403":
+          description: Unauthorized access. Only administrators can start the game.
+        "405":
+          description: The command could not be accepted. Either no game is currently open, or the game is in a state from which it cannot be started, for example if it is already running.
+
+  /game/commands/end:
+    post:
+      summary: Ends the game.
+      description: Gives the command to end the game. Only administrators can give this command. Once the command is received, the current round is finished, after which the game is closed.
+      responses:
+        "201":
+          description: The command has been accepted and the game will be closed at the next possible moment.
+        "403":
+          description: Unauthorized access. Only administrators can end the game.
+        "405":
+          description: The command could not be accepted. Either no game is currently taking place, or the game has not started yet.
+
   /admins:
     post:
       summary: Creates a new admin to join the current game
@@ -54,7 +78,7 @@ paths:
             schema:
               $ref: "#/components/schemas/admin"
       responses:
-        "200":
+        "201":
           description: The admin has been successfully registered to the game.
           content:
             application/json:
@@ -90,7 +114,7 @@ paths:
   /commands:
     post:
       summary: Creates a new command for the specified robot
-      description: A new command has been created for the specific robot and will be processed at the next possible time. Duplicate commands always replace the previous one.
+      description: A new command has been created for the specific robot and will be processed at the next possible time. Multiple commands can be given per player per turn, but there can only be one command per robot at a time. Duplicate commands always replace the previous one.
       requestBody:
         required: true
         content:
@@ -107,7 +131,7 @@ paths:
         "400":
           description: Invalid input, requestbody invalid.
         "403":
-          description: The user misses credentials to access this ressource.
+          description: The user has no permission to access this resource.
         "405":
           description: The command could not be accepted. Possible cause is that there is no running game at the moment.
 
@@ -119,13 +143,20 @@ components:
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0851
     command-type:
-      #discussion
+      description: Specifies the command type. Type and content must match, otherwise the command cannot be processed.
       type: string
+      enum:
+        - blocking
+        - trading
+        - movement
+        - battle
+        - mining
+        - scouting
     command-body:
-      #discussion
+      description: Defines the command content. The corresponding syntax is given by the robot service.
       type: string
     command-item:
-      #discussion
+      description: Defines whether a command is bound to an object. The corresponding syntax is given by the robot service.
       type: string
     game:
       type: object
@@ -136,26 +167,30 @@ components:
         game-id:
           $ref: "#/components/schemas/uuid"
         number-of-rounds:
+          description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
           type: integer
+          minimum: 0
           example: 58
         number-of-max-players:
+          description: Defines the maximum possible number of players.
           type: integer
+          minimum: 1
           example: 6
     roundTime:
       type: object
       properties:
         game-time:
+          description: Elapsed time in seconds since the start of the game.
           type: integer
           example: 183
-          description: Elapsed time in seconds since the start of the game.
         round-count:
+          description: Number of the current round.
           type: integer
           example: 4
-          description: Number of the current round.
         round-time:
+          description: Elapsed time in seconds since the start of the round.
           type: integer
           example: 33
-          description: Elapsed time in seconds since the start of the round.
     admin:
       type: object
       required:
@@ -164,9 +199,9 @@ components:
         player-id:
           $ref: "#/components/schemas/uuid"
         name:
+          description: The name the admin chooses to be displayed in the game.
           type: string
           example: "Rigatoni"
-          description: The name the admin chooses to be displayed in the game.
     player:
       type: object
       required:
@@ -175,17 +210,17 @@ components:
         player-id:
           $ref: "#/components/schemas/uuid"
         name:
+          description: The name the player chooses to be displayed in the game.
           type: string
           example: "Rigatoni"
-          description: The name the player chooses to be displayed in the game.
     command:
+      description: The command that a player wants to send to his robot.
       type: object
       required:
         - player-id
         - robot-id
         - command-type
         - command-body
-        - item
       properties:
         player-id:
           $ref: "#/components/schemas/uuid"
