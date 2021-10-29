@@ -1,0 +1,234 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/dadepu/game_service_api/1.0.0
+info:
+  version: 1.0.0
+  title: todo
+paths:
+  /game:
+    post:
+      summary: Creates a new game
+      description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/game"
+      responses:
+        "201":
+          description: A new game has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        "400":
+          description: Invalid input, object invalid.
+        "405":
+          description: A active game already exists at the moment.
+
+  /game/time:
+    get:
+      summary: Returns the current time
+      description: Returns the current time once the game has been started.
+      responses:
+        "200":
+          description: Returns the current time.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/roundTime"
+        "405":
+          description: No game exists at the moment.
+
+  /game/commands/start:
+    post:
+      summary: Starts the game.
+      description: Gives the command to start the game. Only administrators are privileged to start the game. It can be executed only when a new game has been created and is waiting for the game to start.
+      responses:
+        "201":
+          description: The command has been accepted and the game is about to start.
+        "403":
+          description: Unauthorized access. Only administrators can start the game.
+        "405":
+          description: The command could not be accepted. Either no game is currently open, or the game is in a state from which it cannot be started, for example if it is already running.
+
+  /game/commands/end:
+    post:
+      summary: Ends the game.
+      description: Gives the command to end the game. Only administrators can give this command. Once the command is received, the current round is finished, after which the game is closed.
+      responses:
+        "201":
+          description: The command has been accepted and the game will be closed at the next possible moment.
+        "403":
+          description: Unauthorized access. Only administrators can end the game.
+        "405":
+          description: The command could not be accepted. Either no game is currently taking place, or the game has not started yet.
+
+  /admins:
+    post:
+      summary: Creates a new admin to join the current game
+      description: Once a new game is created, admins can join it. Joining is possible at any given time.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/admin"
+      responses:
+        "201":
+          description: The admin has been successfully registered to the game.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/admin"
+        "400":
+          description: Invalid input, requestbody invalid.
+        "405":
+          description: The admin could not be registred. No game exists at the moment.
+
+  /players:
+    post:
+      summary: Creates a new player to join the current game
+      description: Once a new game is created, players can register to join it. Players are registered in the context of a game. Once the game has been started the registration is closed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/player"
+      responses:
+        "201":
+          description: The player has been successfully registered for the game.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/player"
+        "400":
+          description: Invalid input, requestbody invalid.
+        "405":
+          description: The player could not be registered. Either no game exists at the moment or it is already running, so registration for it is no longer possible.
+
+  /commands:
+    post:
+      summary: Creates a new command for the specified robot
+      description: A new command has been created for the specific robot and will be processed at the next possible time. Multiple commands can be given per player per turn, but there can only be one command per robot at a time. Duplicate commands always replace the previous one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/command"
+      responses:
+        "201":
+          description: Returns the UUID of the newly created command.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/uuid"
+        "400":
+          description: Invalid input, requestbody invalid.
+        "403":
+          description: The user has no permission to access this resource.
+        "405":
+          description: The command could not be accepted. Possible cause is that there is no running game at the moment.
+
+
+components:
+  schemas:
+    uuid:
+      type: string
+      format: uuid
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    command-type:
+      description: Specifies the command type. Type and content must match, otherwise the command cannot be processed.
+      type: string
+      enum:
+        - blocking
+        - trading
+        - movement
+        - battle
+        - mining
+        - scouting
+    command-body:
+      description: Defines the command content. The corresponding syntax is given by the robot service.
+      type: string
+    command-item:
+      description: Defines whether a command is bound to an object. The corresponding syntax is given by the robot service.
+      type: string
+    game:
+      type: object
+      required:
+        - number-of-rounds
+        - number-of-max-players
+      properties:
+        game-id:
+          $ref: "#/components/schemas/uuid"
+        number-of-rounds:
+          description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
+          type: integer
+          minimum: 0
+          example: 58
+        number-of-max-players:
+          description: Defines the maximum possible number of players.
+          type: integer
+          minimum: 1
+          example: 6
+    roundTime:
+      type: object
+      properties:
+        game-time:
+          description: Elapsed time in seconds since the start of the game.
+          type: integer
+          example: 183
+        round-count:
+          description: Number of the current round.
+          type: integer
+          example: 4
+        round-time:
+          description: Elapsed time in seconds since the start of the round.
+          type: integer
+          example: 33
+    admin:
+      type: object
+      required:
+        - name
+      properties:
+        player-id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          description: The name the admin chooses to be displayed in the game.
+          type: string
+          example: "Rigatoni"
+    player:
+      type: object
+      required:
+        - name
+      properties:
+        player-id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          description: The name the player chooses to be displayed in the game.
+          type: string
+          example: "Rigatoni"
+    command:
+      description: The command that a player wants to send to his robot.
+      type: object
+      required:
+        - player-id
+        - robot-id
+        - command-type
+        - command-body
+      properties:
+        player-id:
+          $ref: "#/components/schemas/uuid"
+        robot-id:
+          $ref: "#/components/schemas/uuid"
+        command-type:
+          $ref: "#/components/schemas/command-type"
+        command-body:
+          $ref: "#/components/schemas/command-body"
+        item:
+          $ref: "#/components/schemas/command-item"
