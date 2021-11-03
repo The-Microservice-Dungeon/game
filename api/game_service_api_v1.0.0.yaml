@@ -196,7 +196,7 @@ components:
       required:
         - name
       properties:
-        player-id:
+        admin-id:
           $ref: "#/components/schemas/uuid"
         name:
           description: The name the admin chooses to be displayed in the game.
@@ -217,7 +217,6 @@ components:
       description: The command that a player wants to send to his robot.
       type: object
       required:
-        - player-id
         - robot-id
         - command-type
         - command-body
