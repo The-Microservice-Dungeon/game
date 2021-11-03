@@ -1,4 +1,3 @@
 package microservice.dungeon.game.aggregates.core
 
-class EntityNotFoundException {
-}
+class EntityNotFoundException(message: String): Exception(message)
