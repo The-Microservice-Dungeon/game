@@ -10,4 +10,8 @@ interface Event {
     fun getEventName(): String
 
     fun getOccurredAt(): Instant
+
+    fun serialized(): String
+
+    fun getTopic(): String
 }
