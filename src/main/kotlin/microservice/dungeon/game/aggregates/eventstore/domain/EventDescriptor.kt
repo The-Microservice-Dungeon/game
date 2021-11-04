@@ -1,10 +1,13 @@
 package microservice.dungeon.game.aggregates.eventstore.domain
 
+import lombok.Getter
 import microservice.dungeon.game.aggregates.core.Event
-import microservice.dungeon.game.aggregates.core.EventPublishing
 import org.hibernate.annotations.Type
 import org.springframework.beans.BeansException
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
+import org.springframework.core.env.Environment
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
@@ -13,34 +16,39 @@ import javax.persistence.*
 @Table(name = "outbox")
 class EventDescriptor constructor(
     @Transient
-    private val event: EventPublishing,
-    @Transient
-    private val applicationConext: ApplicationContext
+    private val event: Event
 ) {
     @Id
     @Type(type = "uuid-char")
-    val id: UUID = UUID.randomUUID()
+    private val id: UUID = event.getId()
 
-    val type: String = event.getEventName()
+    private val type: String = event.getEventName()
 
-    val occurredAt: Instant = event.getOccurredAt()
+    private val occurredAt: Instant = event.getOccurredAt()
 
-    val content: String = event.serializeEvent()
+    private val content: String = event.serialized()
 
     @Enumerated(value = EnumType.STRING)
-    val status: EventDescriptorStatus = EventDescriptorStatus.CREATED
+    private val status: EventDescriptorStatus = EventDescriptorStatus.CREATED
 
 
-    fun getAsEventPublishing(): EventPublishing {
-        try {
-            val event: Any = applicationConext.getBean(type)
-        } catch (e: BeansException) {
-            throw EventTypeMissMatchException("No matching Event-Bean could be found with name $type")
+    fun getAsEvent(environment: Environment, applicationContext: ApplicationContext): Event {
+        val eventBuilderSuffix: String = environment.getProperty("eventStore.builderSuffix").toString()
+        val eventBuilder: Any = applicationContext.getBean("${type}${eventBuilderSuffix}")
+        if (eventBuilder !is EventBuilder) {
+            throw EventTypeMissMatchException("No matching EventBuilder found for type ${type} with suffix ${eventBuilderSuffix}")
         }
-        if (event !is EventPublishing) {
-            throw EventTypeMissMatchException("Bean $type does not conform to type Event")
-        }
-        event.initializeFromSerializedEvent(content)
-        return event
+        return eventBuilder.deserializedEvent(content)
     }
+
+
+    fun getId(): UUID = id
+
+    fun getType(): String = type
+
+    fun getOccurredAt(): Instant = occurredAt
+
+    fun getContent(): String = content
+
+    fun getStatus(): EventDescriptorStatus = status
 }
