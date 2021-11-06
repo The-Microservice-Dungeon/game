@@ -13,7 +13,7 @@ class DemoEvent constructor(
     private val topic: String,
     private val occurredAt: LocalDateTime
 ): Event {
-    private val eventName: String = "DemoEvent"
+    private val eventName: String = "demoEvent"
 
 
     override fun getId(): UUID = id

@@ -5,7 +5,7 @@ import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.EventBuilder
 import org.springframework.stereotype.Component
 
-@Component(value = "DemoEvent-Builder")
+@Component
 class DemoEventBuilder: EventBuilder {
     override fun deserializedEvent(serialized: String): Event {
         val objectMapper = ObjectMapper().findAndRegisterModules()
