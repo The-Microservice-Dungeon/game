@@ -44,9 +44,7 @@ class RoundService @Autowired constructor (
     }
 
     fun endRound(roundNumber: Int) {
-        val round = roundRepository.findByRoundNumber(roundNumber)
-        round.endRound()
-        roundRepository.save(round)
+
     }
 }
 
