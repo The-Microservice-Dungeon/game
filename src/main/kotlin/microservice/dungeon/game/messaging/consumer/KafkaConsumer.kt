@@ -1,14 +1,15 @@
-package microservice.dungeon.game.messaging
+package microservice.dungeon.game.messaging.consumer
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
 @Component
-@ConditionalOnProperty(value = ["kafka.enable"], havingValue = "true", matchIfMissing = true)
-class KafkaConsumer {
+class KafkaConsumer @Autowired constructor(
 
+) {
     @KafkaListener(topics = ["testTopic"])
-    fun consume(message: String) = println("Consumed message: $message @testTopic")
+    fun consume(message: String) { println("KafkaConsumer.consume: Message received $message")}
 }
