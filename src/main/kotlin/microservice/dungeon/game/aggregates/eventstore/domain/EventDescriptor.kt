@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 
@@ -24,7 +25,7 @@ class EventDescriptor constructor(
 
     private val type: String = event.getEventName()
 
-    private val occurredAt: Instant = event.getOccurredAt()
+    private val occurredAt: LocalDateTime = event.getOccurredAt()
 
     private val content: String = event.serialized()
 
@@ -46,7 +47,7 @@ class EventDescriptor constructor(
 
     fun getType(): String = type
 
-    fun getOccurredAt(): Instant = occurredAt
+    fun getOccurredAt(): LocalDateTime = occurredAt
 
     fun getContent(): String = content
 
