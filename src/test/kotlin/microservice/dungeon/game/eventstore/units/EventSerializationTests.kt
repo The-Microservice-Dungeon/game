@@ -1,7 +1,7 @@
 package microservice.dungeon.game.eventstore.units
 
 import microservice.dungeon.game.aggregates.core.Event
-import microservice.dungeon.game.aggregates.eventstore.domain.EventBuilder
+import microservice.dungeon.game.aggregates.core.EventBuilder
 import microservice.dungeon.game.eventstore.data.DemoEvent
 
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,7 +14,6 @@ import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 

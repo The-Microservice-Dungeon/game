@@ -1,14 +1,10 @@
 package microservice.dungeon.game.aggregates.eventstore.domain
 
-import lombok.Getter
 import microservice.dungeon.game.aggregates.core.Event
+import microservice.dungeon.game.aggregates.core.EventBuilder
 import org.hibernate.annotations.Type
-import org.springframework.beans.BeansException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*

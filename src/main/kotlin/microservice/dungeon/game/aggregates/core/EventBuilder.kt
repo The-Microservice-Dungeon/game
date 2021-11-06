@@ -1,4 +1,4 @@
-package microservice.dungeon.game.aggregates.eventstore.domain
+package microservice.dungeon.game.aggregates.core
 
 import microservice.dungeon.game.aggregates.core.Event
 
