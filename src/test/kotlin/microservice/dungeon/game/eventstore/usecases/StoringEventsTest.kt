@@ -1,4 +1,4 @@
-package microservice.dungeon.game.eventstore
+package microservice.dungeon.game.eventstore.usecases
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.repositories.EventDescriptorRepository
@@ -7,18 +7,22 @@ import microservice.dungeon.game.eventstore.data.DemoEvent
 import microservice.dungeon.game.eventstore.data.compareEvents
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.ApplicationContext
-import org.springframework.core.env.Environment
+import org.springframework.kafka.annotation.EnableKafka
+import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 
+@EnableKafka
 @SpringBootTest
-class EventStoreServiceTests @Autowired constructor(
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+class StoringEventsTest @Autowired constructor(
     private val eventDescriptorRepository: EventDescriptorRepository,
     private val eventStoreService: EventStoreService
 ) {
@@ -29,18 +33,16 @@ class EventStoreServiceTests @Autowired constructor(
 
     @Test
     fun saveEventLoadEventMarkAsPublishedTest() {
-        val originalEvent: Event = DemoEvent(UUID.randomUUID(), "testTopic", Instant.now())
+        val originalEvent: Event = DemoEvent(UUID.randomUUID(), "testTopic", LocalDateTime.now())
         eventStoreService.storeEvent(originalEvent)
 
         val unpublishedEvents: List<Event> = eventStoreService.fetchUnpublishedEvents()
         val unpublishedEvent: Event = unpublishedEvents[0]
-
         assertEquals(unpublishedEvents.size, 1)
         assertTrue(compareEvents(originalEvent, unpublishedEvent))
 
         eventStoreService.markAsPublished(listOf(originalEvent).map{ x -> x.getId()})
         val finalUnpublishedEvents: List<Event> = eventStoreService.fetchUnpublishedEvents()
-
         assertEquals(finalUnpublishedEvents.size, 0)
     }
 }

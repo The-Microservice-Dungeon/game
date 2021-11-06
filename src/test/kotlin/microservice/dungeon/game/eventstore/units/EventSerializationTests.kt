@@ -1,12 +1,8 @@
-package microservice.dungeon.game.eventstore
+package microservice.dungeon.game.eventstore.units
 
-import com.google.common.base.Predicates.instanceOf
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.domain.EventBuilder
-import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
-import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptorStatus
 import microservice.dungeon.game.eventstore.data.DemoEvent
-import microservice.dungeon.game.eventstore.data.DemoEventBuilder
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -15,10 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
+import org.springframework.kafka.annotation.EnableKafka
+import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 
+@EnableKafka
 @SpringBootTest
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
 class EventSerializationTests @Autowired constructor(
     private val applicationContext: ApplicationContext,
     private val environment: Environment
@@ -26,9 +29,8 @@ class EventSerializationTests @Autowired constructor(
     @Test
     fun serializationAndDeserializationTest() {
         val builderSuffix: String = environment.getProperty("eventStore.builderSuffix").toString()
-        val event: Event = DemoEvent(UUID.randomUUID(), "testTopic", Instant.now())
+        val event: Event = DemoEvent(UUID.randomUUID(), "testTopic", LocalDateTime.now())
         val serializedEvent: String = event.serialized()
-
 
         val demoEventBuilder: Any = applicationContext.getBean("${event.getEventName()}${builderSuffix}")
         assertTrue(demoEventBuilder is EventBuilder)

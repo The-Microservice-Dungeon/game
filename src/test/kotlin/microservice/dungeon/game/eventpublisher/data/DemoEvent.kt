@@ -1,10 +1,9 @@
-package microservice.dungeon.game.eventstore.data
+package microservice.dungeon.game.eventpublisher.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 
@@ -22,7 +21,7 @@ class DemoEvent constructor(
 
     override fun getTopic(): String = topic
 
-    override fun getOccurredAt(): LocalDateTime = occurredAt.truncatedTo(ChronoUnit.SECONDS)
+    override fun getOccurredAt(): LocalDateTime = occurredAt
 
     override fun serialized(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()
