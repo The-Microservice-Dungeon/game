@@ -1,0 +1,55 @@
+asyncapi: 2.2.0
+info:
+  title: game_service
+  version: 1.0.0
+  description: Represents the administrative service of the game. Administrators can create a new game, players can join it and issue commands that control their robots. The game service forwards them accordingly and takes care of the synchronization of the game.
+servers:
+  production:
+    url: todo
+    protocol: kafka
+    #variables:
+      #port:
+defaultContentType: application/json
+channels:
+  game/status:
+    publish:
+      summary: Publishes all game relevant status changes
+      description: All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
+      message:
+        payload:
+          type: object
+          properties:
+            game-status:
+              enum: ["created", "started", "ended"]
+          
+  game/user_lobby:
+    publish:
+      summary: Publishes user activities related to their participation in the game. 
+      description: Publishes whenever a user registers or leaves the game. A distinction is made between administrators and players. Administrators can enter or leave the game at any time, players only after creating a new game and before starting the game.
+      message:
+        payload:
+          type: object
+          properties:
+            user-id:
+              type: string
+              format: UUID
+            user-name:
+              type: string
+            user-type:
+              enum: ["admin", "player"]
+            lobby-action:
+              enum: ["joined", "left"]
+          
+  game/round/status:
+    publish:
+      summary: Publishes status changes of a round
+      description: Publishes all the status changes of each round of the game.
+      message:
+        payload:
+          type: object
+          properties:
+            round-number:  
+              type: integer
+              minimum: 0
+            round-status:
+              enum: ["started", "command input ended", "ended"]
