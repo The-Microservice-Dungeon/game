@@ -1,20 +1,20 @@
-package microservice.dungeon.game.messaging
+package microservice.dungeon.game.messaging.producer
 
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 
-@Configuration
-@ConditionalOnProperty(value = ["kafka.enable"], havingValue = "true", matchIfMissing = true)
-class KafkaProducerConfig {
 
+@Configuration
+class KafkaProducerConfig @Autowired constructor(
+    private val kafkaProducerListener: KafkaProducerListener<String, String>
+) {
     @Value(value = "\${kafka.bootstrapAddress}")
     private val bootstrapAddress: String = ""
 
@@ -28,5 +28,9 @@ class KafkaProducerConfig {
     }
 
     @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, String> = KafkaTemplate(producerFactory())
+    fun kafkaTemplate(): KafkaTemplate<String, String> {
+        val template = KafkaTemplate(producerFactory())
+        template.setProducerListener(kafkaProducerListener)
+        return template
+    }
 }
