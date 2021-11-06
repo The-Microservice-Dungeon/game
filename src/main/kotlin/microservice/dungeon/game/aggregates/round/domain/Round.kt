@@ -5,14 +5,14 @@ import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusExcept
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import kotlin.math.round
 
 @Entity
 @Table(name = "rounds")
 class Round(
     @Id
-    val roundNumber: Int
+    private val roundNumber: Int
 ) {
-    @Getter
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
 
 
@@ -76,4 +76,8 @@ class Round(
         roundStatus = RoundStatus.ROUND_ENDED
         // do stuff here
     }
+
+    fun getRoundNumber(): Int = roundNumber
+
+    fun getRoundStatus(): RoundStatus = roundStatus
 }
