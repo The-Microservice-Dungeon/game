@@ -28,6 +28,11 @@ class RoundStarted(
 
     override fun serialized(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()
+        return objectMapper.writeValueAsString(this)
+    }
+
+    override fun serializedMessage(): String {
+        val objectMapper = ObjectMapper().findAndRegisterModules()
         var rootNode: JsonNode = objectMapper.valueToTree(this)
         (rootNode as ObjectNode).remove("topic")
         return objectMapper.writeValueAsString(rootNode)

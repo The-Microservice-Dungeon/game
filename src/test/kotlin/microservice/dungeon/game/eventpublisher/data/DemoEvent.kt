@@ -27,4 +27,9 @@ class DemoEvent constructor(
         val objectMapper = ObjectMapper().findAndRegisterModules()
         return objectMapper.writeValueAsString(this)
     }
+
+    override fun serializedMessage(): String {
+        val objectMapper = ObjectMapper().findAndRegisterModules()
+        return objectMapper.writeValueAsString(this)
+    }
 }
