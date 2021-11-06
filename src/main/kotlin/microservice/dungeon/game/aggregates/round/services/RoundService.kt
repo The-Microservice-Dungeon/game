@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,13 +26,19 @@ class RoundService @Autowired constructor (
         }
         val round = Round(roundNumber)
         roundRepository.save(round)
-        val roundStarted: RoundStarted = RoundStarted(LocalDateTime.now(), round.roundNumber, RoundStatus.COMMAND_INPUT_STARTED)
+        val roundStarted = RoundStarted(LocalDateTime.now(), roundNumber, RoundStatus.COMMAND_INPUT_STARTED)
         eventStoreService.storeEvent(roundStarted)
         eventPublisherService.publishEvents(listOf(roundStarted))
     }
 
+    @Transactional
     fun endCommandInputs(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.endCommandInputPhase()
+        roundRepository.save(round)
+        val commandInputEnded = CommandInputEnded(LocalDateTime.now(), roundNumber, RoundStatus.COMMAND_INPUT_ENDED)
+        eventStoreService.storeEvent(commandInputEnded)
+        eventPublisherService.publishEvents(listOf(commandInputEnded))
     }
 
     fun deliverBlockingCommands(roundNumber: Int) {
