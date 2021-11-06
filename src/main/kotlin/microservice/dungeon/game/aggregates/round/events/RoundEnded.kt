@@ -35,7 +35,7 @@ class RoundEnded (
 
     override fun getTopic(): String = topic
 
-    fun roundNumber(): Int = roundNumber
+    fun getRoundNumber(): Int = roundNumber
 
-    fun roundStatus(): RoundStatus = roundStatus
+    fun getRoundStatus(): RoundStatus = roundStatus
 }
