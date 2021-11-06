@@ -4,8 +4,10 @@ import lombok.Getter
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
+@Table(name = "rounds")
 class Round(
     @Id
     val roundNumber: Int
