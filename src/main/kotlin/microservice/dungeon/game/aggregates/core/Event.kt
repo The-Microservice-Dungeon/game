@@ -1,6 +1,7 @@
 package microservice.dungeon.game.aggregates.core
 
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -9,7 +10,7 @@ interface Event {
 
     fun getEventName(): String
 
-    fun getOccurredAt(): Instant
+    fun getOccurredAt(): LocalDateTime
 
     fun serialized(): String
 
