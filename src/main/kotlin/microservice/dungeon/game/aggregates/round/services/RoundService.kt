@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.eventstore.services.EventStoreServic
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
+import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -67,6 +68,11 @@ class RoundService @Autowired constructor (
 
     @Transactional
     fun endRound(roundNumber: Int) {
-
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.endRound()
+        roundRepository.save(round)
+        val roundEnded = RoundEnded(LocalDateTime.now(), roundNumber, RoundStatus.ROUND_ENDED)
+        eventStoreService.storeEvent(roundEnded)
+        eventPublisherService.publishEvents(listOf(roundEnded))
     }
 }
