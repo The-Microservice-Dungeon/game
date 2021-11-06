@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class RoundEndedBuilder: EventBuilder {
-    fun deserializedEvent(serialized: String): Event {
+    override fun deserializedEvent(serialized: String): Event {
         val objectMapper = ObjectMapper().findAndRegisterModules()
         return objectMapper.readValue(serialized, RoundEnded::class.java)
     }
