@@ -9,6 +9,7 @@ import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
 import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
+import microservice.dungeon.game.web.CommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,7 +19,8 @@ import java.time.LocalDateTime
 class RoundService @Autowired constructor (
     private val roundRepository: RoundRepository,
     private val eventStoreService: EventStoreService,
-    private val eventPublisherService: EventPublisherService
+    private val eventPublisherService: EventPublisherService,
+    private val commandDispatcherClient: CommandDispatcherClient
 ) {
     @Transactional
     fun startNewRound(roundNumber: Int) {
@@ -42,28 +44,59 @@ class RoundService @Autowired constructor (
         eventPublisherService.publishEvents(listOf(commandInputEnded))
     }
 
+
+    @Transactional
+    //TODO("Commands")
     fun deliverBlockingCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverBlockingCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchBlockingCommands(roundNumber, emptyList())
     }
 
+    @Transactional
+    //TODO("Commands")
     fun deliverTradingCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverTradingCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchTradingCommands(roundNumber, emptyList())
     }
 
+    @Transactional
+    //TODO("Commands")
     fun deliverMovementCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverMovementCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchMovementCommands(roundNumber, emptyList())
     }
 
+    @Transactional
+    //TODO("Commands")
     fun deliverBattleCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverBattleCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchBattleCommands(roundNumber, emptyList())
     }
 
+    @Transactional
+    //TODO("Commands")
     fun deliverMiningCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverMiningCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchMiningCommands(roundNumber, emptyList())
     }
 
+    @Transactional
+    //TODO("Commands")
     fun deliverScoutingCommands(roundNumber: Int) {
-        //TODO
+        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+        round.deliverScoutingCommandsToRobot()
+        roundRepository.save(round)
+        commandDispatcherClient.dispatchScoutingCommands(roundNumber, emptyList())
     }
 
     @Transactional
