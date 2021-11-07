@@ -1,12 +1,10 @@
-package microservice.dungeon.game.eventstore.units
+package microservice.dungeon.game.eventstore.domaintests
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
-import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptorStatus
-import microservice.dungeon.game.eventstore.data.DemoEvent
-import microservice.dungeon.game.eventstore.data.compareEventDescriptorWithEvent
-import microservice.dungeon.game.eventstore.data.compareEvents
-import org.junit.jupiter.api.Assertions
+import microservice.dungeon.game.eventstore.mockbeans.DemoEvent
+import microservice.dungeon.game.eventstore.mockbeans.compareEventDescriptorWithEvent
+import microservice.dungeon.game.eventstore.mockbeans.compareEvents
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +14,6 @@ import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 

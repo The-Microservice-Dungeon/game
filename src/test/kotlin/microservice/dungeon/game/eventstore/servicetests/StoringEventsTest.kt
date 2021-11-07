@@ -1,10 +1,10 @@
-package microservice.dungeon.game.eventstore.usecases
+package microservice.dungeon.game.eventstore.servicetests
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.repositories.EventDescriptorRepository
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
-import microservice.dungeon.game.eventstore.data.DemoEvent
-import microservice.dungeon.game.eventstore.data.compareEvents
+import microservice.dungeon.game.eventstore.mockbeans.DemoEvent
+import microservice.dungeon.game.eventstore.mockbeans.compareEvents
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 

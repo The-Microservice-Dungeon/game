@@ -1,8 +1,8 @@
-package microservice.dungeon.game.eventstore.units
+package microservice.dungeon.game.eventstore.domaintests
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.EventBuilder
-import microservice.dungeon.game.eventstore.data.DemoEvent
+import microservice.dungeon.game.eventstore.mockbeans.DemoEvent
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -1,14 +1,12 @@
-package microservice.dungeon.game.eventstore.units
+package microservice.dungeon.game.eventstore.domaintests
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptorStatus
 import microservice.dungeon.game.aggregates.eventstore.repositories.EventDescriptorRepository
-import microservice.dungeon.game.eventstore.data.DemoEvent
-import microservice.dungeon.game.eventstore.data.compareEventDescriptors
+import microservice.dungeon.game.eventstore.mockbeans.DemoEvent
+import microservice.dungeon.game.eventstore.mockbeans.compareEventDescriptors
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +16,6 @@ import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 import javax.transaction.Transactional
@@ -28,8 +25,6 @@ import javax.transaction.Transactional
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
 class EventDescriptorPersistenceTests @Autowired constructor(
-    private val applicationContext: ApplicationContext,
-    private val environment: Environment,
     private val eventDescriptorRepository: EventDescriptorRepository
 ) {
     @BeforeEach

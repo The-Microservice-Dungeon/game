@@ -1,4 +1,4 @@
-package microservice.dungeon.game.round.units
+package microservice.dungeon.game.model.round.domaintests
 
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
@@ -10,9 +10,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDateTime
 
-@SpringBootTest
-@DirtiesContext
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
 class CommandInputEndedTests {
 
     @Test

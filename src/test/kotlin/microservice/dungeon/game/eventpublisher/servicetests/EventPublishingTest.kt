@@ -1,9 +1,9 @@
-package microservice.dungeon.game.eventpublisher.usecases
+package microservice.dungeon.game.eventpublisher.servicetests
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.core.messaging.KafkaConsumerHistory
-import microservice.dungeon.game.eventpublisher.data.DemoEvent
+import microservice.dungeon.game.eventpublisher.mockbeans.DemoEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +12,6 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.lang.Thread.sleep
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 

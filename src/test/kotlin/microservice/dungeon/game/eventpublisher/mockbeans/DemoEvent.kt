@@ -1,8 +1,7 @@
-package microservice.dungeon.game.eventpublisher.data
+package microservice.dungeon.game.eventpublisher.mockbeans
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 

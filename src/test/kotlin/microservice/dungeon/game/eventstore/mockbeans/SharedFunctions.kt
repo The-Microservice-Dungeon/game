@@ -1,4 +1,4 @@
-package microservice.dungeon.game.eventstore.data
+package microservice.dungeon.game.eventstore.mockbeans
 
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor

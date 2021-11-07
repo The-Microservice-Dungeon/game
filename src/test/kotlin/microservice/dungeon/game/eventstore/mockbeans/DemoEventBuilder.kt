@@ -1,4 +1,4 @@
-package microservice.dungeon.game.eventstore.data
+package microservice.dungeon.game.eventstore.mockbeans
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
