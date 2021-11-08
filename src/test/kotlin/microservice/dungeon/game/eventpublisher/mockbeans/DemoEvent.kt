@@ -2,6 +2,7 @@ package microservice.dungeon.game.eventpublisher.mockbeans
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
+import microservice.dungeon.game.aggregates.core.EventDto
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,8 +28,7 @@ class DemoEvent constructor(
         return objectMapper.writeValueAsString(this)
     }
 
-    override fun serializedMessage(): String {
-        val objectMapper = ObjectMapper().findAndRegisterModules()
-        return objectMapper.writeValueAsString(this)
+    override fun toDTO(): EventDto {
+        return DemoEventDto(id, topic, occurredAt)
     }
 }
