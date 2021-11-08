@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class KafkaConsumer @Autowired constructor(
+class KafkaRobotConsumer @Autowired constructor(
     private val eventConsumerService: EventConsumerService
 ) {
     @KafkaListener(topics = ["testTopic"])
