@@ -1,10 +1,10 @@
 package microservice.dungeon.game.aggregates.round.events
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import microservice.dungeon.game.aggregates.core.Event
+import microservice.dungeon.game.aggregates.core.EventDto
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.dtos.RoundEventDto
 import java.time.LocalDateTime
 import java.util.*
 
@@ -31,11 +31,8 @@ class CommandInputEnded (
         return objectMapper.writeValueAsString(this)
     }
 
-    override fun serializedMessage(): String {
-        val objectMapper = ObjectMapper().findAndRegisterModules()
-        var rootNode: JsonNode = objectMapper.valueToTree(this)
-        (rootNode as ObjectNode).remove("topic")
-        return objectMapper.writeValueAsString(rootNode)
+    override fun toDTO(): EventDto {
+        return RoundEventDto(id, occurredAt, roundNumber, roundStatus)
     }
 
     override fun getTopic(): String = topic
