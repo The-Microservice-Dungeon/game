@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDateTime
+import java.util.*
 
 class CommandInputEndedTests {
 
     @Test
     fun serializeAndDeserializeEventTest() {
-        val event = CommandInputEnded(LocalDateTime.now(), 1, RoundStatus.COMMAND_INPUT_STARTED)
+        val event = CommandInputEnded(LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 1, RoundStatus.COMMAND_INPUT_STARTED)
         val eventSerialized = event.serialized()
         val eventDeserialized = CommandInputEndedBuilder().deserializedEvent(eventSerialized)
         assertEquals(event.serialized(), eventDeserialized.serialized())

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class RoundService @Autowired constructor (
@@ -23,88 +24,99 @@ class RoundService @Autowired constructor (
     private val commandDispatcherClient: CommandDispatcherClient
 ) {
     @Transactional
-    fun startNewRound(roundNumber: Int) {
-        if (!roundRepository.findByRoundNumber(roundNumber).isEmpty) {
-            throw EntityAlreadyExistsException("A round with number $roundNumber already exists.")
+    fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
+        if (!roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).isEmpty) {
+            throw EntityAlreadyExistsException("A round with number $roundNumber for game $gameId already exists.")
         }
-        val round = Round(roundNumber)
+        val round = Round(gameId, roundNumber)
         roundRepository.save(round)
-        val roundStarted = RoundStarted(LocalDateTime.now(), roundNumber, RoundStatus.COMMAND_INPUT_STARTED)
+        val roundStarted = RoundStarted(LocalDateTime.now(), round.getRoundId(), gameId, roundNumber, RoundStatus.COMMAND_INPUT_STARTED)
         eventStoreService.storeEvent(roundStarted)
         eventPublisherService.publishEvents(listOf(roundStarted))
+        return round.getRoundId()
     }
 
     @Transactional
-    fun endCommandInputs(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    fun endCommandInputs(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.endCommandInputPhase()
         roundRepository.save(round)
-        val commandInputEnded = CommandInputEnded(LocalDateTime.now(), roundNumber, RoundStatus.COMMAND_INPUT_ENDED)
+        val commandInputEnded = CommandInputEnded(
+            LocalDateTime.now(),
+            round.getRoundId(),
+            round.getGameId(),
+            round.getRoundNumber(),
+            RoundStatus.COMMAND_INPUT_ENDED)
         eventStoreService.storeEvent(commandInputEnded)
         eventPublisherService.publishEvents(listOf(commandInputEnded))
     }
 
 
     @Transactional
-    //TODO("Commands")
-    fun deliverBlockingCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverBlockingCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchBlockingCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchBlockingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands")
-    fun deliverTradingCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverTradingCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverTradingCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchTradingCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchTradingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands")
-    fun deliverMovementCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverMovementCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchMovementCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchMovementCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands")
-    fun deliverBattleCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverBattleCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchBattleCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchBattleCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands")
-    fun deliverMiningCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverMiningCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchMiningCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchMiningCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands")
-    fun deliverScoutingCommands(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    //TODO("Commands + Dispatcher")
+    fun deliverScoutingCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.deliverScoutingCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchScoutingCommands(roundNumber, emptyList())
+        commandDispatcherClient.dispatchScoutingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    fun endRound(roundNumber: Int) {
-        val round: Round = roundRepository.findByRoundNumber(roundNumber).get()
+    fun endRound(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
         round.endRound()
         roundRepository.save(round)
-        val roundEnded = RoundEnded(LocalDateTime.now(), roundNumber, RoundStatus.ROUND_ENDED)
+        val roundEnded = RoundEnded(
+            LocalDateTime.now(),
+            round.getRoundId(),
+            round.getGameId(),
+            round.getRoundNumber(),
+            RoundStatus.ROUND_ENDED)
         eventStoreService.storeEvent(roundEnded)
         eventPublisherService.publishEvents(listOf(roundEnded))
     }

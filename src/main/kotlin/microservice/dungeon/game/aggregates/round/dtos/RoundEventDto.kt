@@ -9,6 +9,8 @@ import java.util.*
 class RoundEventDto constructor(
     val id: UUID,
     val occurredAt: LocalDateTime,
+    val roundId: UUID,
+    val gameId: UUID,
     val roundNumber: Int,
     val roundStatus: RoundStatus
 ): EventDto {

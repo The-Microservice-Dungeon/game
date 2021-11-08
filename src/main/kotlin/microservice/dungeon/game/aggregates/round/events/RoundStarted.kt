@@ -13,11 +13,13 @@ import java.util.*
 class RoundStarted(
     private val id: UUID,
     private val occurredAt: LocalDateTime,
+    private val roundId: UUID,
+    private val gameId: UUID,
     private val roundNumber: Int,
     private val roundStatus: RoundStatus
-): Event {
-    constructor(occurredAt: LocalDateTime, roundNumber: Int, roundStatus: RoundStatus):
-            this(UUID.randomUUID(), occurredAt, roundNumber, roundStatus)
+) : Event {
+    constructor(occurredAt: LocalDateTime, roundId: UUID, gameId: UUID, roundNumber: Int, roundStatus: RoundStatus):
+            this(UUID.randomUUID(), occurredAt, roundId, gameId, roundNumber, roundStatus)
 
     private val topic: String = "testTopic"
     private val eventName: String = "roundStarted"
@@ -34,10 +36,14 @@ class RoundStarted(
     }
 
     override fun toDTO(): EventDto {
-        return RoundEventDto(id, occurredAt, roundNumber, roundStatus)
+        return RoundEventDto(id, occurredAt, roundId, gameId, roundNumber, roundStatus)
     }
 
     override fun getTopic(): String = topic
+
+    fun getRoundId(): UUID = roundId
+
+    fun getGameId(): UUID = gameId
 
     fun getRoundNumber(): Int = roundNumber
 

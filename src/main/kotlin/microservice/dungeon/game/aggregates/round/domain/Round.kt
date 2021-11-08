@@ -1,6 +1,7 @@
 package microservice.dungeon.game.aggregates.round.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
@@ -8,9 +9,11 @@ import javax.persistence.Table
 @Entity
 @Table(name = "rounds")
 class Round(
-    @Id
+    private val gameId: UUID,
     private val roundNumber: Int
 ) {
+    @Id
+    private val roundId: UUID = UUID.randomUUID()
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
 
 
@@ -67,6 +70,10 @@ class Round(
         roundStatus = RoundStatus.ROUND_ENDED
     }
 
+
+    fun getRoundId(): UUID = roundId
+
+    fun getGameId(): UUID = gameId
 
     fun getRoundNumber(): Int = roundNumber
 

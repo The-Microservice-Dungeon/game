@@ -6,5 +6,5 @@ import java.util.*
 
 interface RoundRepository : CrudRepository<Round, UUID> {
 
-    fun findByRoundNumber(roundNumber: Int): Optional<Round>
+    fun findByGameIdAndRoundNumber(gameId: UUID, roundNumber: Int): Optional<Round>
 }
