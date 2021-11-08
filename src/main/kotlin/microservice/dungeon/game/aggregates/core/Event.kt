@@ -14,7 +14,7 @@ interface Event {
 
     fun serialized(): String
 
-    fun serializedMessage(): String
+    fun toDTO(): EventDto
 
     fun getTopic(): String
 }
