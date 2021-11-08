@@ -21,9 +21,14 @@ class CommandDispatcherClient constructor(
             .uri("/commands/blocking")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(ObjectMapper().writeValueAsString(commands))
-            .retrieve()
-            .bodyToMono(JsonNode::class.java)
-            .block()
+            .exchangeToMono{ clientResponse ->
+                if (clientResponse.statusCode() == HttpStatus.OK) {
+                    clientResponse.bodyToMono(JsonNode::class.java)
+                }
+                else {
+                    throw Exception("Err")
+                }
+            }.block()
     }
 
     fun dispatchTradingCommands(roundNumber: Int, commands: List<String>) {
