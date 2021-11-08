@@ -14,7 +14,7 @@ class EventPublisherService @Autowired constructor(
 ) {
     fun publishEvents(events: List<Event>) {
         events.forEach { event: Event ->
-            kafkaProducing.send(event.getTopic(), event.serialized())
+            kafkaProducing.send(event.getTopic(), event.toDTO().serialize())
         }
     }
 
