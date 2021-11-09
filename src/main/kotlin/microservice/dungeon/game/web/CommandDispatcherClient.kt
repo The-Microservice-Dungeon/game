@@ -6,9 +6,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitExchange
-import org.springframework.web.reactive.function.client.bodyToMono
-import org.springframework.web.reactive.function.client.createExceptionAndAwait
 
 class CommandDispatcherClient constructor(
     private val robotBaseUrl: String
