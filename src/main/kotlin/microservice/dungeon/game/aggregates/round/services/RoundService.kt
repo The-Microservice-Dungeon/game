@@ -46,7 +46,7 @@ class RoundService @Autowired constructor (
             round.getRoundId(),
             round.getGameId(),
             round.getRoundNumber(),
-            RoundStatus.COMMAND_INPUT_ENDED)
+            round.getRoundStatus())
         eventStoreService.storeEvent(commandInputEnded)
         eventPublisherService.publishEvents(listOf(commandInputEnded))
     }

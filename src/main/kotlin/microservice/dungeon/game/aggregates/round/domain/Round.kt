@@ -10,12 +10,11 @@ import javax.persistence.Table
 @Table(name = "rounds")
 class Round(
     private val gameId: UUID,
-    private val roundNumber: Int
-) {
+    private val roundNumber: Int,
     @Id
-    private val roundId: UUID = UUID.randomUUID()
+    private val roundId: UUID = UUID.randomUUID(),
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
-
+) {
 
     fun endCommandInputPhase() {
         if (roundStatus != RoundStatus.COMMAND_INPUT_STARTED) {
