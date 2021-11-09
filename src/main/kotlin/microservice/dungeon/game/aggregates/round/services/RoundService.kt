@@ -30,7 +30,7 @@ class RoundService @Autowired constructor (
         }
         val round = Round(gameId, roundNumber)
         roundRepository.save(round)
-        val roundStarted = RoundStarted(LocalDateTime.now(), round.getRoundId(), gameId, roundNumber, RoundStatus.COMMAND_INPUT_STARTED)
+        val roundStarted = RoundStarted(round)
         eventStoreService.storeEvent(roundStarted)
         eventPublisherService.publishEvents(listOf(roundStarted))
         return round.getRoundId()
@@ -41,12 +41,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.endCommandInputPhase()
         roundRepository.save(round)
-        val commandInputEnded = CommandInputEnded(
-            LocalDateTime.now(),
-            round.getRoundId(),
-            round.getGameId(),
-            round.getRoundNumber(),
-            round.getRoundStatus())
+        val commandInputEnded = CommandInputEnded(round)
         eventStoreService.storeEvent(commandInputEnded)
         eventPublisherService.publishEvents(listOf(commandInputEnded))
     }
@@ -111,12 +106,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.endRound()
         roundRepository.save(round)
-        val roundEnded = RoundEnded(
-            LocalDateTime.now(),
-            round.getRoundId(),
-            round.getGameId(),
-            round.getRoundNumber(),
-            RoundStatus.ROUND_ENDED)
+        val roundEnded = RoundEnded(round)
         eventStoreService.storeEvent(roundEnded)
         eventPublisherService.publishEvents(listOf(roundEnded))
     }
