@@ -10,7 +10,9 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "outbox")
+@Table(name = "outbox", indexes = [
+    Index(name = "eventDescriptorIndexWithStatus", columnList = "status")
+])
 class EventDescriptor constructor(
     @Transient
     private val event: Event
