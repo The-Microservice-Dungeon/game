@@ -24,7 +24,7 @@ class EventDescriptor constructor(
     private val type: String = event.getEventName()
 
     private val occurredAt: LocalDateTime = event.getOccurredAt()
-
+    @Lob
     private val content: String = event.serialized()
 
     @Enumerated(value = EnumType.STRING)
