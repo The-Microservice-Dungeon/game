@@ -1,17 +1,21 @@
 package microservice.dungeon.game.aggregates.round.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
+import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.Index
 import javax.persistence.Table
 
 @Entity
 @Table(name = "rounds")
 class Round(
+    @Type(type="uuid-char")
     private val gameId: UUID,
     private val roundNumber: Int,
     @Id
+    @Type(type="uuid-char")
     private val roundId: UUID = UUID.randomUUID(),
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
 ) {
