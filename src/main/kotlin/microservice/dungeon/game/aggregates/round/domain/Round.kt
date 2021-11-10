@@ -9,7 +9,9 @@ import javax.persistence.Index
 import javax.persistence.Table
 
 @Entity
-@Table(name = "rounds")
+@Table(name = "rounds", indexes = [
+    Index(name = "roundIndexWithGameIdAndRoundNumber", columnList = "gameId, roundNumber", unique = true)
+])
 class Round(
     @Type(type="uuid-char")
     private val gameId: UUID,
