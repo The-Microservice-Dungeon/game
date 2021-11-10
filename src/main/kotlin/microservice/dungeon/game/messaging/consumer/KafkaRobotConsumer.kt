@@ -14,10 +14,12 @@ class KafkaRobotConsumer @Autowired constructor(
 ) {
     @KafkaListener(topics = ["testTopic"])
     fun consume(message: String) {
-        val node: JsonNode = ObjectMapper().readTree(message)
-        val id: UUID = UUID.fromString(node.get("id").asText())
-        eventConsumerService.consumeMessage(id) {
-
-        }
+        println("RobotConsumer")
+        println(message)
+//        val node: JsonNode = ObjectMapper().readTree(message)
+//        val id: UUID = UUID.fromString(node.get("id").asText())
+//        eventConsumerService.consumeMessage(id) {
+//
+//        }
     }
 }
