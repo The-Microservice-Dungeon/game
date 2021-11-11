@@ -13,9 +13,9 @@ class EventConsumerService @Autowired constructor(
     private val eventMessageRepository: EventMessageRepository
 ) {
     @Transactional
-    fun consumeMessage(id: UUID, callback: () -> Unit) {
+    fun consumeMessage(id: UUID, occurredAt: LocalDateTime, callback: () -> Unit) {
         if (eventMessageRepository.findById(id).isEmpty) {
-            val eventMessage = EventMessage(id, LocalDateTime.now())
+            val eventMessage = EventMessage(id, occurredAt, LocalDateTime.now())
             eventMessageRepository.save(eventMessage)
             callback()
         }
