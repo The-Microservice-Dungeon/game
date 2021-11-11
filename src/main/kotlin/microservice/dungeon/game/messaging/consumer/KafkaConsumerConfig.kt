@@ -9,6 +9,12 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.orm.jpa.JpaTransactionManager
+
+import javax.persistence.EntityManagerFactory
+
+
+
 
 @EnableKafka
 @Configuration
@@ -19,6 +25,11 @@ class KafkaConsumerConfig {
 
     @Value(value = "\${kafka.groupId}")
     private val groupId: String = ""
+
+    @Bean
+    fun transactionManager(entityManagerFactory: EntityManagerFactory): JpaTransactionManager {
+        return JpaTransactionManager(entityManagerFactory)
+    }
 
     @Bean
     fun consumerFactory(): ConsumerFactory<String, String> {
@@ -34,6 +45,7 @@ class KafkaConsumerConfig {
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = consumerFactory()
+        //TODO("Transaction Manager")
         return factory
     }
 }
