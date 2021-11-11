@@ -12,12 +12,16 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.transaction.support.TransactionTemplate
 import java.time.LocalDateTime
 import java.util.*
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+@SpringBootTest(properties = [
+    "kafka.bootstrapAddress=localhost:29094"
+])
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29094", "port=29094"])
 class EventStorePersistenceTests @Autowired constructor(
     private val eventDescriptorRepository: EventDescriptorRepository,
     private val transactionTemplate: TransactionTemplate,

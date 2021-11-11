@@ -15,10 +15,15 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Scope
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import java.util.*
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+@SpringBootTest(properties = [
+    "kafka.bootstrapAddress=localhost:29096",
+    "kafka.consumer.enable=false"
+])
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29096", "port=29096"])
 class KafkaProducerMessagingConsumeTests @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
     private val kafkaConsumerMock: KafkaConsumerMock
@@ -34,18 +39,9 @@ class KafkaProducerMessagingConsumeTests @Autowired constructor(
         val roundStarted = RoundStarted(round)
         val message: String = roundStarted.toDTO().serialize()
 
-        kafkaProducer.send("testTopic", message)
+        kafkaProducer.send("mockTopic", message)
         Thread.sleep(1000)
 
         assertEquals(kafkaConsumerMock.getMessages().size, 1)
-        println(kafkaConsumerMock.getMessages().first())
-    }
-
-    @TestConfiguration
-    class KafkaProducerMessagingConsumeTestsConfig {
-        @Bean
-        @Primary
-        @Scope("singleton")
-        fun kafkaConsumerMockSingleton(): KafkaConsumerMock = KafkaConsumerMock()
     }
 }

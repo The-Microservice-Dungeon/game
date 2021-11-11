@@ -15,17 +15,22 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.kafka.support.ProducerListener
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import java.lang.Thread.sleep
 import java.util.*
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+@SpringBootTest(properties = [
+    "kafka.bootstrapAddress=localhost:29093"
+])
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29093", "port=29093"])
 class EventPublisherLiveTests @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val eventStoreService: EventStoreService
 ) {
 
     @Test
+    //TODO("Comment")
     fun sendMessageSuccessfullyAndValidateCallbackTest() {
         val round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
         val roundStarted = RoundStarted(round)

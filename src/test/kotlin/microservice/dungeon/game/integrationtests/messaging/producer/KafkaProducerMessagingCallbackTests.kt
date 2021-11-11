@@ -3,7 +3,6 @@ package microservice.dungeon.game.integrationtests.messaging.producer
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
-import microservice.dungeon.game.messaging.consumer.KafkaRobotConsumer
 import microservice.dungeon.game.messaging.producer.KafkaProducer
 import microservice.dungeon.game.messaging.producer.KafkaProducerListener
 import org.junit.jupiter.api.BeforeEach
@@ -17,18 +16,19 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Scope
-import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.lang.Thread.sleep
 import java.util.*
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+@SpringBootTest(properties = [
+    "kafka.bootstrapAddress=localhost:29095"
+])
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29095", "port=29095"])
 class KafkaProducerMessagingCallbackTests @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
-    private val kafkaProducerListener: KafkaProducerListener<String, String>,
-    private val kafkaRobotConsumer: KafkaRobotConsumer
+    private val kafkaProducerListener: KafkaProducerListener<String, String>
 ) {
     @BeforeEach
     fun initialize() {

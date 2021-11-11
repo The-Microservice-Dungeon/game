@@ -9,12 +9,16 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import java.util.*
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29092", "port=29092"])
+@SpringBootTest(properties = [
+    "kafka.bootstrapAddress=localhost:29097"
+])
+@DirtiesContext
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29097", "port=29097"])
 class RobotPersistenceTest @Autowired constructor(
     private val robotRepository: RobotRepository,
     private val transactionTemplate: TransactionTemplate
