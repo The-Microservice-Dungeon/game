@@ -52,4 +52,8 @@ abstract class AbstractRoundEvent constructor(
                 && roundNumber == event.getRoundNumber()
                 && roundStatus == event.getRoundStatus()
                 && eventName == event.getEventName()
+
+    override fun isSameAs(comparison: Event): Boolean =
+         getId() == comparison.getId()
+                && serialized() == comparison.serialized()
 }
