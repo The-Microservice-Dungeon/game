@@ -1,5 +1,6 @@
 package microservice.dungeon.game.aggregates.eventstore.services
 
+import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.InvalidApplicationPropertyException
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
@@ -23,6 +24,9 @@ open class EventStoreService @Autowired constructor(
 ) {
 
     fun storeEvent(event: Event) {
+        if (!eventDescriptorRepository.findById(event.getId()).isEmpty) {
+            throw EntityAlreadyExistsException("An Event with id ${event.getId()} already exists")
+        }
         val eventDescriptor = EventDescriptor(event)
         eventDescriptorRepository.save(eventDescriptor)
     }
