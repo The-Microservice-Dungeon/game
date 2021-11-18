@@ -17,4 +17,6 @@ interface Event {
     fun toDTO(): EventDto
 
     fun getTopic(): String
+
+    fun isSameAs(event: Event): Boolean
 }
