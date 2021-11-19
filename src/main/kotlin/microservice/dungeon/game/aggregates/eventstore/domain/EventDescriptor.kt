@@ -14,8 +14,7 @@ import javax.persistence.*
     Index(name = "eventDescriptorIndexWithStatus", columnList = "status")
 ])
 class EventDescriptor constructor(
-    @Transient
-    private val event: Event
+    event: Event
 ) {
     @Id
     @Type(type = "uuid-char")
@@ -50,12 +49,4 @@ class EventDescriptor constructor(
     fun getContent(): String = content
 
     fun getStatus(): EventDescriptorStatus = status
-
-    fun isSameAs(compare: EventDescriptor): Boolean {
-        return  id              == compare.getId() &&
-                type            == compare.getType() &&
-                occurredAt      == compare.getOccurredAt() &&
-                content         == compare.getContent() &&
-                status          == compare.getStatus()
-    }
 }
