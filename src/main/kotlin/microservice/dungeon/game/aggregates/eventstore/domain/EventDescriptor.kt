@@ -22,7 +22,7 @@ class EventDescriptor constructor(
 
     private val type: String = event.getEventName()
 
-    private val occurredAt: LocalDateTime = event.getOccurredAt()
+    private val occurredAt: LocalDateTime = event.getOccurredAt().getTime()
     @Lob
     private val content: String = event.serialized()
 

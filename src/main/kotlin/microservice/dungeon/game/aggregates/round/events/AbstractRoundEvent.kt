@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.round.events
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.EventDto
+import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.dtos.RoundEventDto
 import java.time.LocalDateTime
@@ -10,18 +11,21 @@ import java.util.*
 
 abstract class AbstractRoundEvent constructor(
     private val id: UUID,
-    private val occurredAt: LocalDateTime,
+    private val occurredAt: EventTime,
     private val roundId: UUID,
     private val gameId: UUID,
     private val roundNumber: Int,
     private val roundStatus: RoundStatus,
     private val eventName: String,
-    private val topic: String
+    private val topic: String,
+    private val version: Int
 ): Event  {
 
     override fun getId(): UUID = id
 
-    override fun getOccurredAt(): LocalDateTime = occurredAt
+    override fun getTransactionId(): UUID = roundId
+
+    override fun getOccurredAt(): EventTime = occurredAt
 
     fun getRoundId(): UUID = roundId
 
@@ -34,6 +38,8 @@ abstract class AbstractRoundEvent constructor(
     override fun getEventName(): String = eventName
 
     override fun getTopic(): String = topic
+
+    override fun getVersion(): Int = version
 
     override fun serialized(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()
@@ -52,6 +58,7 @@ abstract class AbstractRoundEvent constructor(
                 && roundNumber == event.getRoundNumber()
                 && roundStatus == event.getRoundStatus()
                 && eventName == event.getEventName()
+    //TODO
 
     override fun isSameAs(comparison: Event): Boolean =
          getId() == comparison.getId()
