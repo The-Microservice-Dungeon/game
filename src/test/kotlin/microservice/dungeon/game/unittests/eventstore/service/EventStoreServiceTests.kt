@@ -51,7 +51,8 @@ class EventStoreServiceTests {
 
         argumentCaptor<EventDescriptor>().apply {
             verify(eventDescriptorRepositoryMock!!).save(capture())
-            assertTrue(firstValue.isSameAs(eventDescriptor))
+            assertThat(firstValue).usingRecursiveComparison()
+                .isEqualTo(eventDescriptor)
         }
     }
 
