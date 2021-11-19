@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component
 class KafkaConsumerMock {
     private var messages: List<String> = emptyList()
 
-    @KafkaListener(topics = ["mockTopic"])
+    @KafkaListener(topics = ["\${kafka.topicMock}"])
     fun consume(message: String) {
         messages = messages + listOf(message)
-        println("Consumed: $message")
     }
 
     fun getMessages(): List<String> {
