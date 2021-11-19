@@ -5,12 +5,14 @@ import microservice.dungeon.game.aggregates.eventconsumer.repositories.EventMess
 import microservice.dungeon.game.aggregates.eventconsumer.services.EventConsumerService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
 
+@Disabled
 class EventConsumerServiceTests {
     private var eventMessageRepositoryMock: EventMessageRepository? = null
     private var eventConsumerService: EventConsumerService? = null
