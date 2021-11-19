@@ -36,7 +36,7 @@ open class EventStoreService @Autowired constructor(
         when(publishingMode) {
             "UPDATE" -> eventDescriptorRepository.markAsPublished(events)
             "DELETE" -> eventDescriptorRepository.deletePublished(events)
-            else -> throw InvalidApplicationPropertyException("eventStore.publishingMode must either be UPDATE or DELETE")
+            else -> throw RuntimeException("eventStore.publishingMode must either be UPDATE or DELETE")
         }
     }
 
