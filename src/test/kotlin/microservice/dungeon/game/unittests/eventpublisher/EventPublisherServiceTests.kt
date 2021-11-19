@@ -27,22 +27,14 @@ class EventPublisherServiceTests {
     }
 
     @Test
-    fun publishEventsShouldSendListOfEvents() {
+    fun publishEventShouldSendListOfEvents2() {
         val mockEvent: Event = mock()
-        val mockDTO: EventDto = mock()
-        whenever(mockEvent.getTopic())
-            .thenReturn("someTopic")
-        whenever(mockEvent.toDTO())
-            .thenReturn(mockDTO)
-        whenever(mockDTO.serialize())
-            .thenReturn("{some Json}")
-
         val validListOfEvents = listOf(mockEvent, mockEvent)
         eventPublisherService!!
             .publishEvents(validListOfEvents)
 
         verify(kafkaProducingMock!!, times(2))
-            .send(mockEvent.getTopic(), mockDTO.serialize())
+            .send(mockEvent)
     }
 
     @Test
