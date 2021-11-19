@@ -17,7 +17,7 @@ class KafkaProducer @Autowired constructor (
         kafkaTemplate.send(topic, payload)
     }
 
-    fun send(event: Event) {
+    override fun send(event: Event) {
         val record = ProducerRecord<String, String>(event.getTopic(), event.toDTO().serialize())
         record.headers().add(
             RecordHeader("eventId", event.getId().toString().toByteArray())
