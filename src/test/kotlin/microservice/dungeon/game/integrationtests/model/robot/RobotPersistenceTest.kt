@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.model.robot
 import microservice.dungeon.game.aggregates.robot.domain.Robot
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import microservice.dungeon.game.aggregates.robot.services.RobotService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,7 +18,6 @@ import java.util.*
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29097"
 ])
-@DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29097", "port=29097"])
 class RobotPersistenceTest @Autowired constructor(
     private val robotRepository: RobotRepository,
@@ -30,7 +30,7 @@ class RobotPersistenceTest @Autowired constructor(
 
     @Test
     @Transactional
-    fun saveRobotAndFindTest() {
+    fun saveRobotShouldPersistRobot() {
         val robotId = UUID.randomUUID()
         val playerId = UUID.randomUUID()
         val gameId = UUID.randomUUID()
@@ -42,7 +42,10 @@ class RobotPersistenceTest @Autowired constructor(
         val loadedRobot = transactionTemplate.execute {
             robotRepository.findById(robotId).get()
         }!!
-        assertEquals(loadedRobot.getRobotId(), robot.getRobotId())
-        assertEquals(loadedRobot.getRobotStatus(), robot.getRobotStatus())
+
+        assertThat(loadedRobot.getRobotId())
+            .isEqualTo(robot.getRobotId())
+        assertThat(loadedRobot.getRobotStatus())
+            .isEqualTo(robot.getRobotStatus())
     }
 }
