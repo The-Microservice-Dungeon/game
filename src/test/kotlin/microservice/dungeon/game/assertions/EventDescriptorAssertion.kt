@@ -11,7 +11,7 @@ class EventDescriptorAssertion(actual: EventDescriptor):
     fun matches(comparison: Event): EventDescriptorAssertion {
         assertThat(actual.getId()).isEqualTo(comparison.getId())
         assertThat(actual.getType()).isEqualTo(comparison.getEventName())
-        assertThat(actual.getOccurredAt()).isEqualTo(comparison.getOccurredAt())
+        assertThat(actual.getOccurredAt()).isEqualTo(comparison.getOccurredAt().getTime())
         assertThat(actual.getContent()).isEqualTo(comparison.serialized())
         return this
     }

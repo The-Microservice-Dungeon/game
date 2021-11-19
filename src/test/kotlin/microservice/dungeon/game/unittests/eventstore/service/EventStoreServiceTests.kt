@@ -1,6 +1,7 @@
 package microservice.dungeon.game.unittests.eventstore.service
 
 import microservice.dungeon.game.aggregates.core.Event
+import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptorStatus
 import microservice.dungeon.game.aggregates.eventstore.repositories.EventDescriptorRepository
@@ -37,7 +38,7 @@ class EventStoreServiceTests {
         environmentMock = mock(Environment::class.java)
         eventStoreService = EventStoreService(eventDescriptorRepositoryMock!!, applicationContextMock!!, environmentMock!!, publishingMode)
 
-        someValidEvent = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        someValidEvent = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
     }
 
 
