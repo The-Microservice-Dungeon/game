@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -63,5 +64,31 @@ class EventTimeTests {
 
         assertThat(validEventTime.getTime())
             .isEqualTo(deserializedEvent.getTime())
+    }
+
+    @Test
+    fun equalsShouldBeTrueWhenBothObjectsAreEqualByValue() {
+        val eventTime = EventTime.makeFromLocalDateTime(validTime!!)
+        val eventTimeOther = EventTime.makeFromLocalDateTime(validTime!!)
+
+        assertThat(eventTime.equals(eventTimeOther))
+            .isTrue()
+        assertThat(eventTime)
+            .isEqualTo(eventTimeOther)
+    }
+
+    @Test
+    fun equalsShouldBeFalseWhenBothObjectsAreNotEqualByValue() {
+        val eventTime = EventTime.makeFromLocalDateTime(validTime!!)
+        val eventTimeOther = EventTime.makeFromLocalDateTime(LocalDateTime.of(2000, 1, 1, 10, 30))
+
+        assertThat(eventTime)
+            .isNotEqualTo(eventTimeOther)
+    }
+
+    @Test
+    @Disabled
+    fun hashCodeShouldBeEqualWhenBothObjectsAreEqualByValue() {
+
     }
 }
