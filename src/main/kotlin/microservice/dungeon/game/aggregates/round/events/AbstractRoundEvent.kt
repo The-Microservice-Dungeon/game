@@ -50,17 +50,23 @@ abstract class AbstractRoundEvent constructor(
         return RoundEventDto(id, occurredAt, roundId, gameId, roundNumber, roundStatus)
     }
 
-    fun equals(event: RoundStarted): Boolean =
-        id == event.getId()
-                && occurredAt == event.getOccurredAt()
-                && roundId == event.getRoundId()
-                && gameId == event.getGameId()
-                && roundNumber == event.getRoundNumber()
-                && roundStatus == event.getRoundStatus()
-                && eventName == event.getEventName()
-    //TODO
+    override fun equals(other: Any?): Boolean =
+        (other is AbstractRoundEvent)
+                && id == other.id
+                && occurredAt == other.occurredAt
+                && roundId == other.roundId
+                && gameId == other.gameId
+                && roundNumber == other.roundNumber
+                && roundStatus == other.roundStatus
+                && eventName == other.eventName
+                && topic == other.topic
+                && version == other.version
 
-    override fun isSameAs(comparison: Event): Boolean =
-         getId() == comparison.getId()
-                && serialized() == comparison.serialized()
+    override fun isSameAs(event: Event): Boolean =
+        getId() == event.getId()
+                && getTransactionId() == event.getTransactionId()
+                && getOccurredAt() == event.getOccurredAt()
+                && getEventName() == event.getEventName()
+                && getTopic() == event.getTopic()
+                && getVersion() == event.getVersion()
 }
