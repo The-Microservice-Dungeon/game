@@ -2,6 +2,7 @@ package microservice.dungeon.game.integrationtests.model.round
 
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,7 +17,6 @@ import java.util.*
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29098"
 ])
-@DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29098", "port=29098"])
 class RoundPersistenceTest @Autowired constructor(
     private val roundRepository: RoundRepository,
@@ -28,7 +28,7 @@ class RoundPersistenceTest @Autowired constructor(
     }
 
     @Test
-    fun saveRoundAndFindTest() {
+    fun saveRoundShouldPersistRound() {
         val gameId = UUID.randomUUID()
         val roundNumber = 3
         val round = Round(gameId, roundNumber)
@@ -40,11 +40,13 @@ class RoundPersistenceTest @Autowired constructor(
         val loadedRound = transactionTemplate.execute {
             roundRepository.findById(roundId).get()
         }!!
-        assertEquals(loadedRound.getRoundId(), roundId)
+
+        assertThat(loadedRound.getRoundId())
+            .isEqualTo(roundId)
     }
 
     @Test
-    fun loadRoundWithGameIdAndRoundNumber() {
+    fun findByGameIdAndRoundNumberShouldFindRound() {
         val gameId = UUID.randomUUID()
         val roundNumber = 3
         val round = Round(gameId, roundNumber)
@@ -56,6 +58,8 @@ class RoundPersistenceTest @Autowired constructor(
         val loadedRound = transactionTemplate.execute {
             roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).get()
         }!!
-        assertEquals(loadedRound.getRoundId(), roundId)
+
+        assertThat(loadedRound.getRoundId())
+            .isEqualTo(roundId)
     }
 }

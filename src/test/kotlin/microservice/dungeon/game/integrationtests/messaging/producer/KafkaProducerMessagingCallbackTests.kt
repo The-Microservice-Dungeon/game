@@ -30,26 +30,24 @@ class KafkaProducerMessagingCallbackTests @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
     private val kafkaProducerListener: KafkaProducerListener<String, String>
 ) {
+    private var round: Round? = null
+    private var roundStarted: RoundStarted? = null
+
     @BeforeEach
     fun initialize() {
+        round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+        roundStarted = RoundStarted(round!!)
         reset(kafkaProducerListener)
     }
 
     @Test
-    fun sendMessageSuccessfullyAndValidateCallbackTest() {
-        val round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
-        val roundStarted = RoundStarted(round)
-        val message: String = roundStarted.toDTO().serialize()
-        kafkaProducer.send("testTopic", message)
+    fun sendMessageShouldTriggerCallbackWhenSendSuccessfully() {
+        kafkaProducer.send("testTopic", roundStarted!!.toDTO().serialize())
         sleep(1000)
+
         verify(kafkaProducerListener).onSuccess(argThat { producerRecord ->
-            producerRecord.value() == message
+            producerRecord.value() == roundStarted!!.toDTO().serialize()
         }, any())
-    }
-
-    @Test
-    fun sendMessageUnsuccessfullyTest() {
-
     }
 
     @TestConfiguration

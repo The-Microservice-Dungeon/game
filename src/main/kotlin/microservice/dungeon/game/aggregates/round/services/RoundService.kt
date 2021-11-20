@@ -93,15 +93,6 @@ class RoundService @Autowired constructor (
     }
 
     @Transactional
-    //TODO("Commands + Dispatcher")
-    fun deliverScoutingCommands(roundId: UUID) {
-        val round: Round = roundRepository.findById(roundId).get()
-        round.deliverScoutingCommandsToRobot()
-        roundRepository.save(round)
-        commandDispatcherClient.dispatchScoutingCommands(round.getRoundNumber(), emptyList())
-    }
-
-    @Transactional
     fun endRound(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.endRound()

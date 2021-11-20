@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.EventDto
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
+import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.dtos.RoundEventDto
@@ -12,15 +13,15 @@ import java.util.*
 
 class CommandInputEnded (
     id: UUID,
-    occurredAt: LocalDateTime,
+    occurredAt: EventTime,
     roundId: UUID,
     gameId: UUID,
     roundNumber: Int,
     roundStatus: RoundStatus
-) : AbstractRoundEvent(id, occurredAt, roundId, gameId, roundNumber, roundStatus, "commandInputEnded", "testTopic") {
+) : AbstractRoundEvent(id, occurredAt, roundId, gameId, roundNumber, roundStatus, "commandInputEnded", "testTopic", 1) {
 
     constructor(round: Round):
-            this(UUID.randomUUID(), LocalDateTime.now(), round.getRoundId(), round.getGameId(), round.getRoundNumber(), round.getRoundStatus())
+            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), round.getRoundId(), round.getGameId(), round.getRoundNumber(), round.getRoundStatus())
 
     init {
         if (roundStatus != RoundStatus.COMMAND_INPUT_ENDED)

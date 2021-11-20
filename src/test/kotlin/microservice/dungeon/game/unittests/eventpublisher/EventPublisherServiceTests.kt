@@ -8,6 +8,8 @@ import microservice.dungeon.game.messaging.producer.KafkaProducing
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.*
@@ -25,20 +27,23 @@ class EventPublisherServiceTests {
     }
 
     @Test
-    fun publishEventsTest() {
-        val mockEvent = mock(Event::class.java)
-        val mockDto = mock(EventDto::class.java)
-        whenever(mockEvent.getTopic()).thenReturn("someTopic")
-        whenever(mockEvent.toDTO()).thenReturn(mockDto)
-        whenever(mockDto.serialize()).thenReturn("{some Json}")
-        eventPublisherService!!.publishEvents(listOf(mockEvent))
-        verify(kafkaProducingMock!!).send(mockEvent.getTopic(), mockDto.serialize())
+    fun publishEventShouldSendListOfEvents2() {
+        val mockEvent: Event = mock()
+        val validListOfEvents = listOf(mockEvent, mockEvent)
+        eventPublisherService!!
+            .publishEvents(validListOfEvents)
+
+        verify(kafkaProducingMock!!, times(2))
+            .send(mockEvent)
     }
 
     @Test
-    fun onSuccessfulPublishTest() {
-        val eventId = UUID.randomUUID()
-        eventPublisherService!!.onSuccessfulPublish(eventId)
-        verify(eventStoreServiceMock!!).markAsPublished(listOf(eventId))
+    fun onSuccessfulPublishShouldMarkEventAsPublished() {
+        val validEventId = UUID.randomUUID()
+        eventPublisherService!!
+            .onSuccessfulPublish(validEventId)
+
+        verify(eventStoreServiceMock!!)
+            .markAsPublished(listOf(validEventId))
     }
 }

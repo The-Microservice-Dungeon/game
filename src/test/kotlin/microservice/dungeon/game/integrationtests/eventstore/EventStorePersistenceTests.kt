@@ -1,6 +1,7 @@
 package microservice.dungeon.game.integrationtests.eventstore
 
 import microservice.dungeon.game.aggregates.core.Event
+import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptor
 import microservice.dungeon.game.aggregates.eventstore.domain.EventDescriptorStatus
 import microservice.dungeon.game.aggregates.eventstore.repositories.EventDescriptorRepository
@@ -33,7 +34,7 @@ class EventStorePersistenceTests @Autowired constructor(
 
     @Test
     fun saveEventDescriptorAndFindTest() {
-        val event: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor = EventDescriptor(event)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor)
@@ -46,7 +47,7 @@ class EventStorePersistenceTests @Autowired constructor(
 
     @Test
     fun markAsPublishedPublishedEventDescriptorsTest() {
-        val event: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor = EventDescriptor(event)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor)
@@ -62,12 +63,12 @@ class EventStorePersistenceTests @Autowired constructor(
 
     @Test
     fun deletePublishedEventDescriptorsTest() {
-        val event: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor = EventDescriptor(event)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor)
         }
-        val event2: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event2: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor2 = EventDescriptor(event2)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor2)
@@ -84,12 +85,12 @@ class EventStorePersistenceTests @Autowired constructor(
 
     @Test
     fun saveEventDescriptorAndMarkPublishedAndLoadAllByStatusTest() {
-        val event: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor = EventDescriptor(event)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor)
         }
-        val event2: Event = RoundStarted(UUID.randomUUID(), LocalDateTime.now(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event2: Event = RoundStarted(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
         val eventDescriptor2 = EventDescriptor(event2)
         transactionTemplate.execute {
             eventDescriptorRepository.save(eventDescriptor2)
