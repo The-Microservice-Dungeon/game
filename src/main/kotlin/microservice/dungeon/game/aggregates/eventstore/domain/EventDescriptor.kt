@@ -34,7 +34,7 @@ class EventDescriptor constructor(
         val eventBuilderSuffix: String = environment.getProperty("eventStore.builderSuffix").toString()
         val eventBuilder: Any = applicationContext.getBean("${type}${eventBuilderSuffix}")
         if (eventBuilder !is EventBuilder) {
-            throw EventTypeMissMatchException("No matching EventBuilder found for type ${type} with suffix ${eventBuilderSuffix}")
+            throw EventTypeMissMatchException("No matching EventBuilder found for type $type with suffix $eventBuilderSuffix")
         }
         return eventBuilder.deserializedEvent(content)
     }
