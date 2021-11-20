@@ -18,6 +18,13 @@ class EventTime (
     @JsonIgnore
     fun getTimeFormat(): String = timeFormat
 
+    @JsonIgnore
+    override fun equals(other: Any?): Boolean {
+        return (other is EventTime)
+                && time == other.time
+    }
+
+
 
     companion object {
         const val timeFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
