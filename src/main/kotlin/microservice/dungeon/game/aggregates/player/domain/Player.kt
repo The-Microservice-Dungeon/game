@@ -15,9 +15,7 @@ import javax.persistence.Table
 ])
 class Player constructor(
     private var userName: String,
-    private var mailAddress: String,
-    private var firstName: String,
-    private var lastName: String,
+    private var mailAddress: String
 ) {
     @Id
     @Type(type="uuid-char")
@@ -32,8 +30,4 @@ class Player constructor(
     fun getUserName(): String = userName
 
     fun getMailAddress(): String = mailAddress
-
-    fun getFirstName(): String = firstName
-
-    fun getLastName(): String = lastName
 }

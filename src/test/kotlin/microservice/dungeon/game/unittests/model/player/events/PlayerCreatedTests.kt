@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 class PlayerCreatedTests {
-    private val ANY_PLAYER = Player("ANY_USERNAME", "ANY_MAILADDRESS", "ANY_FIRSTNAME", "ANY_LASTNAME")
+    private val ANY_PLAYER = Player("ANY_USERNAME", "ANY_MAILADDRESS")
 
     @Test
     fun shouldConstructFromPlayer() {
