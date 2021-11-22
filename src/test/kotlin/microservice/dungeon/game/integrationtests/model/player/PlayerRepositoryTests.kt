@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -79,7 +80,14 @@ class PlayerRepositoryTests @Autowired constructor(
 
     @Test
     fun shouldHaveUniqueUserName() {
+        // given
+        val playerWithSameUserName = Player(ANY_PLAYER.getUserName(), "SOME_OTHER_MAIL")
+        playerRepository.save(ANY_PLAYER)
 
+        // when then
+        assertThatThrownBy {
+            playerRepository.save(playerWithSameUserName)
+        }
     }
 
     @Test
