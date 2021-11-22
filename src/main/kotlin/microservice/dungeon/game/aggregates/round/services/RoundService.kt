@@ -94,10 +94,12 @@ class RoundService @Autowired constructor (
     @Transactional
     fun endRound(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.endRound()
+        val response = round.endRound()
         roundRepository.save(round)
-        val roundEnded = RoundEnded(round)
-        eventStoreService.storeEvent(roundEnded)
-        eventPublisherService.publishEvents(listOf(roundEnded))
+        if (response) {
+            val roundEnded = RoundEnded(round)
+            eventStoreService.storeEvent(roundEnded)
+            eventPublisherService.publishEvents(listOf(roundEnded))
+        }
     }
 }
