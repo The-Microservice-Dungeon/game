@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.core.EventDto
 import microservice.dungeon.game.aggregates.domainprimitives.EventTime
-import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerEventDto
-import microservice.dungeon.game.aggregates.round.dtos.RoundEventDto
-import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import java.util.*
 
 abstract class AbstractPlayerEvent (
-    private val eventId: UUID,
+    private val id: UUID,
     private val transactionId: UUID,
     private val occurredAt: EventTime,
     private val eventName: String,
@@ -21,7 +18,7 @@ abstract class AbstractPlayerEvent (
     private val userName: String,
     private val mailAddress: String
 ): Event {
-    override fun getId(): UUID = eventId
+    override fun getId(): UUID = id
 
     override fun getTransactionId(): UUID = transactionId
 
@@ -48,7 +45,7 @@ abstract class AbstractPlayerEvent (
 
     override fun equals(other: Any?): Boolean =
         (other is AbstractPlayerEvent)
-                && eventId == other.eventId
+                && id == other.id
                 && transactionId == other.transactionId
                 && occurredAt == other.occurredAt
                 && eventName == other.eventName

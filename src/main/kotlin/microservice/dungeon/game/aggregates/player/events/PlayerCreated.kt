@@ -1,28 +1,33 @@
 package microservice.dungeon.game.aggregates.player.events
 
-import microservice.dungeon.game.aggregates.core.Event
-import microservice.dungeon.game.aggregates.core.EventDto
 import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.player.domain.Player
 import java.time.LocalDateTime
 import java.util.*
 
 class PlayerCreated (
-    eventId: UUID,
-    transactionId: UUID,
+    id: UUID,
     occurredAt: EventTime,
-    player: Player
+    playerId: UUID,
+    userName: String,
+    mailAddress: String
 ): AbstractPlayerEvent(
-    eventId,
-    transactionId,
+    id,
+    playerId,
     occurredAt,
     "player-created",
     "player",
     1,
-    player.getPlayerId(),
-    player.getUserName(),
-    player.getMailAddress()
+    playerId,
+    userName,
+    mailAddress
 ) {
     constructor(player: Player):
-        this(UUID.randomUUID(), player.getPlayerId(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), player)
+        this(
+            UUID.randomUUID(),
+            EventTime.makeFromLocalDateTime(LocalDateTime.now()),
+            player.getPlayerId(),
+            player.getUserName(),
+            player.getMailAddress()
+        )
 }
