@@ -7,6 +7,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
@@ -104,6 +107,15 @@ class PlayerRepositoryTests @Autowired constructor(
 
     @Test
     fun shouldHaveUniqueToken() {
+        // given
+        val playerWithSameToken = Player("SOME_OTHER_USERNAME", "SOME_OTHER_MAILADDRESS", playerToken = ANY_PLAYER.getPlayerToken())
+        playerRepository.save(ANY_PLAYER)
 
+        // when then
+        assertThat(playerWithSameToken.getPlayerToken())
+            .isEqualTo(ANY_PLAYER.getPlayerToken())
+        assertThatThrownBy {
+            playerRepository.save(playerWithSameToken)
+        }
     }
 }
