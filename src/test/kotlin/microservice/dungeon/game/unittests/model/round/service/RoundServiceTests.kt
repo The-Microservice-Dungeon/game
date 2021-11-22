@@ -84,7 +84,28 @@ class RoundServiceTests {
 
     @Test
     fun shouldPublishRoundStartedWhenNewRoundCreated() {
+        var round: Round? = null
+        var roundStarted: Event? = null
 
+        // given
+        // when
+        val roundId = roundService!!.startNewRound(ANY_GAMEID, ANY_ROUND_NUMBER)
+
+        // then
+        argumentCaptor<Round>().apply {
+            verify(mockRoundRepository!!).save(capture())
+            round = firstValue
+        }
+        argumentCaptor<List<Event>>().apply {
+            verify(mockEventPublisherService!!).publishEvents(capture())
+            roundStarted = firstValue.first()
+        }
+        assertThat(roundStarted!!)
+            .isInstanceOf(RoundStarted::class.java)
+        assertThat(roundStarted!!.getTransactionId())
+            .isEqualTo(roundId)
+        assertThat(roundStarted!! as AbstractRoundEvent)
+            .matches(round!!)
     }
 
 
