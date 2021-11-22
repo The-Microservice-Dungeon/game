@@ -42,4 +42,18 @@ class PlayerServiceTests {
         assertThat(player)
             .isCreatedFrom(ANY_USERNAME, ANY_MAILADDRESS)
     }
+
+    @Test
+    fun shouldNotAllowPlayerCreationWhenUserNameOrMailAddressAlreadyExists() {
+        // given
+        whenever(mockPlayerRepository!!.findPlayerByUserNameOrMailAddress(anyString(), anyString()))
+            .thenReturn(Optional.of(
+                ANY_PLAYER
+            ))
+
+        // when, then
+        assertThatThrownBy {
+            playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        }
+    }
 }
