@@ -113,7 +113,8 @@ class RoundServiceTests {
 
     @Test
     fun shouldSendPassiveScoutingCommandToRobotWhenNewRoundCreated() {
-        //TODO
+        //TODO("blocked till commands are available and robot restapi is stable")
+
     }
 
     @Test
@@ -179,20 +180,33 @@ class RoundServiceTests {
 
     @Test
     fun shouldPublishCommandInputEndedWhenCommandInputEnded() {
+        var roundCommandInputEnded: Round? = null
+        var commandInputEnded: Event? = null
 
+        // given
+        val roundCommandInputStarted = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED)
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(roundCommandInputStarted))
+
+        // when
+        roundService!!.endCommandInputs(ANY_GAMEID)
+
+        // then
+        argumentCaptor<Round>().apply {
+            verify(mockRoundRepository!!).save(capture())
+            roundCommandInputEnded = firstValue
+        }
+        argumentCaptor<List<Event>>().apply {
+            verify(mockEventPublisherService!!).publishEvents(capture())
+            commandInputEnded = firstValue.first()
+        }
+        assertThat(commandInputEnded!!)
+            .isInstanceOf(CommandInputEnded::class.java)
+        assertThat(commandInputEnded!!.getTransactionId())
+            .isEqualTo(roundCommandInputStarted.getRoundId())
+        assertThat(commandInputEnded!! as AbstractRoundEvent)
+            .matches(roundCommandInputEnded!!)
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     fun shouldNotAllowEndCommandInputWhenRoundNotExists() {
@@ -205,6 +219,22 @@ class RoundServiceTests {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+    // prevent duplicate command publishing!!
+
+    // should prevent dispatching when round not exists
+
+    // error handling while dispatching??
 
     @Test
     fun shouldAllowDispatchBlockingCommands() {
