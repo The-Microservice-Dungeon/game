@@ -64,8 +64,12 @@ class Round(
         roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
     }
 
-    fun endRound() {
+    fun endRound(): Boolean {
+        if (roundStatus ==  RoundStatus.ROUND_ENDED) {
+            return false
+        }
         roundStatus = RoundStatus.ROUND_ENDED
+        return true
     }
 
 
