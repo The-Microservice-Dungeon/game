@@ -6,4 +6,5 @@ import java.util.*
 
 interface PlayerRepository: CrudRepository<Player, UUID> {
 
+    fun findByPlayerToken(playerToken: UUID): Optional<Player>
 }
