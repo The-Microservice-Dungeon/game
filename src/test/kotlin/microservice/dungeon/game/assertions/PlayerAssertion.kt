@@ -15,4 +15,16 @@ class PlayerAssertion(actual: Player):
             .isEqualTo(mailAddress)
         return this
     }
+
+    fun isSameAs(other: Player): PlayerAssertion {
+        assertThat(actual.getPlayerId())
+            .isEqualTo(other.getPlayerId())
+        assertThat(actual.getPlayerToken())
+            .isEqualTo(other.getPlayerToken())
+        assertThat(actual.getUserName())
+            .isEqualTo(other.getUserName())
+        assertThat(actual.getMailAddress())
+            .isEqualTo(other.getMailAddress())
+        return this
+    }
 }
