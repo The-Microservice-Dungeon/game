@@ -23,6 +23,10 @@ class PlayerTests {
             .isNotNull
         assertThat(player.getPlayerToken())
             .isNotNull
+        assertThat(player.getUserName())
+            .isEqualTo(ANY_USERNAME)
+        assertThat(player.getMailAddress())
+            .isEqualTo(ANY_MAILADDRESS)
     }
 
     @Test
