@@ -52,8 +52,29 @@ class PlayerRepositoryTests @Autowired constructor(
     }
 
     @Test
-    fun shouldFindPlayerByMailAddressOrUserName() {
+    fun shouldFindPlayerByUserName() {
+        // given
+        playerRepository.save(ANY_PLAYER)
 
+        // when
+        val foundByUserName = playerRepository.findByUserNameOrMailAddress(ANY_PLAYER.getUserName(), "").get()
+
+        // then
+        assertThat(foundByUserName)
+            .isSameAs(ANY_PLAYER)
+    }
+
+    @Test
+    fun shouldFindPlayerByMailAddress() {
+        // given
+        playerRepository.save(ANY_PLAYER)
+
+        // when
+        val foundByMailAddress = playerRepository.findByUserNameOrMailAddress("", ANY_PLAYER.getMailAddress()).get()
+
+        // then
+        assertThat(foundByMailAddress)
+            .isSameAs(ANY_PLAYER)
     }
 
     @Test
