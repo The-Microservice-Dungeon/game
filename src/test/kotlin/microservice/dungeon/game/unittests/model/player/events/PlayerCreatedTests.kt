@@ -36,4 +36,18 @@ class PlayerCreatedTests {
         assertThat(playerCreatedOne)
             .isEqualTo(playerCreatedTwo)
     }
+
+    @Test
+    fun shouldBeSerializableAndReConstructable() {
+        // given
+        val playerCreated = PlayerCreated(ANY_PLAYER)
+
+        //when
+        val serializedPlayerCreated = playerCreated.serialized()
+        val deserializedPlayerCreated = PlayerCreatedBuilder().deserializedEvent(serializedPlayerCreated)
+
+        // then
+        assertThat(deserializedPlayerCreated)
+            .isEqualTo(playerCreated)
+    }
 }
