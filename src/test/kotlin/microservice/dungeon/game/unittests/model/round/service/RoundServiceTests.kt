@@ -15,6 +15,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.*
 import java.util.*
 
@@ -238,15 +240,6 @@ class RoundServiceTests {
 
 
 
-
-
-
-
-
-
-
-
-
     // prevent duplicate command publishing!!
 
     // should prevent dispatching when round not exists
@@ -305,9 +298,34 @@ class RoundServiceTests {
 
 
 
-    @Test
-    fun shouldAllowEndRound() {
 
+
+
+
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class
+    )
+    fun shouldAllowEndRoundRegardlessOfRoundStatus(roundStatus: RoundStatus) {
+        val capturedRound: Round?
+
+        // given
+        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.of(round))
+
+        // when
+        roundService!!.endRound(ANY_ROUND_ID)
+
+        // then
+        argumentCaptor<Round>().apply {
+            verify(mockRoundRepository!!).save(capture())
+            capturedRound = firstValue
+        }
+        assertThat(capturedRound!!.getRoundId())
+            .isEqualTo(round.getRoundId())
+        assertThat(capturedRound.getRoundStatus())
+            .isEqualTo(RoundStatus.ROUND_ENDED)
     }
 
     @Test
@@ -321,7 +339,7 @@ class RoundServiceTests {
     }
 
     @Test
-    fun shouldNotPublishEventWhenRoundAlreadyEnded() {
+    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded() {
 
     }
 }
