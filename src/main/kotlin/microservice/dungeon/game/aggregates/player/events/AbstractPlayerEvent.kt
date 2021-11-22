@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerEventDto
 import microservice.dungeon.game.aggregates.round.dtos.RoundEventDto
+import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import java.util.*
 
 abstract class AbstractPlayerEvent (
@@ -44,6 +45,18 @@ abstract class AbstractPlayerEvent (
     }
 
     override fun toDTO(): EventDto = PlayerEventDto(playerId, userName, mailAddress)
+
+    override fun equals(other: Any?): Boolean =
+        (other is AbstractPlayerEvent)
+                && eventId == other.eventId
+                && transactionId == other.transactionId
+                && occurredAt == other.occurredAt
+                && eventName == other.eventName
+                && topic == other.topic
+                && version == other.version
+                && playerId == other.playerId
+                && userName == other.userName
+                && mailAddress == other.mailAddress
 
     override fun isSameAs(event: Event): Boolean =
         getId() == event.getId()
