@@ -210,11 +210,18 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowEndCommandInputWhenRoundNotExists() {
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
 
+        // when then
+        assertThatThrownBy {
+            roundService!!.endCommandInputs(ANY_ROUND_ID)
+        }
     }
 
     @Test
-    fun shouldNotPublishEventWhenCommandInputAlreadyEnded() {
+    fun shouldNotPublishAndStoreEventWhenCommandInputAlreadyEnded() {
 
     }
 
