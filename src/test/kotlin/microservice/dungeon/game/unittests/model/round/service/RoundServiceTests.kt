@@ -338,8 +338,21 @@ class RoundServiceTests {
 
     }
 
-    @Test
-    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded() {
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class
+    )
+    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded(roundStatus: RoundStatus) {
+        // given
+        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.of(round))
 
+        // when
+        roundService!!.endRound(ANY_ROUND_ID)
+
+        // then
+        verify(mockEventStoreService!!, never()).storeEvent(any())
+        verify(mockEventPublisherService!!, never()).publishEvents(any())
     }
 }
