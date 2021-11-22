@@ -1,10 +1,14 @@
 package microservice.dungeon.game.unittests.model.round.service
 
+import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
+import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
+import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -51,20 +55,49 @@ class RoundServiceTests {
         }
     }
 
+    @Test
+    fun shouldStoreRoundStartedWhenNewRoundCreated() {
+        var round: Round? = null
+        var roundStarted: Event? = null
+
+        // given
+        // when
+        val roundId = roundService!!.startNewRound(ANY_GAMEID, ANY_ROUND_NUMBER)
 
 
-
-
-
-
-
-
-
+        // then
+        argumentCaptor<Round>().apply {
+            verify(mockRoundRepository!!).save(capture())
+            round = firstValue
+        }
+        argumentCaptor<Event>().apply {
+            verify(mockEventStoreService!!).storeEvent(capture())
+            roundStarted = firstValue
+        }
+        assertThat(roundStarted!!)
+            .isInstanceOf(RoundStarted::class.java)
+        assertThat(roundStarted!!.getTransactionId())
+            .isEqualTo(roundId)
+        assertThat(roundStarted!! as AbstractRoundEvent)
+            .matches(round!!)
+    }
 
     @Test
-    fun shouldPublishEventWhenNewRoundCreated() {
+    fun shouldPublishRoundStartedWhenNewRoundCreated() {
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     fun shouldSendPassiveScoutingCommandToRobotWhenNewRoundCreated() {
