@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.eventstore.services.EventStoreServic
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
+import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
@@ -147,7 +148,37 @@ class RoundServiceTests {
     }
 
     @Test
-    fun shouldPublishEventWhenCommandInputEnded() {
+    fun shouldStoreCommandInputEndedWhenCommandInputEnded() {
+        var roundCommandInputEnded: Round? = null
+        var commandInputEnded: Event? = null
+
+        // given
+        val roundCommandInputStarted = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED)
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(roundCommandInputStarted))
+
+        // when
+        roundService!!.endCommandInputs(ANY_GAMEID)
+
+        // then
+        argumentCaptor<Round>().apply {
+            verify(mockRoundRepository!!).save(capture())
+            roundCommandInputEnded = firstValue
+        }
+        argumentCaptor<Event>().apply {
+            verify(mockEventStoreService!!).storeEvent(capture())
+            commandInputEnded = firstValue
+        }
+        assertThat(commandInputEnded!!)
+            .isInstanceOf(CommandInputEnded::class.java)
+        assertThat(commandInputEnded!!.getTransactionId())
+            .isEqualTo(roundCommandInputStarted.getRoundId())
+        assertThat(commandInputEnded!! as AbstractRoundEvent)
+            .matches(roundCommandInputEnded!!)
+    }
+
+    @Test
+    fun shouldPublishCommandInputEndedWhenCommandInputEnded() {
 
     }
 
