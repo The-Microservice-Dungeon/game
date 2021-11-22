@@ -20,8 +20,7 @@ import java.util.*
 class RoundService @Autowired constructor (
     private val roundRepository: RoundRepository,
     private val eventStoreService: EventStoreService,
-    private val eventPublisherService: EventPublisherService,
-    private val commandDispatcherClient: CommandDispatcherClient
+    private val eventPublisherService: EventPublisherService
 ) {
     @Transactional
     fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
@@ -53,7 +52,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchBlockingCommands(round.getRoundNumber(), emptyList())
+//        commandDispatcherClient.dispatchBlockingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
@@ -62,7 +61,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverTradingCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchTradingCommands(round.getRoundNumber(), emptyList())
+//        commandDispatcherClient.dispatchTradingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
@@ -71,7 +70,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchMovementCommands(round.getRoundNumber(), emptyList())
+//        commandDispatcherClient.dispatchMovementCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
@@ -80,7 +79,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchBattleCommands(round.getRoundNumber(), emptyList())
+//        commandDispatcherClient.dispatchBattleCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
@@ -89,7 +88,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
-        commandDispatcherClient.dispatchMiningCommands(round.getRoundNumber(), emptyList())
+//        commandDispatcherClient.dispatchMiningCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
