@@ -108,7 +108,7 @@ class GameService @Autowired constructor (
         }
         try {
             val game: Game = gameRepository.findByGameId(gameId).get()
-            val gameLength: Long = (game.getMaxRounds() * 60000).toLong()
+            val gameLength: Long = (game.getMaxRounds()!! * 60000).toLong()
             Thread.sleep(gameLength)
         } finally {
             fixedRateTimer.cancel()
