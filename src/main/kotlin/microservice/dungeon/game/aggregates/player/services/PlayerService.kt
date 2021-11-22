@@ -25,6 +25,7 @@ class PlayerService @Autowired constructor(
         val player = Player(userName, mailAddress)
         val playerCreated = PlayerCreated(player)
         playerRepository.save(player)
+        eventStoreService.storeEvent(playerCreated)
         eventPublisherService.publishEvents(listOf(playerCreated))
         return player
     }
