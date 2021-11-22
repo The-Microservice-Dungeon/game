@@ -14,10 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.util.*
 
 class RoundServiceTests {
@@ -136,25 +133,35 @@ class RoundServiceTests {
 
     @Test
     fun shouldAllowEndCommandInput() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
+        // when
+        roundService!!.endCommandInputs(ANY_GAMEID)
+
+        // then
+        verify(spyRound).endCommandInputPhase()
+        verify(mockRoundRepository!!).save(isA<Round>())
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     fun shouldPublishEventWhenCommandInputEnded() {
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     fun shouldNotAllowEndCommandInputWhenRoundNotExists() {
