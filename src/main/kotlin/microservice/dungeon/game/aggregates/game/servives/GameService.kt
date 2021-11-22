@@ -1,21 +1,26 @@
 package microservice.dungeon.game.aggregates.game.servives
 
+import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.Player.Player
+import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.web.CommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 
 @Service
 class GameService @Autowired constructor (
+    private val roundService: RoundService,
     private val gameRepository: GameRepository,
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService,
@@ -48,9 +53,57 @@ class GameService @Autowired constructor (
     @Transactional
     fun insertPlayer(gameId : UUID, player: Player){
         val game: Game = gameRepository.findByGameId(gameId).get()
+        if (game.getGameStatus() != GameStatus.CREATED) {
+            throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is ${game.getGameStatus()}")
+        }
+
+        else if (game.playerList.size < game.getMaxPlayers()) {
         game.playerList.add(player)
+        eventStoreService.storeEvent(playerJoined)
+        eventPublisherService.publishEvents(listOf(playerJoined))
+        }
+
+        else {
+                throw MethodNotAllowedForStatusException("Player cannot join")
+        }
+
     }
+    @Transactional
+    fun runGame(gameId: UUID){
+        val game: Game = gameRepository.findByGameId(gameId).get()
+        game.startGame()
+        var roundCounter = 0
+        val fixedRateTimer = fixedRateTimer(name = "createNewRoundTimer",
+            initialDelay = 0, period = 60000) {
 
+            val roundID = roundService.startNewRound(gameId, roundCounter)
+            roundCounter += 1
 
+            Thread.sleep(45000)
+
+            roundService.endCommandInputs(roundID)
+
+            roundService.deliverBlockingCommands(roundID)
+            Thread.sleep(2000)
+            roundService.deliverTradingCommands(roundID)
+            Thread.sleep(2000)
+            roundService.deliverMovementCommands(roundID)
+            Thread.sleep(2000)
+            roundService.deliverBattleCommands(roundID)
+            Thread.sleep(2000)
+            roundService.deliverMiningCommands(roundID)
+            Thread.sleep(2000)
+            roundService.endRound(roundID)
+
+        }
+        try {
+            val game: Game = gameRepository.findByGameId(gameId).get()
+            val gameLength: Long = (game.getMaxRounds() * 60000).toLong()
+            Thread.sleep(gameLength)
+        } finally {
+            fixedRateTimer.cancel();
+            closeGame(gameId)
+        }
+    }
 
 }

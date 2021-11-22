@@ -12,7 +12,7 @@ class RobotService @Autowired constructor(
 ) {
 
     fun newRobot(robotId: UUID, playerId: UUID, gameId: UUID) {
-        if (robotRepository.findById(robotId).isEmpty()) {
+        if (robotRepository.findById(robotId).isEmpty) {
             val robot = Robot(robotId, playerId, gameId)
             robotRepository.save(robot)
         }

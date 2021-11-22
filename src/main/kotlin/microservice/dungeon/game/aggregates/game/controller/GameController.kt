@@ -30,7 +30,7 @@ class GameController(@Autowired private val gameService: GameService) {
 
 
     @PostMapping("/games/{gameId}/gameCommands/start")
-    fun startGame(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) = game.startGame()
+    fun startGame(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) = gameService.runGame(gameId)
 
 
     @PostMapping("/games/{gameId}/gameCommands/end")

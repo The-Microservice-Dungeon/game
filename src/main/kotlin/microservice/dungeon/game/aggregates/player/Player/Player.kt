@@ -17,7 +17,7 @@ import javax.validation.constraints.NotBlank
 class Player {
     @Id
     @Type(type="uuid-char")
-    private val playerId: UUID = UUID.randomUUID()
+    val playerId: UUID = UUID.randomUUID()
     @get: NotBlank
     private val playerName: String = ""
 }

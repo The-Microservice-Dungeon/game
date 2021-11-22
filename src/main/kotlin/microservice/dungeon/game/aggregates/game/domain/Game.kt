@@ -3,7 +3,8 @@ package microservice.dungeon.game.aggregates.game.domain
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.player.Player.Player
 import org.hibernate.annotations.Type
-import java.time.*
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -31,26 +32,19 @@ class Game(
     private var roundCount: Int = 0,
 
     @OneToMany
-    val playerList: MutableList<Player> = mutableListOf<Player>()
+    val playerList: MutableList<Player> = mutableListOf(),
 
-)   {
 
-    private fun runGame(){
-        //TODO
-    }
+
+    )   {
+
 
     fun startGame() {
         if (gameStatus != GameStatus.CREATED) {
             throw MethodNotAllowedForStatusException("Game Status is $gameStatus but requires ${GameStatus.CREATED}")
         }
         gameStatus = GameStatus.GAME_RUNNING
-        this.runGame()
         this.startTime = LocalTime.now()
-    }
-    fun insertPlayer(){
-        if (gameStatus != GameStatus.CREATED) {
-            throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is $gameStatus")
-        }
     }
 
 
@@ -67,6 +61,12 @@ class Game(
     fun getMaxRounds(): Int = maxRounds
     fun getGameStatus(): GameStatus = gameStatus
 
+    fun getPlayersUUID(): UUID{
+        val playerUUID = playerList.last()
+        return playerUUID.playerId
+    }
+
+    // RoundTime RoundNumber missing
     fun getCurrentTime(): Int {
         currentTime = LocalTime.now()
         return currentTime.compareTo(startTime)
