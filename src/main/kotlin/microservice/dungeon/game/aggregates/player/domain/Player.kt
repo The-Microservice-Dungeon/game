@@ -15,14 +15,13 @@ import javax.persistence.Table
 ])
 class Player constructor(
     private var userName: String,
-    private var mailAddress: String
-) {
+    private var mailAddress: String,
     @Id
     @Type(type="uuid-char")
-    private var playerId: UUID = UUID.randomUUID()
+    private var playerId: UUID = UUID.randomUUID(),
     @Type(type="uuid-char")
     private var playerToken: UUID = UUID.randomUUID()
-
+) {
     fun getPlayerId(): UUID = playerId
 
     fun getPlayerToken(): UUID = playerToken
