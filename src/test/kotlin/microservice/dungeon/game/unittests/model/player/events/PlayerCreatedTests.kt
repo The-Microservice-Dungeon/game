@@ -22,4 +22,18 @@ class PlayerCreatedTests {
         assertThat(playerCreated)
             .matches(ANY_PLAYER)
     }
+
+    @Test
+    fun shouldBeEqualByValue() {
+        // given
+        val eventId = UUID.randomUUID()
+        val eventTime = EventTime.makeFromLocalDateTime(LocalDateTime.now())
+        val playerCreatedOne = PlayerCreated(eventId, ANY_PLAYER.getPlayerId(), eventTime, ANY_PLAYER)
+        val playerCreatedTwo = PlayerCreated(eventId, ANY_PLAYER.getPlayerId(), eventTime, ANY_PLAYER)
+
+        // when
+        // then
+        assertThat(playerCreatedOne)
+            .isEqualTo(playerCreatedTwo)
+    }
 }
