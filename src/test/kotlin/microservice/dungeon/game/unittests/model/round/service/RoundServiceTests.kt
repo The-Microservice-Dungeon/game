@@ -4,19 +4,21 @@ import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.*
-import kotlin.math.round
 
 class RoundServiceTests {
     private var mockEventStoreService: EventStoreService? = null
@@ -24,6 +26,7 @@ class RoundServiceTests {
     private var mockRoundRepository: RoundRepository? = null
     private var roundService: RoundService? = null
 
+    private val ANY_ROUND_ID = UUID.randomUUID()
     private val ANY_GAMEID = UUID.randomUUID()
     private val ANY_ROUND_NUMBER = 3
 
@@ -52,6 +55,8 @@ class RoundServiceTests {
                 .isEqualTo(ANY_GAMEID)
             assertThat(round.getRoundNumber())
                 .isEqualTo(ANY_ROUND_NUMBER)
+            assertThat(round.getRoundStatus())
+                .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
         }
     }
 
@@ -108,26 +113,23 @@ class RoundServiceTests {
             .matches(round!!)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
     fun shouldSendPassiveScoutingCommandToRobotWhenNewRoundCreated() {
         //TODO
     }
 
     @Test
-    fun shouldNotAllowCreateNewRoundWhenRoundAlreadyExists() {
+    fun shouldNotAllowNewRoundCreationWhenSameRoundAlreadyExists() {
+        // given
+        val duplicateGameId = ANY_GAMEID
+        val duplicateRoundNumber = ANY_ROUND_NUMBER
+        whenever(mockRoundRepository!!.findByGameIdAndRoundNumber(duplicateGameId, duplicateRoundNumber))
+            .thenReturn(Optional.of(Round(duplicateGameId, duplicateRoundNumber)))
 
+        // when then
+        assertThatThrownBy {
+            roundService!!.startNewRound(duplicateGameId, duplicateRoundNumber)
+        }
     }
 
 
@@ -136,6 +138,18 @@ class RoundServiceTests {
     fun shouldAllowEndCommandInput() {
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     fun shouldPublishEventWhenCommandInputEnded() {
