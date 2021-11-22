@@ -28,8 +28,8 @@ class PlayerCreatedTests {
         // given
         val eventId = UUID.randomUUID()
         val eventTime = EventTime.makeFromLocalDateTime(LocalDateTime.now())
-        val playerCreatedOne = PlayerCreated(eventId, ANY_PLAYER.getPlayerId(), eventTime, ANY_PLAYER)
-        val playerCreatedTwo = PlayerCreated(eventId, ANY_PLAYER.getPlayerId(), eventTime, ANY_PLAYER)
+        val playerCreatedOne = PlayerCreated(eventId, eventTime, ANY_PLAYER.getPlayerId(), ANY_PLAYER.getUserName(), ANY_PLAYER.getMailAddress())
+        val playerCreatedTwo = PlayerCreated(eventId, eventTime, ANY_PLAYER.getPlayerId(), ANY_PLAYER.getUserName(), ANY_PLAYER.getMailAddress())
 
         // when
         // then
