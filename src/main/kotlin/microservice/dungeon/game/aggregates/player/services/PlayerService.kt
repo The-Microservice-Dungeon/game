@@ -19,7 +19,7 @@ class PlayerService @Autowired constructor(
 ) {
     @Transactional
     fun createNewPlayer(userName: String, mailAddress: String): Player {
-        if(!playerRepository.findPlayerByUserNameOrMailAddress(userName, mailAddress).isEmpty) {
+        if(!playerRepository.findByUserNameOrMailAddress(userName, mailAddress).isEmpty) {
             throw EntityAlreadyExistsException("Player already exists")
         }
         val player = Player(userName, mailAddress)

@@ -53,7 +53,7 @@ class PlayerServiceTests {
     @Test
     fun shouldNotAllowPlayerCreationWhenUserNameOrMailAddressAlreadyExists() {
         // given
-        whenever(mockPlayerRepository!!.findPlayerByUserNameOrMailAddress(anyString(), anyString()))
+        whenever(mockPlayerRepository!!.findByUserNameOrMailAddress(anyString(), anyString()))
             .thenReturn(Optional.of(
                 ANY_PLAYER
             ))
