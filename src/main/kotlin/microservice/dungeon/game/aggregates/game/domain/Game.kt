@@ -2,12 +2,14 @@ package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.player.Player.Player
+import org.hibernate.Hibernate
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
+
 
 
 @Entity
@@ -20,16 +22,18 @@ class Game(
     private val gameId: UUID = UUID.randomUUID(),
     private var gameStatus: GameStatus = GameStatus.CREATED,
     @get: NotBlank
-    private var maxPlayers: Int = 0,
+    private var maxPlayers: Int? = null,
     @get: NotBlank
-    private var maxRounds: Int = 0,
+    private var maxRounds: Int? = null,
 
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
-    private var startTime: LocalTime = LocalTime.now(),
+    private var startTime: LocalTime? = null,
 
-    private var currentTime: LocalTime = LocalTime.now(),
-    private var roundTime: LocalTime = LocalTime.now(),
-    private var roundCount: Int = 0,
+
+    private var gameTime: LocalTime? = null,
+    private var lastRoundStartedAt: LocalTime? = null,
+    private var roundTime: LocalTime? = null,
+    private var currentRoundCount: Int = 0,
 
     @OneToMany
     val playerList: MutableList<Player> = mutableListOf(),
@@ -57,19 +61,33 @@ class Game(
 
 
     fun getGameId(): UUID = gameId
-    fun getMaxPlayers(): Int = maxPlayers
-    fun getMaxRounds(): Int = maxRounds
+    fun getMaxPlayers(): Int? = maxPlayers
+    fun getMaxRounds(): Int? = maxRounds
     fun getGameStatus(): GameStatus = gameStatus
+    fun setCurrentRoundCount(updateCurrentRound : Int) {
+        this.currentRoundCount = updateCurrentRound
+    }
+    fun getCurrentRoundCount() = currentRoundCount
+    fun getGameTime() = gameTime
+
+    fun setLastRoundStrartedAt(lastRoundStartedAt: LocalTime) {
+        this.lastRoundStartedAt = lastRoundStartedAt
+    }
+
 
     fun getPlayersUUID(): UUID{
         val playerUUID = playerList.last()
         return playerUUID.playerId
     }
 
-    // RoundTime RoundNumber missing
-    fun getCurrentTime(): Int {
-        currentTime = LocalTime.now()
-        return currentTime.compareTo(startTime)
-    }
+    fun getLastRoundStrartedAt(): LocalTime? = lastRoundStartedAt
+
 }
 
+@Entity
+data class GameTime(val currentGameTimeInMinutes: Long, val roundTimeInSeconds: Long, val currentRoundCount: Int) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    open var id: Long? = null
+}

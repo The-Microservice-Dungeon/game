@@ -7,6 +7,5 @@ import java.util.*
 interface GameRepository : CrudRepository<Game, UUID> {
 
     fun findByGameId(gameId: UUID): Optional<Game>
-    fun getGameTime(gameId: UUID): Optional<Game>
 
 }

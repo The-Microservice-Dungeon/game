@@ -16,7 +16,7 @@ class GameController(@Autowired private val gameService: GameService) {
     fun getAllGames(): MutableIterable<Game> = gameService.getAllGames()
 
     @GetMapping("/games/{gameId}/time")
-    fun getTime(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) = game.getCurrentTime()
+    fun getTime(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) = gameService.getGameTime(gameId)
 
 
     @PutMapping("/games/{gameId}/players")
