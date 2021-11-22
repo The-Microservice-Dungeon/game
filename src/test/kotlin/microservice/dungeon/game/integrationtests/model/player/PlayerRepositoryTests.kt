@@ -91,12 +91,19 @@ class PlayerRepositoryTests @Autowired constructor(
     }
 
     @Test
-    fun shouldHaveUniqueToken() {
+    fun shouldHaveUniqueMailAddress() {
+        // given
+        val playerWithSameMailAddress = Player("SOME_OTHER_USERNAME", ANY_PLAYER.getMailAddress())
+        playerRepository.save(ANY_PLAYER)
 
+        // when then
+        assertThatThrownBy {
+            playerRepository.save(playerWithSameMailAddress)
+        }
     }
 
     @Test
-    fun shouldHaveUniqueMailAddress() {
+    fun shouldHaveUniqueToken() {
 
     }
 }
