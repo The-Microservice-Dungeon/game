@@ -221,8 +221,18 @@ class RoundServiceTests {
     }
 
     @Test
-    fun shouldNotPublishAndStoreEventWhenCommandInputAlreadyEnded() {
+    fun shouldNotPublishOrStoreEventWhenCommandInputAlreadyEnded() {
+        // given
+        val commandInputAlreadyEndedRound = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED)
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.of(commandInputAlreadyEndedRound))
 
+        // when then
+        assertThatThrownBy {
+            roundService!!.endCommandInputs(ANY_ROUND_ID)
+        }
+        verify(mockEventPublisherService!!, never()).publishEvents(any())
+        verify(mockEventStoreService!!, never()).storeEvent(any())
     }
 
 
