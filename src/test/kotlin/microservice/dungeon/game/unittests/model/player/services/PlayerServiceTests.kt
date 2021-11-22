@@ -82,4 +82,23 @@ class PlayerServiceTests {
         assertThat(capturedEvent.getOccurredAt().getTime())
             .isBeforeOrEqualTo(LocalDateTime.now())
     }
+
+    @Test
+    fun shouldStorePublishedEventWhenNewPlayerCreated() {
+        // given
+        // when
+        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+
+        // then
+        val playerCreatedCaptor = argumentCaptor<Event>()
+        verify(mockEventStoreService!!).storeEvent(playerCreatedCaptor.capture())
+        val capturedEvent = playerCreatedCaptor.firstValue
+
+        assertThat(capturedEvent)
+            .isInstanceOf(PlayerCreated::class.java)
+        assertThat(capturedEvent as AbstractPlayerEvent)
+            .matches(player)
+        assertThat(capturedEvent.getOccurredAt().getTime())
+            .isBeforeOrEqualTo(LocalDateTime.now())
+    }
 }
