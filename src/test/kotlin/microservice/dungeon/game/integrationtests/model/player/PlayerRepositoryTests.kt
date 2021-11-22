@@ -40,7 +40,15 @@ class PlayerRepositoryTests @Autowired constructor(
 
     @Test
     fun shouldFindPlayerByToken() {
+        // given
+        playerRepository.save(ANY_PLAYER)
 
+        // when
+        val foundPlayer = playerRepository.findByPlayerToken(ANY_PLAYER.getPlayerToken()).get()
+
+        // then
+        assertThat(foundPlayer)
+            .isSameAs(ANY_PLAYER)
     }
 
     @Test
