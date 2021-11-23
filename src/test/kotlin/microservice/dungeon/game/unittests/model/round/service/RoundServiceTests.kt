@@ -133,6 +133,7 @@ class RoundServiceTests {
         assertThatThrownBy {
             roundService!!.startNewRound(duplicateGameId, duplicateRoundNumber)
         }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
 
@@ -222,6 +223,7 @@ class RoundServiceTests {
         assertThatThrownBy {
             roundService!!.endCommandInputs(ANY_ROUND_ID)
         }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
@@ -259,7 +261,15 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowDispatchBlockingCommandsWhenRoundNotExists() {
-        //TODO
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
+
+        // when then
+        assertThatThrownBy {
+            roundService!!.deliverBlockingCommands(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
