@@ -242,15 +242,24 @@ class RoundServiceTests {
 
 
 
-    // prevent duplicate command publishing!!
-
-    // should prevent dispatching when round not exists
-
-    // error handling while dispatching??
-
     @Test
     fun shouldAllowDispatchBlockingCommands() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
+        // when
+        roundService!!.deliverBlockingCommands(ANY_GAMEID)
+
+        // then
+        verify(spyRound).deliverBlockingCommandsToRobot()
+        verify(mockRoundRepository!!).save(isA<Round>())
+    }
+
+    @Test
+    fun shouldNotAllowDispatchBlockingCommandsWhenRoundNotExists() {
+        //TODO
     }
 
     @Test
@@ -258,9 +267,17 @@ class RoundServiceTests {
         //TODO
     }
 
+
+
+
     @Test
     fun shouldAllowDispatchTradingCommands() {
 
+    }
+
+    @Test
+    fun shouldNotAllowDispatchTradingCommandsWhenRoundNotExists() {
+        //TODO
     }
 
     @Test
@@ -268,9 +285,17 @@ class RoundServiceTests {
         //TODO
     }
 
+
+
+
     @Test
     fun shouldAllowDispatchMovementCommands() {
 
+    }
+
+    @Test
+    fun shouldNotAllowDispatchMovementCommandsWhenRoundNotExists() {
+        //TODO
     }
 
     @Test
@@ -278,9 +303,17 @@ class RoundServiceTests {
         //TODO
     }
 
+
+
+
     @Test
     fun shouldAllowDispatchBattleCommands() {
 
+    }
+
+    @Test
+    fun shouldNotAllowDispatchBattleCommandsWhenRoundNotExists() {
+        //TODO
     }
 
     @Test
@@ -288,9 +321,17 @@ class RoundServiceTests {
         //TODO
     }
 
+
+
+
     @Test
     fun shouldAllowDispatchMiningCommands() {
 
+    }
+
+    @Test
+    fun shouldNotAllowDispatchMiningCommandsWhenRoundNotExists() {
+        //TODO
     }
 
     @Test
