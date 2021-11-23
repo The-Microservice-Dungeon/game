@@ -29,16 +29,12 @@ class Game(
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
     private var startTime: LocalTime? = null,
 
-
     private var gameTime: LocalTime? = null,
     private var lastRoundStartedAt: LocalTime? = null,
-    private var roundTime: LocalTime? = null,
     private var currentRoundCount: Int = 0,
 
     @OneToMany
     val playerList: MutableList<Player> = mutableListOf(),
-
-
 
     )   {
 
@@ -68,19 +64,19 @@ class Game(
         this.currentRoundCount = updateCurrentRound
     }
     fun getCurrentRoundCount() = currentRoundCount
-    fun getGameTime() = gameTime
+    fun getGameStartTime() = startTime
 
-    fun setLastRoundStrartedAt(lastRoundStartedAt: LocalTime) {
+    fun setLastRoundStartedAt(lastRoundStartedAt: LocalTime) {
         this.lastRoundStartedAt = lastRoundStartedAt
     }
-
+    fun getLastRoundStartedAt(): LocalTime? = lastRoundStartedAt
 
     fun getPlayersUUID(): UUID{
         val playerUUID = playerList.last()
         return playerUUID.playerId
     }
 
-    fun getLastRoundStrartedAt(): LocalTime? = lastRoundStartedAt
+
 
 }
 

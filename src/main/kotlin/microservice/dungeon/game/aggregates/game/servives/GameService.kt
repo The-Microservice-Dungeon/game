@@ -67,8 +67,8 @@ class GameService @Autowired constructor (
 
         else if (game.playerList.size < game.getMaxPlayers()!!) {
         game.playerList.add(player)
-        eventStoreService.storeEvent(playerJoined)
-        eventPublisherService.publishEvents(listOf(playerJoined))
+        //eventStoreService.storeEvent(playerJoined)
+        //eventPublisherService.publishEvents(listOf(playerJoined))
         }
 
         else {
@@ -85,7 +85,7 @@ class GameService @Autowired constructor (
             initialDelay = 0, period = 60000) {
 
             val roundID = roundService.startNewRound(gameId, roundCounter)
-            game.setLastRoundStrartedAt(LocalTime.now())
+            game.setLastRoundStartedAt(LocalTime.now())
             roundCounter += 1
             game.setCurrentRoundCount(roundCounter)
 
@@ -107,7 +107,7 @@ class GameService @Autowired constructor (
 
         }
         try {
-            val game: Game = gameRepository.findByGameId(gameId).get()
+            //val game: Game = gameRepository.findByGameId(gameId).get()
             val gameLength: Long = (game.getMaxRounds()!! * 60000).toLong()
             Thread.sleep(gameLength)
         } finally {
@@ -119,11 +119,13 @@ class GameService @Autowired constructor (
 
     fun getGameTime(gameId: UUID): Any {
         val game: Game = gameRepository.findByGameId(gameId).get()
-        val round: Round = roundRepository.findByGameIdAndRoundNumber(gameId, game.getCurrentRoundCount()).get()
-        val roundTime = ChronoUnit.SECONDS.between(game.getLastRoundStrartedAt(), LocalTime.now())
-        val gameTime =  ChronoUnit.MINUTES.between(game.getLastRoundStrartedAt(), LocalTime.now())
         val gson = Gson()
-        return gson.toJson(GameTime(gameTime, roundTime, game.getCurrentRoundCount()))
+        return gson.toJson(GameTime(
+                                    ChronoUnit.MINUTES.between(game.getGameStartTime() , LocalTime.now()),
+                                    ChronoUnit.SECONDS.between(game.getLastRoundStartedAt(), LocalTime.now()),
+                                    game.getCurrentRoundCount()
+                                    )
+                            )
     }
 
 

@@ -178,4 +178,27 @@ class RoundTests {
         assertThat(round.getRoundStatus())
             .isEqualTo(RoundStatus.ROUND_ENDED)
     }
+
+    @ParameterizedTest
+    @EnumSource(
+        RoundStatus::class,
+        names = ["ROUND_ENDED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun endRoundShouldShouldBeTrueWhenStatusChangeOccurred(status: RoundStatus) {
+        // given
+        val round = Round(someGameId, someRoundNumber, someRoundId, status)
+
+        // when
+        val response = round.endRound()
+
+        // then
+        assertThat(response).isTrue
+
+        // when
+        val alreadyEndedResponse = round.endRound()
+
+        // then
+        assertThat(alreadyEndedResponse).isFalse
+    }
 }
