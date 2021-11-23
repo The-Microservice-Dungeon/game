@@ -17,11 +17,11 @@ class Player constructor(
     private var userName: String,
     private var mailAddress: String,
     @Id
-    @Type(type="uuid-char")
-    private var playerId: UUID = UUID.randomUUID(),
+    @Type(type="uuid-char") var playerId: UUID = UUID.randomUUID(),
     @Type(type="uuid-char")
     private var playerToken: UUID = UUID.randomUUID()
 ) {
+    @JvmName("getPlayerId1")
     fun getPlayerId(): UUID = playerId
 
     fun getPlayerToken(): UUID = playerToken
