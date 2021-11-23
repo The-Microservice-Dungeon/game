@@ -369,7 +369,15 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowDispatchBattleCommandsWhenRoundNotExists() {
-        //TODO
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
+
+        // when then
+        assertThatThrownBy {
+            roundService!!.deliverBattleCommands(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
