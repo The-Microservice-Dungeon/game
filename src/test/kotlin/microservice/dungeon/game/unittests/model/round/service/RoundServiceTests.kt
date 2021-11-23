@@ -7,9 +7,11 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
+import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
+import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -328,9 +330,34 @@ class RoundServiceTests {
             .isEqualTo(RoundStatus.ROUND_ENDED)
     }
 
-    @Test
-    fun shouldPublishEventWhenRoundEnded() {
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["ROUND_ENDED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldPublishRoundEndedWhenRoundEnded(roundStatus: RoundStatus) {
+        var roundEnded: Event?
 
+        // given
+        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.of(round))
+
+        // when
+        roundService!!.endRound(ANY_ROUND_ID)
+
+        // then
+        argumentCaptor<List<Event>>().apply {
+            verify(mockEventPublisherService!!).publishEvents(capture())
+            roundEnded = firstValue.first()
+        }
+        assertThat(roundEnded!!)
+            .isInstanceOf(RoundEnded::class.java)
+        assertThat(roundEnded!!.getTransactionId())
+            .isEqualTo(round.getRoundId())
+        assertThat(roundEnded!! as AbstractRoundEvent)
+            .matches(round)
     }
 
     @Test
@@ -338,13 +365,10 @@ class RoundServiceTests {
 
     }
 
-    @ParameterizedTest
-    @EnumSource(
-        value = RoundStatus::class
-    )
-    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded(roundStatus: RoundStatus) {
+    @Test
+    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded() {
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.ROUND_ENDED)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(round))
 
