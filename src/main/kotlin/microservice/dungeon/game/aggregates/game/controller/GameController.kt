@@ -2,7 +2,7 @@ package microservice.dungeon.game.aggregates.game.controller
 
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.servives.GameService
-import microservice.dungeon.game.aggregates.player.Player.Player
+import microservice.dungeon.game.aggregates.player.domain.Player
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.util.*
