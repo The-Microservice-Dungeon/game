@@ -360,6 +360,36 @@ class RoundServiceTests {
             .matches(round)
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["ROUND_ENDED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldStoreRoundEndedWhenRoundEnded(roundStatus: RoundStatus) {
+        var roundEnded: Event?
+
+        // given
+        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.of(round))
+
+        // when
+        roundService!!.endRound(ANY_ROUND_ID)
+
+        // then
+        argumentCaptor<Event>().apply {
+            verify(mockEventStoreService!!).storeEvent(capture())
+            roundEnded = firstValue
+        }
+        assertThat(roundEnded!!)
+            .isInstanceOf(RoundEnded::class.java)
+        assertThat(roundEnded!!.getTransactionId())
+            .isEqualTo(round.getRoundId())
+        assertThat(roundEnded!! as AbstractRoundEvent)
+            .matches(round)
+    }
+
     @Test
     fun shouldNotAllowEndRoundWhenRoundNotExists() {
         // given
