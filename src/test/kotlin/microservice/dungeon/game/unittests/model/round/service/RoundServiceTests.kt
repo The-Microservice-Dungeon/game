@@ -272,7 +272,17 @@ class RoundServiceTests {
 
     @Test
     fun shouldAllowDispatchTradingCommands() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
+        // when
+        roundService!!.deliverTradingCommands(ANY_GAMEID)
+
+        // then
+        verify(spyRound).deliverTradingCommandsToRobot()
+        verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
