@@ -297,7 +297,15 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowDispatchTradingCommandsWhenRoundNotExists() {
-        //TODO
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
+
+        // when then
+        assertThatThrownBy {
+            roundService!!.deliverTradingCommands(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
