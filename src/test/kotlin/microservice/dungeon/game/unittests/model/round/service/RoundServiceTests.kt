@@ -328,7 +328,17 @@ class RoundServiceTests {
 
     @Test
     fun shouldAllowDispatchBattleCommands() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
+        // when
+        roundService!!.deliverBattleCommands(ANY_GAMEID)
+
+        // then
+        verify(spyRound).deliverBattleCommandsToRobot()
+        verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
