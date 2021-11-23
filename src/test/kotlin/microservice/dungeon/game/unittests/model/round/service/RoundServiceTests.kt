@@ -333,7 +333,15 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowDispatchMovementCommandsWhenRoundNotExists() {
-        //TODO
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
+
+        // when then
+        assertThatThrownBy {
+            roundService!!.deliverMovementCommands(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
