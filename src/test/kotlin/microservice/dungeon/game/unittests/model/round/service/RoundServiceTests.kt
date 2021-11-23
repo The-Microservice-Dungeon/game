@@ -362,7 +362,15 @@ class RoundServiceTests {
 
     @Test
     fun shouldNotAllowEndRoundWhenRoundNotExists() {
+        // given
+        whenever(mockRoundRepository!!.findById(any()))
+            .thenReturn(Optional.empty())
 
+        // when then
+        assertThatThrownBy {
+            roundService!!.endRound(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
