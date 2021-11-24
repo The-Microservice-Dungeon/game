@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class AbstractRoundEventTests {
+class AbstractRoundEventTest {
     private var validRound: Round? = null
     private var validRoundStarted: AbstractRoundEvent? = null
 

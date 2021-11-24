@@ -14,7 +14,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationContext
 import java.util.*
 
-class KafkaProducerListenerTests {
+class KafkaProducerListenerTest {
     private var eventPublisherServiceMock: EventPublisherService? = null
     private var applicationContextMock: ApplicationContext? = null
     private var kafkaProducerListener: KafkaProducerListener<String, String>? = null

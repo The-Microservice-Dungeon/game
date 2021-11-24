@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class EventTimeTests {
+class EventTimeTest {
     private var objectMapper: ObjectMapper? = null
 
     private val timeFormatPattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"

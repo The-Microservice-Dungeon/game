@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import java.lang.Exception
 import java.util.*
 
-class CommandInputEndedTests {
+class CommandInputEndedTest {
     private var validRound: Round? = null
 
     @BeforeEach

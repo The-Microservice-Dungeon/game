@@ -21,7 +21,7 @@ import org.springframework.core.env.Environment
 import java.time.LocalDateTime
 import java.util.*
 
-class EventStoreServiceTests {
+class EventStoreServiceTest {
     private var eventDescriptorRepositoryMock: EventDescriptorRepository? = null
     private var applicationContextMock: ApplicationContext? = null
     private var environmentMock: Environment? = null

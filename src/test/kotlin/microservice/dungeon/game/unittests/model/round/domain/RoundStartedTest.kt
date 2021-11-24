@@ -16,7 +16,7 @@ import java.lang.Exception
 import java.util.*
 import java.util.stream.Stream
 
-class RoundStartedTests {
+class RoundStartedTest {
     private var validRound: Round? = null
 
     @BeforeEach

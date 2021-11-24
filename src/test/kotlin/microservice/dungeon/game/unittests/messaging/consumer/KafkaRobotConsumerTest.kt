@@ -2,7 +2,7 @@ package microservice.dungeon.game.unittests.messaging.consumer
 
 import org.junit.jupiter.api.Test
 
-class KafkaRobotConsumerTests {
+class KafkaRobotConsumerTest {
 
     @Test
     fun consumeMessageWithCallbackTest() {

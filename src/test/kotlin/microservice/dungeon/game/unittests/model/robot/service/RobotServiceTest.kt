@@ -18,7 +18,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.whenever
 import java.util.*
 
-class RobotServiceTests {
+class RobotServiceTest {
     private var robotRepositoryMock: RobotRepository? = null
     private var robotService: RobotService? = null
 

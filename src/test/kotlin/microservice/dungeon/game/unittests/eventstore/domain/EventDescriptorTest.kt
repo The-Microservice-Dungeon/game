@@ -21,7 +21,7 @@ import java.lang.RuntimeException
 import java.time.LocalDateTime
 import java.util.*
 
-class EventDescriptorTests {
+class EventDescriptorTest {
     private var environmentMock: Environment? = null
     private var applicationContextMock: ApplicationContext? = null
 

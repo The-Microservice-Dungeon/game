@@ -18,7 +18,7 @@ import org.mockito.kotlin.*
 import java.time.LocalDateTime
 import java.util.*
 
-class PlayerServiceTests {
+class PlayerServiceTest {
     private val ANY_USERNAME = "ANY_USERNAME"
     private val ANY_MAILADDRESS = "ANY_MAILADDRESS"
     private val ANY_PLAYER = Player(ANY_USERNAME, ANY_MAILADDRESS)

@@ -14,7 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.*
 
-class EventPublisherServiceTests {
+class EventPublisherServiceTest {
     private var kafkaProducingMock: KafkaProducing? = null
     private var eventStoreServiceMock: EventStoreService? = null
     private var eventPublisherService: EventPublisherService? = null
