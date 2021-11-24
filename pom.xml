@@ -166,7 +166,7 @@
                 <version>2.22.2</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/integrationtests/**.java</exclude>
+                        <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
