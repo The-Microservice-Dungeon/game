@@ -26,12 +26,9 @@ jobs:
           distribution: 'temurin'
           # setup maven cache as well
           cache: maven
-      - name: Compile
-        run: mvn compile
       - name: Unit-Test
         run: |
-          chmod +x ./mvnw
-          ./mvnw surefire:test
+          mvn test
           echo "-------------------------------------------------------"
           ls -a ./
           echo "-------------------------------------------------------"
