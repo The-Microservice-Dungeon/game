@@ -34,4 +34,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build to GitHub Container Registry
         # use jib plugin to build docker image
-        run: mvn compile com.google.cloud.tools:jib-maven-plugin:3.1.4:build -Dimage=ghcr.io/the-microservice-duneon/game/gameservice
+        run: mvn compile com.google.cloud.tools:jib-maven-plugin:3.1.4:build -Dimage=ghcr.io/the-microservice-dungeon/game/gameservice
