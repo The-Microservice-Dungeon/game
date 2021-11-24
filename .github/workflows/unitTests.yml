@@ -25,7 +25,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           # setup maven cache as well
-          cache: maven
+          #cache: maven
       - name: Compile
         run: mvn compile
       - name: Unit-Test
