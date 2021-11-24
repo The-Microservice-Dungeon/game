@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -71,8 +72,19 @@ class PlayerControllerPostCreateNewPlayerContractTest {
     }
 
     @Test
-    fun shouldFailWhenPlayerWithSameMailOrUsernameAlreadyExists() {
+    fun shouldFailToCreateNewPlayerWhenPlayerWithSameMailOrUsernameAlreadyExists() {
+        // given
+        val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
+        whenever(mockPlayerService!!.createNewPlayer(anyString(), anyString()))
+            .doAnswer{ throw EntityAlreadyExistsException("Player already exists") }
 
+        // when then
+        webTestClient!!.post().uri("/players")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(requestEntity)
+            .exchange()
+            .expectStatus().isEqualTo(406)
     }
 
     @Test
