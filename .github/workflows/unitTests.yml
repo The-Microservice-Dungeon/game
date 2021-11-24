@@ -5,10 +5,10 @@ name: Unit Test
 # Controls when the workflow will run
 on:
   # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
   push:
     branches:
-      - 'devops'
-  workflow_dispatch:
+      - 'main'
 
 jobs:
   unit-test:
@@ -25,8 +25,15 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           # setup maven cache as well
-          #cache: maven
+          cache: maven
       - name: Compile
         run: mvn compile
       - name: Unit-Test
-        run: mvn surefire:test
+        run: |
+          mvn surefire:test
+          echo "-------------------------------------------------------"
+          ls -a ./
+          echo "-------------------------------------------------------"
+          ls -a ./src/test/
+          echo "-------------------------------------------------------"
+          ls -a ./src/test/kotlin/microservice/dungeon/game/

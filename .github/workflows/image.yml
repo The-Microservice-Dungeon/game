@@ -5,9 +5,6 @@ name: Image
 # Controls when the workflow will run
 on:
   # Allows you to run this workflow manually from the Actions tab
-  push:
-    branches:
-      - 'devops'
   workflow_dispatch:
 jobs:
   build-image:
