@@ -30,7 +30,8 @@ jobs:
         run: mvn compile
       - name: Unit-Test
         run: |
-          mvn surefire:test
+          chmod +x ./mvnw
+          ./mvnw surefire:test
           echo "-------------------------------------------------------"
           ls -a ./
           echo "-------------------------------------------------------"
