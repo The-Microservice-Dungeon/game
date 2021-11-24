@@ -28,7 +28,7 @@ import java.util.*
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29096", "port=29096"])
-class KafkaProducerMessagingConsumeTests @Autowired constructor(
+class KafkaProducerMessagingConsumeIntegrationTest @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
     private val kafkaConsumerMock: KafkaConsumerMock,
     @Value(value = "\${kafka.topicMock}")

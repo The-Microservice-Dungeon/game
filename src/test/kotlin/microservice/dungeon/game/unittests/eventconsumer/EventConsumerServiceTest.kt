@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Disabled
-class EventConsumerServiceTests {
+class EventConsumerServiceTest {
     private var eventMessageRepositoryMock: EventMessageRepository? = null
     private var eventConsumerService: EventConsumerService? = null
 

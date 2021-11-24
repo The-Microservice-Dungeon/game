@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.body
 import org.springframework.test.web.reactive.server.expectBody
@@ -28,10 +29,11 @@ import org.springframework.test.web.servlet.MockMvc
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = [
-        "kafka.bootstrapAddress=localhost:29098"
+        "kafka.bootstrapAddress=localhost:29100"
 ])
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29098", "port=29098"])
-class PlayerControllerTests {
+@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29100", "port=29100"])
+class PlayerControllerIntegrationTest {
     private var mockPlayerService: PlayerService? = null
     private var playerController: PlayerController? = null
     private var webTestClient: WebTestClient? = null

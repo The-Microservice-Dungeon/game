@@ -3,9 +3,10 @@ package microservice.dungeon.game.unittests.model.player.domain
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-class PlayerTests {
+class PlayerTest {
     private val ANY_USERNAME = "ANY_USERNAME"
     private val ANY_MAILADDRESS = "ANY_MAILADDRESS"
 
@@ -41,11 +42,13 @@ class PlayerTests {
     }
 
     @Test
+    @Disabled
     fun shouldNotInitializeWithoutValidUserName() {
         TODO("implement username pattern validation")
     }
 
     @Test
+    @Disabled
     fun shouldNotInitializeWithoutValidMailAddress() {
         TODO("implement mailAddress pattern validation")
     }

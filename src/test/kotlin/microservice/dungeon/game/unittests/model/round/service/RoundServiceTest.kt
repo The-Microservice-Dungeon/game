@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.*
 import java.util.*
 
-class RoundServiceTests {
+class RoundServiceTest {
     private var mockEventStoreService: EventStoreService? = null
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockRoundRepository: RoundRepository? = null

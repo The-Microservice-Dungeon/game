@@ -16,10 +16,10 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.*
 
 @SpringBootTest(properties = [
-    "kafka.bootstrapAddress=localhost:29098"
+    "kafka.bootstrapAddress=localhost:29101"
 ])
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29098", "port=29098"])
-class PlayerRepositoryTests @Autowired constructor(
+@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29101", "port=29101"])
+class PlayerRepositoryIntegrationTest @Autowired constructor(
     private val playerRepository: PlayerRepository
 ) {
     private val ANY_PLAYER = Player("ANY_USERNAME", "ANY_MAILADDRESS")

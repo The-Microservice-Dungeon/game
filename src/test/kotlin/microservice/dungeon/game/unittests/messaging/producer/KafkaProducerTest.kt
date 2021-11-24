@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class KafkaProducerTests {
+class KafkaProducerTest {
     private var kafkaTemplateMock: KafkaTemplate<String, String>? = null
     private var kafkaProducer: KafkaProducer? = null
 

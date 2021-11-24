@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.*
 
-class PlayerCreatedTests {
+class PlayerCreatedTest {
     private val ANY_PLAYER = Player("ANY_USERNAME", "ANY_MAILADDRESS")
 
     @Test

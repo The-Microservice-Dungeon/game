@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 
-class RoundTests {
+class RoundTest {
     private val someGameId = UUID.randomUUID()
     private val someRoundId = UUID.randomUUID()
     private val someRoundNumber = 3
