@@ -19,7 +19,7 @@ import java.util.*
     "kafka.bootstrapAddress=localhost:29097"
 ])
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29097", "port=29097"])
-class RobotPersistenceTest @Autowired constructor(
+class RobotRepositoryIntegrationTest @Autowired constructor(
     private val robotRepository: RobotRepository,
     private val transactionTemplate: TransactionTemplate
 ) {

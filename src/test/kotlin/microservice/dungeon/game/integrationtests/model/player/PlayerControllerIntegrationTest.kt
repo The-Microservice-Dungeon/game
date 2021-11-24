@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc
         "kafka.bootstrapAddress=localhost:29098"
 ])
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29098", "port=29098"])
-class PlayerControllerTests {
+class PlayerControllerIntegrationTest {
     private var mockPlayerService: PlayerService? = null
     private var playerController: PlayerController? = null
     private var webTestClient: WebTestClient? = null

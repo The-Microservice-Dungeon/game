@@ -26,7 +26,7 @@ import java.util.*
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29095", "port=29095"])
-class KafkaProducerMessagingCallbackTests @Autowired constructor(
+class KafkaProducerMessagingCallbackIntegrationTest @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
     private val kafkaProducerListener: KafkaProducerListener<String, String>
 ) {

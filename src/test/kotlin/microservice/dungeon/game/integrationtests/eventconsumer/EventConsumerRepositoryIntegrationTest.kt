@@ -23,7 +23,7 @@ import java.util.*
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29099", "port=29099"])
-class EventConsumerPersistenceTests @Autowired constructor(
+class EventConsumerRepositoryIntegrationTest @Autowired constructor(
     private val eventMessageRepository: EventMessageRepository,
     private val transactionTemplate: TransactionTemplate
 ) {

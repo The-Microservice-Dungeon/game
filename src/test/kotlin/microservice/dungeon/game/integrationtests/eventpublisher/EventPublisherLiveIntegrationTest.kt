@@ -26,7 +26,7 @@ import java.util.*
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29093", "port=29093"])
-class EventPublisherLiveTests @Autowired constructor(
+class EventPublisherLiveIntegrationTest @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val eventStoreService: EventStoreService
 ) {
