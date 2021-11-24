@@ -89,6 +89,12 @@ class PlayerControllerPostCreateNewPlayerContractTest {
 
     @Test
     fun shouldAbortWhenInputBodyInvalid() {
-
+        // when then
+        webTestClient!!.post().uri("/players")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue("{}")
+            .exchange()
+            .expectStatus().isEqualTo(400)
     }
 }
