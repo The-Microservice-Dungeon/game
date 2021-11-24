@@ -72,7 +72,7 @@ class PlayerControllerPostCreateNewPlayerContractTest {
     }
 
     @Test
-    fun shouldFailToCreateNewPlayerWhenPlayerWithSameMailOrUsernameAlreadyExists() {
+    fun shouldFailWhenPlayerWithSameMailOrUsernameAlreadyExists() {
         // given
         val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
         whenever(mockPlayerService!!.createNewPlayer(anyString(), anyString()))
