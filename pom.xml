@@ -167,6 +167,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*IntegrationTest.java</exclude>
+                        <exclude>**/*ContractTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
