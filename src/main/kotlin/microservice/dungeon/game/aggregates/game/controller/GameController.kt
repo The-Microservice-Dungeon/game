@@ -2,8 +2,11 @@ package microservice.dungeon.game.aggregates.game.controller
 
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.EntityNotFoundException
+import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
+import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
+import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -21,8 +24,9 @@ class GameController(@Autowired private val gameService: GameService) {
     fun getAllGames(): MutableIterable<Game> = gameService.getAllGames()
 
     @GetMapping("/games/{gameId}/time")
-    fun getTime(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) =
-        gameService.getGameTime(gameId)
+    fun getTime(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game): GameTimeDto {
+        return gameService.getGameTime(gameId)
+    }
 
 
     @PutMapping("/games/{gameId}/players")
@@ -37,6 +41,16 @@ class GameController(@Autowired private val gameService: GameService) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Player not found"
+            )
+        } catch (e: MethodNotAllowedForStatusException) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Wrong game status"
+            )
+        } catch (e: GameAlreadyFullException) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Game already full"
             )
         } catch (e: EntityAlreadyExistsException) {
             throw ResponseStatusException(
