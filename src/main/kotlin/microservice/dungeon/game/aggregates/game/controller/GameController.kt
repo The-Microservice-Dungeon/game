@@ -1,10 +1,10 @@
 package microservice.dungeon.game.aggregates.game.controller
 
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
+import microservice.dungeon.game.aggregates.core.EntityNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.servives.GameService
-import microservice.dungeon.game.aggregates.player.domain.Player
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -29,9 +29,22 @@ class GameController(@Autowired private val gameService: GameService) {
     fun insertPlayerById(
         @PathVariable(value = "gameId") gameId: UUID,
         @Valid @RequestBody playerToken: UUID
-    ) = gameService.insertPlayer(gameId, playerToken)
+    ) {
+        try {
+            gameService.insertPlayer(gameId, playerToken)
 
-
+        } catch (e: EntityNotFoundException) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Player not found"
+            )
+        } catch (e: EntityAlreadyExistsException) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_ACCEPTABLE,
+                "Player already in Game"
+            )
+        }
+    }
 
     @PostMapping("/games", consumes = ["application/json"], produces = ["application/json"])
     fun createNewGame(@RequestBody requestGame: GameResponseDto): ResponseEntity<GameResponseDto> {
@@ -56,7 +69,6 @@ class GameController(@Autowired private val gameService: GameService) {
             )
         }
     }
-
 
     @PostMapping("/games/{gameId}/gameCommands/start")
     fun startGame(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) =
