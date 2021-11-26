@@ -22,9 +22,9 @@ class Game(
     private val gameId: UUID = UUID.randomUUID(),
     private var gameStatus: GameStatus = GameStatus.CREATED,
     @get: NotBlank
-    private var maxPlayers: Int? = null,
+    private var maxPlayers: Int = 0,
     @get: NotBlank
-    private var maxRounds: Int? = null,
+    private var maxRounds: Int = 0,
 
     private var roundDuration: Long = 60000, // in ms
     private var commandCollectDuration: Long = 45000, // in ms
@@ -60,8 +60,8 @@ class Game(
 
 
     fun getGameId(): UUID = gameId
-    fun getMaxPlayers(): Int? = maxPlayers
-    fun getMaxRounds(): Int? = maxRounds
+    fun getMaxPlayers(): Int = maxPlayers
+    fun getMaxRounds(): Int = maxRounds
     fun getRoundDuration(): Long = roundDuration
     fun getCommandCollectDuration(): Long = commandCollectDuration
     fun getGameStatus(): GameStatus = gameStatus
@@ -70,6 +70,7 @@ class Game(
     }
     fun getCurrentRoundCount() = currentRoundCount
     fun getGameStartTime() = startTime
+    fun getCreatedGameDateTime() = createdGameDateTime
 
     fun setLastRoundStartedAt(lastRoundStartedAt: LocalTime) {
         this.lastRoundStartedAt = lastRoundStartedAt
@@ -83,12 +84,4 @@ class Game(
 
 
 
-}
-
-@Entity
-data class GameTime(val currentGameTimeInMinutes: Long, val roundTimeInSeconds: Long, val currentRoundCount: Int) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    open var id: Long? = null
 }
