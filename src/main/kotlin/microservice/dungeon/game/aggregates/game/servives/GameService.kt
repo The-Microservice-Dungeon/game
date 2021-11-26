@@ -1,6 +1,10 @@
 package microservice.dungeon.game.aggregates.game.servives
 
 import com.google.gson.Gson
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -11,7 +15,6 @@ import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
-import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.web.CommandDispatcherClient
@@ -21,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.fixedRateTimer
 
 
@@ -81,40 +83,60 @@ class GameService @Autowired constructor (
         val game: Game = gameRepository.findByGameId(gameId).get()
         game.startGame()
         var roundCounter = 1
-        val fixedRateTimer = fixedRateTimer(name = "createNewRoundTimer",
-            initialDelay = 0, period = 60000) {
+        val scope = MainScope()
 
-            val roundID = roundService.startNewRound(gameId, roundCounter)
+        val roundDuration = game.getRoundDuration()
+        val commandCollectDuration = game.getCommandCollectDuration()
+
+        val fixedRateTimer = fixedRateTimer(name = "createNewRoundTimer",
+            initialDelay = 0, period = roundDuration) {
+
+
+            val roundID = roundService.startNewRound(gameId, roundCounter) //start new Round
+
+            val executionDuration = (roundDuration - commandCollectDuration)/7 // Execution time for each phase
+
+
             game.setLastRoundStartedAt(LocalTime.now())
             roundCounter += 1
             game.setCurrentRoundCount(roundCounter)
 
-            Thread.sleep(45000)
+            scope.launch { // create new coroutine in common thread pool
+                delay(commandCollectDuration) // non-blocking delay for 45 second
+                roundService.endCommandInputs(roundID)
 
-            roundService.endCommandInputs(roundID)
+                roundService.deliverBlockingCommands(roundID)
 
-            roundService.deliverBlockingCommands(roundID)
-            Thread.sleep(2000)
-            roundService.deliverTradingCommands(roundID)
-            Thread.sleep(2000)
-            roundService.deliverMovementCommands(roundID)
-            Thread.sleep(2000)
-            roundService.deliverBattleCommands(roundID)
-            Thread.sleep(2000)
-            roundService.deliverMiningCommands(roundID)
-            Thread.sleep(2000)
-            roundService.endRound(roundID)
+                delay((commandCollectDuration + executionDuration))
+                roundService.deliverTradingCommands(roundID)
+                delay((commandCollectDuration + executionDuration*2))
+                roundService.deliverMovementCommands(roundID)
+                delay((commandCollectDuration + executionDuration*3))
+                roundService.deliverBattleCommands(roundID)
+                delay((commandCollectDuration + executionDuration*4))
+                roundService.deliverMiningCommands(roundID)
+                delay((commandCollectDuration + executionDuration*5))
+                roundService.endRound(roundID)
+
+            }
+
+        scope.cancel()
 
         }
         try {
             //val game: Game = gameRepository.findByGameId(gameId).get()
             val gameLength: Long = (game.getMaxRounds()!! * 60000).toLong()
-            Thread.sleep(gameLength)
+            val gameLengthScope = MainScope()
+            gameLengthScope.launch {
+                delay(gameLength) //ehemals Thread.sleep(gameLength)
+            }
+            //Testen ob das so läuft?
         } finally {
             fixedRateTimer.cancel()
             closeGame(gameId)
         }
     }
+
 
 
     fun getGameTime(gameId: UUID): Any {
