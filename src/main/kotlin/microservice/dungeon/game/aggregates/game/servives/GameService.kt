@@ -4,6 +4,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
+import microservice.dungeon.game.aggregates.core.EntityNotFoundException
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -14,13 +16,17 @@ import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.web.CommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -28,7 +34,7 @@ import kotlin.concurrent.fixedRateTimer
 
 
 @Service
-class GameService @Autowired constructor (
+class GameService @Autowired constructor(
     private val roundService: RoundService,
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
@@ -61,26 +67,37 @@ class GameService @Autowired constructor (
 
 
     @Transactional
-    fun insertPlayer(gameId : UUID, token: UUID){
-        val player: Player = playerRepository.findByPlayerToken(token).get()
-        val game: Game = gameRepository.findByGameId(gameId).get()
-        if (game.getGameStatus() != GameStatus.CREATED) {
-            throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is ${game.getGameStatus()}")
-        }
+    fun insertPlayer(gameId: UUID, token: UUID): ResponseEntity<PlayerResponseDto> {
 
-        else if (game.playerList.size < game.getMaxPlayers()) {
-        game.playerList.add(player)
-        //eventStoreService.storeEvent(playerJoined)
-        //eventPublisherService.publishEvents(listOf(playerJoined))
-        }
+            val player: Player = playerRepository.findByPlayerToken(token).get()
 
-        else {
-                throw MethodNotAllowedForStatusException("Player cannot join")
-        }
+            if (player.getPlayerId() == null) {
+                throw EntityNotFoundException("Player does not exist")
+            }
+
+            val responsePlayer = PlayerResponseDto(
+                player.getPlayerToken(),
+                player.getUserName(),
+                player.getMailAddress()
+            )
+
+            val game: Game = gameRepository.findByGameId(gameId).get()
+            if (game.getGameStatus() != GameStatus.CREATED) {
+                throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is ${game.getGameStatus()}")
+            } else if (game.playerList.size < game.getMaxPlayers()) {
+                game.playerList.add(player)
+                return ResponseEntity(responsePlayer, HttpStatus.CREATED)
+                //eventStoreService.storeEvent(playerJoined)
+                //eventPublisherService.publishEvents(listOf(playerJoined))
+            } else {
+                throw MethodNotAllowedForStatusException("Player cannot join") //two exeptions full game/ game started//TODO
+            }
+
 
     }
+
     @Transactional
-    fun runGame(gameId: UUID){
+    fun runGame(gameId: UUID) {
         val game: Game = gameRepository.findByGameId(gameId).get()
         game.startGame()
         var roundCounter = 1
@@ -89,13 +106,15 @@ class GameService @Autowired constructor (
         val roundDuration = game.getRoundDuration()
         val commandCollectDuration = game.getCommandCollectDuration()
 
-        val fixedRateTimer = fixedRateTimer(name = "createNewRoundTimer",
-            initialDelay = 0, period = roundDuration) {
+        val fixedRateTimer = fixedRateTimer(
+            name = "createNewRoundTimer",
+            initialDelay = 0, period = roundDuration
+        ) {
 
 
             val roundID = roundService.startNewRound(gameId, roundCounter) //start new Round
 
-            val executionDuration = (roundDuration - commandCollectDuration)/7 // Execution time for each phase
+            val executionDuration = (roundDuration - commandCollectDuration) / 7 // Execution time for each phase
 
 
             game.setLastRoundStartedAt(LocalTime.now())
@@ -110,18 +129,18 @@ class GameService @Autowired constructor (
 
                 delay((commandCollectDuration + executionDuration))
                 roundService.deliverTradingCommands(roundID)
-                delay((commandCollectDuration + executionDuration*2))
+                delay((commandCollectDuration + executionDuration * 2))
                 roundService.deliverMovementCommands(roundID)
-                delay((commandCollectDuration + executionDuration*3))
+                delay((commandCollectDuration + executionDuration * 3))
                 roundService.deliverBattleCommands(roundID)
-                delay((commandCollectDuration + executionDuration*4))
+                delay((commandCollectDuration + executionDuration * 4))
                 roundService.deliverMiningCommands(roundID)
-                delay((commandCollectDuration + executionDuration*5))
+                delay((commandCollectDuration + executionDuration * 5))
                 roundService.endRound(roundID)
 
             }
 
-        scope.cancel()
+            scope.cancel()
 
         }
         try {
