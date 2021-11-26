@@ -1,6 +1,5 @@
 package microservice.dungeon.game.aggregates.game.servives
 
-import com.google.gson.Gson
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -10,11 +9,12 @@ import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
-import microservice.dungeon.game.aggregates.game.domain.GameTime
+import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.web.CommandDispatcherClient
@@ -31,7 +31,7 @@ import kotlin.concurrent.fixedRateTimer
 class GameService @Autowired constructor (
     private val roundService: RoundService,
     private val gameRepository: GameRepository,
-    private val roundRepository: RoundRepository,
+    private val playerRepository: PlayerRepository,
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService,
     private val commandDispatcherClient: CommandDispatcherClient
@@ -61,13 +61,14 @@ class GameService @Autowired constructor (
 
 
     @Transactional
-    fun insertPlayer(gameId : UUID, player: Player){
+    fun insertPlayer(gameId : UUID, token: UUID){
+        val player: Player = playerRepository.findByPlayerToken(token).get()
         val game: Game = gameRepository.findByGameId(gameId).get()
         if (game.getGameStatus() != GameStatus.CREATED) {
             throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is ${game.getGameStatus()}")
         }
 
-        else if (game.playerList.size < game.getMaxPlayers()!!) {
+        else if (game.playerList.size < game.getMaxPlayers()) {
         game.playerList.add(player)
         //eventStoreService.storeEvent(playerJoined)
         //eventPublisherService.publishEvents(listOf(playerJoined))
@@ -138,16 +139,13 @@ class GameService @Autowired constructor (
     }
 
 
-
     fun getGameTime(gameId: UUID): Any {
         val game: Game = gameRepository.findByGameId(gameId).get()
-        val gson = Gson()
-        return gson.toJson(GameTime(
-                                    ChronoUnit.MINUTES.between(game.getGameStartTime() , LocalTime.now()),
-                                    ChronoUnit.SECONDS.between(game.getLastRoundStartedAt(), LocalTime.now()),
-                                    game.getCurrentRoundCount()
-                                    )
-                            )
+        return GameTimeDto(
+            ChronoUnit.MINUTES.between(game.getGameStartTime(), LocalTime.now()),
+            ChronoUnit.SECONDS.between(game.getLastRoundStartedAt(), LocalTime.now()),
+            game.getCurrentRoundCount()
+        )
     }
 
 
