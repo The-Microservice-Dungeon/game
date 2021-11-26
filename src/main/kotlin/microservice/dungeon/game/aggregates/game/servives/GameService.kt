@@ -4,8 +4,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.EntityNotFoundException
+import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -18,7 +18,6 @@ import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
-import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.web.CommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +25,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -70,8 +68,8 @@ class GameService @Autowired constructor(
     fun insertPlayer(gameId: UUID, token: UUID): ResponseEntity<PlayerResponseDto> {
 
             val player: Player = playerRepository.findByPlayerToken(token).get()
-
-            if (player.getPlayerId() == null) {
+            //TODO
+            if (player == null) {
                 throw EntityNotFoundException("Player does not exist")
             }
 
@@ -90,10 +88,10 @@ class GameService @Autowired constructor(
                 //eventStoreService.storeEvent(playerJoined)
                 //eventPublisherService.publishEvents(listOf(playerJoined))
             } else {
-                throw MethodNotAllowedForStatusException("Player cannot join") //two exeptions full game/ game started//TODO
+                throw GameAlreadyFullException("Game is full")
             }
 
-
+        TODO("Player already in game missing")
     }
 
     @Transactional
@@ -145,7 +143,7 @@ class GameService @Autowired constructor(
         }
         try {
             //val game: Game = gameRepository.findByGameId(gameId).get()
-            val gameLength: Long = (game.getMaxRounds()!! * 60000).toLong()
+            val gameLength: Long = (game.getMaxRounds() * 60000).toLong()
             val gameLengthScope = MainScope()
             gameLengthScope.launch {
                 delay(gameLength) //ehemals Thread.sleep(gameLength)
@@ -158,7 +156,7 @@ class GameService @Autowired constructor(
     }
 
 
-    fun getGameTime(gameId: UUID): Any {
+    fun getGameTime(gameId: UUID): GameTimeDto {
         val game: Game = gameRepository.findByGameId(gameId).get()
         return GameTimeDto(
             ChronoUnit.MINUTES.between(game.getGameStartTime(), LocalTime.now()),
