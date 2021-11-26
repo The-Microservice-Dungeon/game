@@ -36,8 +36,8 @@ class Game(
     private var lastRoundStartedAt: LocalTime? = null,
     private var currentRoundCount: Int = 0,
 
-    @OneToMany
-    val playerList: MutableList<Player> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "game")
+    var playerList: MutableList<PlayersInGame> = mutableListOf(),
 
     )   {
 
@@ -77,11 +77,20 @@ class Game(
     }
     fun getLastRoundStartedAt(): LocalTime? = lastRoundStartedAt
 
-    fun getPlayersUUID(): UUID{
-        val playerUUID = playerList.last()
-        return playerUUID.playerId
-    }
+    fun getPlayersInGame(): MutableList<PlayersInGame> = playerList
 
 
 
+
+
+}
+
+@Entity
+data class PlayersInGame(
+    @Id
+    private val playerInGameId: UUID?,
+    @ManyToOne
+    var game: Game
+){
+    fun getPlayersInGameUUID() = playerInGameId
 }
