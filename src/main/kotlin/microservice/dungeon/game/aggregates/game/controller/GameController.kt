@@ -36,6 +36,7 @@ class GameController(@Autowired private val gameService: GameService) {
     ) {
         try {
             gameService.insertPlayer(gameId, playerToken)
+            
 
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
@@ -89,11 +90,12 @@ class GameController(@Autowired private val gameService: GameService) {
         @PathVariable(value = "gameId") gameId: UUID,
         @RequestBody adminToken: UUID,
         @ModelAttribute game: Game
-    ) {
+    ): ResponseEntity<HttpStatus> {
         try {
             //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
             //            ?: throw EntityNotFoundException("admin does not exist")
             gameService.runGame(gameId)
+            return ResponseEntity(HttpStatus.ACCEPTED)
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
                 HttpStatus.NOT_ACCEPTABLE,
@@ -104,11 +106,15 @@ class GameController(@Autowired private val gameService: GameService) {
 
 
     @PostMapping("/games/{gameId}/gameCommands/end")
-    fun endGame(@PathVariable(value = "gameId") gameId: UUID, @RequestBody adminToken: UUID,) {
+    fun endGame(
+        @PathVariable(value = "gameId") gameId: UUID,
+        @RequestBody adminToken: UUID,
+    ): ResponseEntity<HttpStatus> {
         try {
             //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
             //            ?: throw EntityNotFoundException("admin does not exist")
             gameService.closeGame(gameId)
+            return ResponseEntity(HttpStatus.ACCEPTED)
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
                 HttpStatus.NOT_ACCEPTABLE,
