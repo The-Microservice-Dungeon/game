@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusExcept
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import javax.validation.Valid
+
 
 @RestController
 @RequestMapping("/")
@@ -36,7 +38,7 @@ class GameController(@Autowired private val gameService: GameService) {
     ) {
         try {
             gameService.insertPlayer(gameId, playerToken)
-            
+
 
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
@@ -120,6 +122,27 @@ class GameController(@Autowired private val gameService: GameService) {
                 HttpStatus.NOT_ACCEPTABLE,
                 "Admin only."
             )
+        }
+    }
+
+
+    @PatchMapping("/game/{id}/maxRounds/{maxRounds}")
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): ResponseEntity<GameResponseDto?>? {
+        return try {
+            gameService.patchMaxRound(id, maxRounds)
+
+        } catch (e: Exception) {
+            ResponseEntity<GameResponseDto?>(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PatchMapping("/game/{id}/roundDuration/{newDuration}")
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): ResponseEntity<GameResponseDto?>? {
+        return try {
+            gameService.patchRoundDuration(id, newDuration)
+
+        } catch (e: Exception) {
+            ResponseEntity<GameResponseDto?>(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 

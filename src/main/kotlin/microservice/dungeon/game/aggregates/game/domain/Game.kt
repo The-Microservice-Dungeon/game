@@ -27,7 +27,7 @@ class Game(
     private var maxRounds: Int = 0,
 
     private var roundDuration: Long = 60000, // in ms
-    private var commandCollectDuration: Long = 45000, // in ms
+    private var commandCollectDuration: Long = roundDuration*(3/4), // in ms
 
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
     private var startTime: LocalTime? = null,
@@ -79,8 +79,16 @@ class Game(
 
     fun getPlayersInGame(): MutableList<PlayersInGame> = playerList
 
-
-
+    fun setMaxRounds(newMaxRounds: Int?) {
+        if (newMaxRounds != null) {
+            this.maxRounds = newMaxRounds
+        }
+    }
+    fun setRoundDuration(newRoundDuration: Long?) {
+        if (newRoundDuration != null) {
+            this.roundDuration = newRoundDuration
+        }
+    }
 
 
 }
