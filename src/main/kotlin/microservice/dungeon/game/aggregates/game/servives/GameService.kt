@@ -13,6 +13,7 @@ import microservice.dungeon.game.aggregates.eventstore.services.EventStoreServic
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
+import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.dtos.PlayersInGameDto
 import microservice.dungeon.game.aggregates.game.events.GameEnded
@@ -180,6 +181,46 @@ class GameService @Autowired constructor(
             ChronoUnit.SECONDS.between(game.getLastRoundStartedAt(), LocalTime.now()),
             game.getCurrentRoundCount()
         )
+    }
+
+    fun patchMaxRound(id: UUID, maxRounds: Int): ResponseEntity<GameResponseDto?>? {
+
+        val game: Game = gameRepository.findByGameId(id).get()
+        game.setMaxRounds(maxRounds)
+
+        gameRepository.save(game)
+
+        val responseGame = GameResponseDto(
+            game.getGameId(),
+            game.getGameStatus(),
+            game.getMaxPlayers(),
+            game.getMaxRounds(),
+            game.getRoundDuration(),
+            game.getCommandCollectDuration(),
+            game.getCreatedGameDateTime(),
+        )
+
+       return  ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
+
+    }
+
+    fun patchRoundDuration(id: UUID, newDuration: Long): ResponseEntity<GameResponseDto?>? {
+        val game: Game = gameRepository.findByGameId(id).get()
+        game.setRoundDuration(newDuration)
+
+        gameRepository.save(game)
+
+        val responseGame = GameResponseDto(
+            game.getGameId(),
+            game.getGameStatus(),
+            game.getMaxPlayers(),
+            game.getMaxRounds(),
+            game.getRoundDuration(),
+            game.getCommandCollectDuration(),
+            game.getCreatedGameDateTime(),
+        )
+
+        return  ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
     }
 
 
