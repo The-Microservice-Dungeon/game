@@ -7,7 +7,6 @@ import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusExcept
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
-import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
