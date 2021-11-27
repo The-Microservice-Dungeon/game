@@ -40,8 +40,7 @@ class GameService @Autowired constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
     private val eventStoreService: EventStoreService,
-    private val eventPublisherService: EventPublisherService,
-    private val commandDispatcherClient: CommandDispatcherClient
+    private val eventPublisherService: EventPublisherService
 ) {
     @Transactional
     fun createNewGame(): Game {
@@ -54,8 +53,8 @@ class GameService @Autowired constructor(
     }
 
     @Transactional
-    fun addPlayerToGame(game: Game, playerId: UUID) {
-        val player = PlayersInGame(playerId, game)
+    fun addPlayerToGame(game: Game, token: UUID) {
+        val player = PlayersInGame(token, game)
         gameRepository.save(player)
     }
 

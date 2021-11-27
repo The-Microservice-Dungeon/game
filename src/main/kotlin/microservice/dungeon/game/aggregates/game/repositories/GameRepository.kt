@@ -8,7 +8,7 @@ import java.util.*
 interface GameRepository : CrudRepository<Game, UUID> {
 
     fun findByGameId(gameId: UUID): Optional<Game>
-    abstract fun save(player: PlayersInGame)
+    fun save(player: PlayersInGame)
 
 
 }

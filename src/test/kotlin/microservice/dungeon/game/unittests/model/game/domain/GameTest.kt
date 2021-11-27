@@ -1,55 +1,34 @@
 package microservice.dungeon.game.unittests.model.game.domain
 
-import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class GameTest {
-    private val ANY_USERNAME = "ANY_USERNAME"
-    private val ANY_MAILADDRESS = "ANY_MAILADDRESS"
+    private val ANY_MAXPLAYERS = 99
+    private val ANY_MAXROUNDS = 99
 
 
     @Test
     fun shouldInitializeValidObject() {
         // given
-        val player = Player(ANY_USERNAME, ANY_MAILADDRESS)
+        val game = Game(maxPlayers = ANY_MAXPLAYERS, maxRounds =  ANY_MAXROUNDS)
 
         // when
         // then
-        assertThat(player)
-            .isCreatedFrom(ANY_USERNAME, ANY_MAILADDRESS)
-        assertThat(player.getPlayerId())
+        assertThat(game)
+            .isCreatedFrom(ANY_MAXPLAYERS, ANY_MAXROUNDS)
+        assertThat(game.getGameId())
             .isNotNull
-        assertThat(player.getPlayerToken())
+        assertThat(game.getGameStatus())
             .isNotNull
-        assertThat(player.getUserName())
-            .isEqualTo(ANY_USERNAME)
-        assertThat(player.getMailAddress())
-            .isEqualTo(ANY_MAILADDRESS)
+        assertThat(game.getMaxPlayers())
+            .isEqualTo(ANY_MAXPLAYERS)
+        assertThat(game.getMaxRounds())
+            .isEqualTo(ANY_MAXROUNDS)
     }
 
-    @Test
-    fun shouldNotHaveEqualPlayerIdAndPlayerToken() {
-        // given
-        val player = Player(ANY_USERNAME, ANY_MAILADDRESS)
 
-        // when
-        // then
-        assertThat(player.getPlayerId())
-            .isNotEqualTo(player.getPlayerToken())
-    }
-
-    @Test
-    @Disabled
-    fun shouldNotInitializeWithoutValidUserName() {
-        TODO("implement username pattern validation")
-    }
-
-    @Test
-    @Disabled
-    fun shouldNotInitializeWithoutValidMailAddress() {
-        TODO("implement mailAddress pattern validation")
-    }
 }

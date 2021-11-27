@@ -92,5 +92,4 @@ data class PlayersInGame(
     @ManyToOne
     var game: Game
 ){
-    fun getPlayersInGameUUID() = playerInGameId
 }
