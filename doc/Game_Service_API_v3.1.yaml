@@ -264,7 +264,6 @@ components:
         - movement
         - battle
         - mining
-        - spawning
         - regeneration
         
     commandObject:
