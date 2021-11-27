@@ -3,38 +3,43 @@ package microservice.dungeon.game.unittests.model.game.services
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
-import microservice.dungeon.game.aggregates.player.domain.Player
-import microservice.dungeon.game.aggregates.player.events.AbstractPlayerEvent
+import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.events.AbstractGameEvent
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.player.events.PlayerCreated
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
-import microservice.dungeon.game.aggregates.player.services.PlayerService
+import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.*
 import java.time.LocalDateTime
 import java.util.*
 
 class GameServiceTest {
-    private val ANY_USERNAME = "ANY_USERNAME"
-    private val ANY_MAILADDRESS = "ANY_MAILADDRESS"
-    private val ANY_PLAYER = Player(ANY_USERNAME, ANY_MAILADDRESS)
+    private val ANY_MAXPLAYERS = 99
+    private val ANY_MAXROUNDS = 99
+    private val ANY_GAME = Game(maxPlayers = ANY_MAXPLAYERS, maxRounds =   ANY_MAXROUNDS)
 
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockEventStoreService: EventStoreService? = null
+    private var mockGameRepository: GameRepository? = null
     private var mockPlayerRepository: PlayerRepository? = null
-    private var playerService: PlayerService? = null
+    private var mockRoundService: RoundService? = null
+    private var gameService: GameService? = null
 
 
     @BeforeEach
     fun setUp() {
+
         mockEventPublisherService = mock()
         mockEventStoreService = mock()
+        mockGameRepository = mock()
         mockPlayerRepository = mock()
-        playerService = PlayerService(mockPlayerRepository!!, mockEventPublisherService!!, mockEventStoreService!!)
+        mockRoundService = mock()
+        gameService = GameService(mockRoundService!!,mockGameRepository!!,mockPlayerRepository!! ,  mockEventStoreService!! ,  mockEventPublisherService!!)
     }
 
 
@@ -42,43 +47,30 @@ class GameServiceTest {
     fun shouldAllowNewPlayerCreation() {
         // given
         // when
-        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        val game: Game = gameService!!.createNewGame()
 
         // then
-        verify(mockPlayerRepository!!).save(player)
-        assertThat(player)
-            .isCreatedFrom(ANY_USERNAME, ANY_MAILADDRESS)
+        verify(mockGameRepository!!).save(game)
+        assertThat(game)
+            .isCreatedFrom(maxPlayers = ANY_MAXPLAYERS, maxRounds =   ANY_MAXROUNDS)
     }
 
-    @Test
-    fun shouldNotAllowPlayerCreationWhenUserNameOrMailAddressAlreadyExists() {
-        // given
-        whenever(mockPlayerRepository!!.findByUserNameOrMailAddress(anyString(), anyString()))
-            .thenReturn(Optional.of(
-                ANY_PLAYER
-            ))
-
-        // when, then
-        assertThatThrownBy {
-            playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
-        }
-    }
 
     @Test
     fun shouldPublishEventWhenNewPlayerCreated() {
         // given
         // when
-        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        val game: Game = gameService!!.createNewGame()
 
         // then
-        val playerCreatedCaptor = argumentCaptor<List<Event>>()
-        verify(mockEventPublisherService!!).publishEvents(playerCreatedCaptor.capture())
-        val capturedEvent = playerCreatedCaptor.firstValue.first()
+        val gameCreatedCaptor = argumentCaptor<List<Event>>()
+        verify(mockEventPublisherService!!).publishEvents(gameCreatedCaptor.capture())
+        val capturedEvent = gameCreatedCaptor.firstValue.first()
 
         assertThat(capturedEvent)
             .isInstanceOf(PlayerCreated::class.java)
-        assertThat(capturedEvent as AbstractPlayerEvent)
-            .matches(player)
+        assertThat(capturedEvent as AbstractGameEvent)
+            .matches(game)
         assertThat(capturedEvent.getOccurredAt().getTime())
             .isBeforeOrEqualTo(LocalDateTime.now())
     }
@@ -87,17 +79,17 @@ class GameServiceTest {
     fun shouldStorePublishedEventWhenNewPlayerCreated() {
         // given
         // when
-        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        val game: Game = gameService!!.createNewGame()
 
         // then
-        val playerCreatedCaptor = argumentCaptor<Event>()
-        verify(mockEventStoreService!!).storeEvent(playerCreatedCaptor.capture())
-        val capturedEvent = playerCreatedCaptor.firstValue
+        val gameCreatedCaptor = argumentCaptor<Event>()
+        verify(mockEventStoreService!!).storeEvent(gameCreatedCaptor.capture())
+        val capturedEvent = gameCreatedCaptor.firstValue
 
         assertThat(capturedEvent)
-            .isInstanceOf(PlayerCreated::class.java)
-        assertThat(capturedEvent as AbstractPlayerEvent)
-            .matches(player)
+            .isInstanceOf(GameCreated::class.java)
+        assertThat(capturedEvent as AbstractGameEvent)
+            .matches(game)
         assertThat(capturedEvent.getOccurredAt().getTime())
             .isBeforeOrEqualTo(LocalDateTime.now())
     }

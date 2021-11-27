@@ -85,13 +85,37 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
     @PostMapping("/games/{gameId}/gameCommands/start")
-    fun startGame(@PathVariable(value = "gameId") gameId: UUID, @ModelAttribute game: Game) =
-        gameService.runGame(gameId)
+    fun startGame(
+        @PathVariable(value = "gameId") gameId: UUID,
+        @RequestBody adminToken: UUID,
+        @ModelAttribute game: Game
+    ) {
+        try {
+            //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
+            //            ?: throw EntityNotFoundException("admin does not exist")
+            gameService.runGame(gameId)
+        } catch (e: EntityNotFoundException) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_ACCEPTABLE,
+                "Admin only."
+            )
+        }
+    }
 
 
     @PostMapping("/games/{gameId}/gameCommands/end")
-    fun endGame(@PathVariable(value = "gameId") gameId: UUID) =
-        gameService.closeGame(gameId)
+    fun endGame(@PathVariable(value = "gameId") gameId: UUID, @RequestBody adminToken: UUID,) {
+        try {
+            //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
+            //            ?: throw EntityNotFoundException("admin does not exist")
+            gameService.closeGame(gameId)
+        } catch (e: EntityNotFoundException) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_ACCEPTABLE,
+                "Admin only."
+            )
+        }
+    }
 
 }
 
