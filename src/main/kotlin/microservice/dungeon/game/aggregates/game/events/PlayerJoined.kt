@@ -1,29 +1,25 @@
 package microservice.dungeon.game.aggregates.game.events
 
-
+import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
 import java.time.LocalDateTime
 import java.util.*
 
-class GameStarted(
+class PlayerJoined (
     id: UUID,
     occurredAt: EventTime,
     gameId: UUID,
-    gameStatus: GameStatus
-) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameStarted", "testTopic", 1) {
+    playerId: UUID
+): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "testTopic", 1){
 
-    constructor(game: Game):
-            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), game.getGameStatus())
-
-    init {
-        if (gameStatus != GameStatus.IN_PREPARATION)
-            throw MethodNotAllowedForStatusException("GameStarted cannot created with game.status = $gameStatus")
-    }
+    //TODO("Constructror")
 
     override fun getTransactionId(): UUID {
         TODO("Not yet implemented")
     }
+
 }
