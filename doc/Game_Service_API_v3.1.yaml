@@ -6,21 +6,12 @@ servers:
 - url: http://{defaultHost}
   variables:
     defaultHost:
-      default: localhost:8082 
-tags:
-- name: players
-  description: Player admnistration
-- name: admins
-  description: Admin admnistration
-- name: games
-  description: Game admnistration    
-- name: commands
-  description: Command admnistration      
+      default: localhost:8082   
 paths:
   "/games":
     post:
       summary: Creates a new game
-      tag:
+      tags:
       - games
       description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
       security:
@@ -47,7 +38,7 @@ paths:
   
     get:
       summary: Returns all open or running games.
-      tag:
+      tags:
       - games
       description: Returns a list of all open or active games. For a list of all players refer to the GameLog.
       responses:
@@ -63,7 +54,7 @@ paths:
   "/games/{gameId}/time":
     get:
       summary: Returns the current time
-      tag:
+      tags:
       - games
       description: Returns the current time once the game has been started.
       parameters:
@@ -83,7 +74,7 @@ paths:
   "/games/{gameId}/gameCommands/start":
     post:
       summary: Starts the game.
-      tag:
+      tags:
       - games
       description: Gives the command to start the game. Only administrators are privileged to start the game. It can be executed only when a new game has been created and is waiting for the game to start.
       parameters:
@@ -103,7 +94,7 @@ paths:
   "/games/{gameId}/gameCommands/end":
     post:
       summary: Ends the game.
-      tag:
+      tags:
       - games
       description: Gives the command to end the game. Only administrators can give this command. Once the command is received, the current round will be continued, after which the game is closed.
       parameters:
@@ -123,7 +114,7 @@ paths:
   "/games/{gameId}/players":
     put:
       summary: Registers a player for the game.
-      tag:
+      tags:
       - games
       description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
@@ -169,7 +160,7 @@ paths:
   "/players":
     post:
       summary: Creates a new player.
-      tag:
+      tags:
       - players
       description: A player can register using a name and email and, upon successful registration, will receive a Bear token that they can use to authenticate themselves in the future.
       requestBody:
@@ -218,7 +209,7 @@ paths:
         "406":
           description: The command could not be accepted. Possible cause is that there is no running game at the moment.
           
-    "get":
+    get:
       summary: Returns all player commands of a round.
       tags: 
       - commands
