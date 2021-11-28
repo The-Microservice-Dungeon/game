@@ -6,11 +6,22 @@ servers:
 - url: http://{defaultHost}
   variables:
     defaultHost:
-      default: localhost:8082   
+      default: localhost:8082 
+tags:
+- name: players
+  description: Player admnistration
+- name: admins
+  description: Admin admnistration
+- name: games
+  description: Game admnistration    
+- name: commands
+  description: Command admnistration      
 paths:
   "/games":
     post:
       summary: Creates a new game
+      tag:
+      - games
       description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
       security:
         - BearerAuth: [admin]
