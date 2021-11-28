@@ -134,7 +134,7 @@ paths:
   "/admins":
     post:
       summary: Creates a new administrator.
-      tag:
+      tags:
       - admins
       description: For registration, an authentication key is required to confirm that the person has the authority to register. In response, a bear token is returned, which is required for future authentications.
       requestBody:
