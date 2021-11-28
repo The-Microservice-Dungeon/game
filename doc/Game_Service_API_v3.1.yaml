@@ -8,11 +8,9 @@ servers:
     defaultHost:
       default: localhost:8082   
 paths:
-  /games:
+  "/games":
     post:
       summary: Creates a new game
-      tags: 
-          -Games
       description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
       security:
         - BearerAuth: [admin]
@@ -38,8 +36,8 @@ paths:
   
     get:
       summary: Returns all open or running games.
-      tags: 
-          -Games
+      tag:
+      - games
       description: Returns a list of all open or active games. For a list of all players refer to the GameLog.
       responses:
         "201":
@@ -51,11 +49,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/game"
             
-  /games/{gameId}/time:
+  "/games/{gameId}/time":
     get:
       summary: Returns the current time
-      tags: 
-          -Games
+      tag:
+      - games
       description: Returns the current time once the game has been started.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -71,11 +69,11 @@ paths:
         "406":
           description: No game exists at the moment.
           
-  /games/{gameId}/gameCommands/start:
+  "/games/{gameId}/gameCommands/start":
     post:
       summary: Starts the game.
-      tags: 
-          -Games
+      tag:
+      - games
       description: Gives the command to start the game. Only administrators are privileged to start the game. It can be executed only when a new game has been created and is waiting for the game to start.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -91,11 +89,11 @@ paths:
         "406":
           description: The command could not be accepted. Either no game is currently open, or the game is in a state from which it cannot be started, for example if it is already running.
           
-  /games/{gameId}/gameCommands/end:
+  "/games/{gameId}/gameCommands/end":
     post:
       summary: Ends the game.
-      tags: 
-          -Games
+      tag:
+      - games
       description: Gives the command to end the game. Only administrators can give this command. Once the command is received, the current round will be continued, after which the game is closed.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -111,11 +109,11 @@ paths:
         "406":
           description: The command could not be accepted. Either no game is currently taking place, or the game has not started yet.
           
-  /games/{gameId}/players:
+  "/games/{gameId}/players":
     put:
       summary: Registers a player for the game.
-      tags: 
-          -Games
+      tag:
+      - games
       description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -131,11 +129,11 @@ paths:
         "406":
           description: The player could not be added because either no game exists with this ID, or the game is in a phase that does not allow registrations.
   
-  /admins:
+  "/admins":
     post:
       summary: Creates a new administrator.
-      tags: 
-          -Admins
+      tag:
+      - admins
       description: For registration, an authentication key is required to confirm that the person has the authority to register. In response, a bear token is returned, which is required for future authentications.
       requestBody:
         required: true
@@ -157,11 +155,11 @@ paths:
         "406":
           description: The admin could not be registred. 
             
-  /players:
+  "/players":
     post:
       summary: Creates a new player.
-      tags: 
-          -Players
+      tag:
+      - players
       description: A player can register using a name and email and, upon successful registration, will receive a Bear token that they can use to authenticate themselves in the future.
       requestBody:
         required: true
@@ -181,11 +179,11 @@ paths:
         "406":
           description: The player could not be registred. A player with the same username or email might already exist.
           
-  /commands:
+  "/commands":
     post:
       summary: Creates a new command for the specified robot
       tags: 
-          -Commands
+      - commands
       description: A new command will be created for the specific robot and will be processed at the next possible time. Multiple commands can be given per player per turn, but there can only be one command per robot at a time. Duplicate commands always replace the previous one. A player is not allowed to give orders for a robot that does not belong to him.
       security:
         - BearerAuth: [player]
@@ -209,10 +207,10 @@ paths:
         "406":
           description: The command could not be accepted. Possible cause is that there is no running game at the moment.
           
-    get:
+    "get":
       summary: Returns all player commands of a round.
       tags: 
-          -Commands
+      - commands
       description: After the round of a game is finished, the commands of this can be retrieved.
       security:
         - BearerAuth: [server]
@@ -436,12 +434,3 @@ components:
           $ref: "#/components/schemas/commandObject"
         itemUse:
           $ref: "#/components/schemas/commandItem"
-tags:
-  - name: Commands
-    description: Command administration
-  - name: Players
-    description: Player administration
-  - name: Admins
-    description: Admin administration
-  - name: Games  
-    description: Game administration    
