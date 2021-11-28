@@ -11,6 +11,8 @@ paths:
   /games:
     post:
       summary: Creates a new game
+      tags: 
+          -Games
       description: Creates a new game. Only one game can be running at a time, so creating a new one is only possible if there is currently no active instance.
       security:
         - BearerAuth: [admin]
@@ -36,6 +38,8 @@ paths:
   
     get:
       summary: Returns all open or running games.
+      tags: 
+          -Games
       description: Returns a list of all open or active games. For a list of all players refer to the GameLog.
       responses:
         "201":
@@ -50,6 +54,8 @@ paths:
   /games/{gameId}/time:
     get:
       summary: Returns the current time
+      tags: 
+          -Games
       description: Returns the current time once the game has been started.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -68,6 +74,8 @@ paths:
   /games/{gameId}/gameCommands/start:
     post:
       summary: Starts the game.
+      tags: 
+          -Games
       description: Gives the command to start the game. Only administrators are privileged to start the game. It can be executed only when a new game has been created and is waiting for the game to start.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -86,6 +94,8 @@ paths:
   /games/{gameId}/gameCommands/end:
     post:
       summary: Ends the game.
+      tags: 
+          -Games
       description: Gives the command to end the game. Only administrators can give this command. Once the command is received, the current round will be continued, after which the game is closed.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -104,6 +114,8 @@ paths:
   /games/{gameId}/players:
     put:
       summary: Registers a player for the game.
+      tags: 
+          -Games
       description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
         - $ref: "#/components/parameters/gameId"
@@ -122,6 +134,8 @@ paths:
   /admins:
     post:
       summary: Creates a new administrator.
+      tags: 
+          -Admins
       description: For registration, an authentication key is required to confirm that the person has the authority to register. In response, a bear token is returned, which is required for future authentications.
       requestBody:
         required: true
@@ -146,6 +160,8 @@ paths:
   /players:
     post:
       summary: Creates a new player.
+      tags: 
+          -Players
       description: A player can register using a name and email and, upon successful registration, will receive a Bear token that they can use to authenticate themselves in the future.
       requestBody:
         required: true
@@ -168,6 +184,8 @@ paths:
   /commands:
     post:
       summary: Creates a new command for the specified robot
+      tags: 
+          -Commands
       description: A new command will be created for the specific robot and will be processed at the next possible time. Multiple commands can be given per player per turn, but there can only be one command per robot at a time. Duplicate commands always replace the previous one. A player is not allowed to give orders for a robot that does not belong to him.
       security:
         - BearerAuth: [player]
@@ -193,6 +211,8 @@ paths:
           
     get:
       summary: Returns all player commands of a round.
+      tags: 
+          -Commands
       description: After the round of a game is finished, the commands of this can be retrieved.
       security:
         - BearerAuth: [server]
@@ -265,6 +285,9 @@ components:
         - battle
         - mining
         - regeneration
+        - battleItemUse
+        - repairItemUse
+        - moveItemUse
         
     commandObject:
       description: Defines the command content. The corresponding syntax is given by the robot service.
@@ -413,3 +436,12 @@ components:
           $ref: "#/components/schemas/commandObject"
         itemUse:
           $ref: "#/components/schemas/commandItem"
+tags:
+  - name: Commands
+    description: Command administration
+  - name: Players
+    description: Player administration
+  - name: Admins
+    description: Admin administration
+  - name: Games  
+    description: Game administration    
