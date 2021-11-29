@@ -414,8 +414,6 @@ components:
           $ref: "#/components/schemas/commandType"
         commandObject:
           $ref: "#/components/schemas/commandObject"
-        itemUse:
-          $ref: "#/components/schemas/commandItem"
     commandOutput:
       description: The command that has been accepted from a player for a specific game, round and robot.
       type: object
@@ -423,8 +421,6 @@ components:
         transacionId:
           $ref: "#/components/schemas/uuid"
         gameId:
-          $ref: "#/components/schemas/uuid"
-        roundId:
           $ref: "#/components/schemas/uuid"
         playerId:
           $ref: "#/components/schemas/uuid"  
@@ -434,5 +430,3 @@ components:
           $ref: "#/components/schemas/commandType"
         commandObject:
           $ref: "#/components/schemas/commandObject"
-        itemUse:
-          $ref: "#/components/schemas/commandItem"
