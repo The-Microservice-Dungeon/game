@@ -1,8 +1,8 @@
-package microservice.dungeon.game.commands.services
+package microservice.dungeon.game.aggregates.commands.services
 
-import microservice.dungeon.game.commands.domain.Command
-import microservice.dungeon.game.commands.dtos.CommandDTO
-import microservice.dungeon.game.commands.repository.CommandRepository
+import microservice.dungeon.game.aggregates.commands.domain.Command
+import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.commands.repository.CommandRepository
 import org.springframework.stereotype.Service
 import java.util.*
 

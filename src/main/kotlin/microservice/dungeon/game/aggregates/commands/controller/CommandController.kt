@@ -1,8 +1,8 @@
-package microservice.dungeon.game.commands.controller
+package microservice.dungeon.game.aggregates.commands.controller
 
-import microservice.dungeon.game.commands.domain.Command
-import microservice.dungeon.game.commands.dtos.CommandDTO
-import microservice.dungeon.game.commands.services.CommandService
+import microservice.dungeon.game.aggregates.commands.domain.Command
+import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.commands.services.CommandService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
