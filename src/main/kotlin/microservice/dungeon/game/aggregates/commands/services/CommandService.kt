@@ -1,19 +1,26 @@
 package microservice.dungeon.game.aggregates.commands.services
 
 import microservice.dungeon.game.aggregates.commands.domain.Command
+import microservice.dungeon.game.aggregates.commands.domain.RoundCommands
 import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.commands.repositories.CommandRepository
+import microservice.dungeon.game.aggregates.commands.repositories.RoundCommandsRepository
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class CommandService(
     private val commandRepository: CommandRepository,
-    private val pastCommandRepository: CommandRepository
+    private val roundCommandsRepository: RoundCommandsRepository
 ) {
 
     fun getAllRoundCommands(roundNumber: Number): List<Command>? {
-        return pastCommandRepository.findAll()
+        val roundCommands = roundCommandsRepository.findById(roundNumber.toInt())
+        if (roundCommands.isPresent) {
+            return roundCommands.get().list
+        } else {
+            throw IllegalArgumentException("Round could not be found")
+        }
     }
 
     fun save(dto: CommandDTO): UUID {
@@ -24,6 +31,9 @@ class CommandService(
 
     fun sendCommands() {
         //TODO send commands in their phase
-        //TODO save the list of commands in pastCommandRepository
+    }
+
+    fun saveRoundCommands() {
+        roundCommandsRepository.save(RoundCommands(commandRepository.findAll(), 0)) //TODO get current roundNumber
     }
 }
