@@ -8,7 +8,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "commands")
 class Command constructor(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @Type(type = "uuid-char") @GeneratedValue(strategy = GenerationType.IDENTITY)
     val transactionId: UUID = UUID.randomUUID(),
 
     @Type(type = "uuid-char")
