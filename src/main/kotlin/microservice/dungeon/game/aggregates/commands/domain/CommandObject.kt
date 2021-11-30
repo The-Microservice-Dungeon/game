@@ -1,4 +1,4 @@
-package microservice.dungeon.game.commands.domain
+package microservice.dungeon.game.aggregates.commands.domain
 
 import java.util.*
 import javax.persistence.Embeddable
