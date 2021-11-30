@@ -7,34 +7,29 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
-
-//TODO: Errors
 
 @RestController
 @RequestMapping("/api")
 class CommandController(@Autowired private val commandService: CommandService) {
 
-    @GetMapping("/commands")
-    fun getAllCommands(): List<Command> = commandService.getAllCommands()
-
-    @PostMapping("/command/save")
-    fun createNewCommand(@ModelAttribute command: CommandDTO): ResponseEntity<UUID> {
-        return ResponseEntity.ok(commandService.save(command))
+    @GetMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
+    fun getAllRoundCommands(@ModelAttribute roundNumber: Number): ResponseEntity<List<Command>> {
+        try {
+            val roundCommands = commandService.getAllRoundCommands(roundNumber)
+            if (roundCommands != null) {
+                return ResponseEntity(roundCommands, HttpStatus.OK)
+            } else {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "roundNumber not found")
+            }
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString())
+        }
     }
 
-    @GetMapping("/commands/search")
-    fun getCommandById(@RequestParam("commandId") commandId: UUID): ResponseEntity<Command> {
-        return commandService.getCommandById(commandId).map { command ->
-            ResponseEntity.ok(command)
-        }.orElse(ResponseEntity.notFound().build())
-    }
+    @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
+    fun createNewCommand(@ModelAttribute command: CommandDTO): ResponseEntity<UUID> =
+        ResponseEntity(commandService.save(command), HttpStatus.CREATED)
 
-    @DeleteMapping("/commands/delete")
-    fun deleteCommandById(@RequestParam("commandId") commandId: UUID): ResponseEntity<Void> {
-
-        return commandService.deleteCommandById(commandId).map { _ ->
-            ResponseEntity<Void>(HttpStatus.OK)
-        }.orElse(ResponseEntity.notFound().build())
-    }
 }
