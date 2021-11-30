@@ -16,7 +16,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repositories under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Setup JDK 11 + cache
         uses: actions/setup-java@v2
@@ -34,7 +34,7 @@ jobs:
     needs: unit-test
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repositories under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Setup JDK 11 + cache
         uses: actions/setup-java@v2
