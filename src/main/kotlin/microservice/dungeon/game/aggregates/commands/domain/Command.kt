@@ -1,6 +1,6 @@
-package microservice.dungeon.game.commands.domain
+package microservice.dungeon.game.aggregates.commands.domain
 
-import microservice.dungeon.game.commands.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*

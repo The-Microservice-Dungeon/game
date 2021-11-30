@@ -1,7 +1,7 @@
-package microservice.dungeon.game.commands.dtos
+package microservice.dungeon.game.aggregates.commands.dtos
 
-import microservice.dungeon.game.commands.domain.CommandObject
-import microservice.dungeon.game.commands.domain.CommandType
+import microservice.dungeon.game.aggregates.commands.domain.CommandObject
+import microservice.dungeon.game.aggregates.commands.domain.CommandType
 import java.util.*
 
 class CommandDTO(
