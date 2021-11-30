@@ -1,4 +1,4 @@
-package microservice.dungeon.game.aggregates.commands.repository
+package microservice.dungeon.game.aggregates.commands.repositories
 
 import microservice.dungeon.game.aggregates.commands.domain.Command
 import org.springframework.data.jpa.repository.JpaRepository
