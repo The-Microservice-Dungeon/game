@@ -31,4 +31,5 @@ class CommandController(@Autowired private val commandService: CommandService) {
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
     fun createNewCommand(@ModelAttribute command: CommandDTO): ResponseEntity<UUID> =
         ResponseEntity(commandService.save(command), HttpStatus.CREATED)
+
 }
