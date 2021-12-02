@@ -44,11 +44,7 @@ class CommandService @Autowired constructor(
         return command.transactionId
     }
 
-    fun sendCommands() {
-        //TODO divide the commands up by their phase
-    }
-
-    fun saveRoundCommands() {
-        roundCommandsRepository.save(RoundCommands(commandRepository.findAll(), 0)) //TODO get current roundNumber
+    fun saveRoundCommands(roundNumber: Int) {
+        roundCommandsRepository.save(RoundCommands(commandRepository.findAll(), roundNumber))
     }
 }
