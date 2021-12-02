@@ -1,10 +1,10 @@
-package microservice.dungeon.game.aggregates.commands.services
+package microservice.dungeon.game.aggregates.command.services
 
-import microservice.dungeon.game.aggregates.commands.domain.Command
-import microservice.dungeon.game.aggregates.commands.domain.RoundCommands
-import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
-import microservice.dungeon.game.aggregates.commands.repositories.CommandRepository
-import microservice.dungeon.game.aggregates.commands.repositories.RoundCommandsRepository
+import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.domain.RoundCommands
+import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
+import microservice.dungeon.game.aggregates.command.repositories.RoundCommandsRepository
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
