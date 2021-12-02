@@ -19,7 +19,7 @@ channels:
         payload:
           type: object
           properties:
-            game-status:
+            gameStatus:
               enum: ["created", "started", "ended"]
           
   game/playerStatus:
@@ -30,10 +30,10 @@ channels:
         payload:
           type: object
           properties:
-            user-id:
+            userId:
               type: string
               format: UUID
-            user-name:
+            userName:
               type: string
             lobby-action:
               enum: ["joined", "left"]
@@ -46,8 +46,8 @@ channels:
         payload:
           type: object
           properties:
-            round-number:  
+            roundNumber:
               type: integer
               minimum: 0
-            round-status:
+            roundStatus:
               enum: ["started", "command input ended", "ended"]
