@@ -25,6 +25,8 @@ class CommandController(@Autowired private val commandService: CommandService) {
             }
         } catch (e: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString())
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString())
         }
     }
 
@@ -35,6 +37,8 @@ class CommandController(@Autowired private val commandService: CommandService) {
             return ResponseEntity(commandId, HttpStatus.CREATED)
         } catch (e: IllegalAccessException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString())
         }
     }
 }
