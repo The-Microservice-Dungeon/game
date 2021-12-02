@@ -39,6 +39,3 @@ class Command constructor(
     }
 }
 
-enum class CommandType {
-    BLOCKING, MINING, MOVEMENT, BATTLE, BUYING, SELLING, REGENERATE, BATTLEITEMUSE, REPAIRITEMUSE, MOVEITEMUSE
-}
