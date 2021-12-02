@@ -5,13 +5,16 @@ import microservice.dungeon.game.aggregates.commands.domain.RoundCommands
 import microservice.dungeon.game.aggregates.commands.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.commands.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.commands.repositories.RoundCommandsRepository
+import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class CommandService(
+class CommandService @Autowired constructor(
     private val commandRepository: CommandRepository,
-    private val roundCommandsRepository: RoundCommandsRepository
+    private val roundCommandsRepository: RoundCommandsRepository,
+    private val robotRepository: RobotRepository
 ) {
 
     fun getAllRoundCommands(roundNumber: Number): List<Command>? {
@@ -25,12 +28,24 @@ class CommandService(
 
     fun save(dto: CommandDTO): UUID {
         var command: Command = Command.fromDTO(dto)
+
+        //TODO Test ;)
+        if (!robotRepository.findAll()
+                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId }
+        ) {
+            throw IllegalAccessException("Player is not allowed to send commands to this robot.")
+        }
+
+        val prevCommands = commandRepository.findByRobotIdIn(command.robotId)
+        if (prevCommands.isNotEmpty()) {
+            commandRepository.deleteAll(prevCommands)
+        }
         command = commandRepository.save(command)
         return command.transactionId
     }
 
     fun sendCommands() {
-        //TODO send commands in their phase
+        //TODO divide the commands up by their phase
     }
 
     fun saveRoundCommands() {
