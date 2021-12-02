@@ -1,4 +1,4 @@
-package microservice.dungeon.game.aggregates.commands.domain
+package microservice.dungeon.game.aggregates.command.domain
 
 enum class CommandType {
     BLOCKING,
