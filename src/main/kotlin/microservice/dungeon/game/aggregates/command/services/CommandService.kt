@@ -36,7 +36,8 @@ class CommandService @Autowired constructor(
             throw IllegalAccessException("Player is not allowed to send commands to this robot.")
         }
 
-        val prevCommands = commandRepository.findByRobotIdIn(command.robotId)
+        val prevCommands = commandRepository.findAll()
+        prevCommands.removeIf { c -> c.robotId != command.robotId }
         if (prevCommands.isNotEmpty()) {
             commandRepository.deleteAll(prevCommands)
         }

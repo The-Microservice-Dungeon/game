@@ -20,6 +20,7 @@ class Command constructor(
     @Type(type = "uuid-char")
     val robotId: UUID,
 
+    @Embedded(insert = "false", update = "false")
     val commandType: CommandType,
 
     @Embedded
