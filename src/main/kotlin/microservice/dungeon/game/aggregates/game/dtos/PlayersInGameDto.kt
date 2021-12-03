@@ -6,7 +6,7 @@ import java.util.*
 class PlayersInGameDto (
     val playerInGameId: UUID,
     val game: Game
-){}
+)
 
 
 

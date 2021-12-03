@@ -1,15 +1,12 @@
 package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
-import microservice.dungeon.game.aggregates.player.domain.Player
-import org.hibernate.Hibernate
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
-
 
 
 @Entity

@@ -76,11 +76,11 @@ class GameService @Autowired constructor(
     @Transactional
     fun insertPlayer(gameId: UUID, token: UUID): ResponseEntity<PlayerResponseDto> {
 
-        val player: Player = playerRepository.findByPlayerToken(token).get()
+        val player: Player = playerRepository.findByPlayerToken(token).get() // is empty?
             ?: throw EntityNotFoundException("Player does not exist")
 
 
-        val responsePlayer = PlayerResponseDto(
+        val responsePlayer = PlayerResponseDto(//nochmal anascheun warum es hier ist
             player.getPlayerToken(),
             player.getUserName(),
             player.getMailAddress()
@@ -146,7 +146,7 @@ class GameService @Autowired constructor(
 
                 delay((commandCollectDuration + executionDuration))
                 roundService.deliverTradingCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 2))
+                delay((commandCollectDuration + executionDuration * 2))//Test if it delays "double"
                 roundService.deliverMovementCommands(roundID)
                 delay((commandCollectDuration + executionDuration * 3))
                 roundService.deliverBattleCommands(roundID)

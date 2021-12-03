@@ -18,8 +18,8 @@ class GameTest {
 
         // when
         // then
-//        assertThat(game)
-//            .isCreatedFrom(ANY_MAXPLAYERS, ANY_MAXROUNDS)
+        assertThat(game)
+            .isCreatedFrom(ANY_MAXPLAYERS, ANY_MAXROUNDS)
         assertThat(game.getGameId())
             .isNotNull
         assertThat(game.getGameStatus())

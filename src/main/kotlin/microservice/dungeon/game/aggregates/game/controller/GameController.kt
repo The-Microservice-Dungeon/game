@@ -73,7 +73,7 @@ class GameController(@Autowired private val gameService: GameService) {
                 newGame.getMaxPlayers(),
                 newGame.getMaxRounds(),
                 newGame.getRoundDuration(),
-                newGame.getCommandCollectDuration(),
+                newGame.getCommandCollectDuration(), // wird gelöscht
                 newGame.getCreatedGameDateTime(),
             )
 
