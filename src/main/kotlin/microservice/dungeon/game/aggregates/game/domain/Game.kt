@@ -96,5 +96,4 @@ data class PlayersInGame(
     private val playerInGameId: UUID?,
     @ManyToOne
     var game: Game
-){
-}
+)

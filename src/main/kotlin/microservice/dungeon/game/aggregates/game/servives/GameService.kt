@@ -140,12 +140,13 @@ class GameService @Autowired constructor(
 
             scope.launch { // create new coroutine in common thread pool
                 delay(commandCollectDuration) // non-blocking delay for 45 second
-                roundService.endCommandInputs(roundID)
-
-                roundService.deliverBlockingCommands(roundID)
-
+                roundService.run {
+                    endCommandInputs(roundID)
+                    deliverBlockingCommands(roundID)
+                }
+                //TODO("Nonblocking")
                 delay((commandCollectDuration + executionDuration))
-                roundService.deliverTradingCommands(roundID)
+                with(roundService) { deliverTradingCommands(roundID) }
                 delay((commandCollectDuration + executionDuration * 2))//Test if it delays "double"
                 roundService.deliverMovementCommands(roundID)
                 delay((commandCollectDuration + executionDuration * 3))

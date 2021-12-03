@@ -19,24 +19,22 @@ channels:
         payload:
           type: object
           properties:
-            game-status:
+            gameStatus:
               enum: ["created", "started", "ended"]
           
-  game/user_lobby:
+  game/playerStatus:
     publish:
       summary: Publishes user activities related to their participation in the game. 
-      description: Publishes whenever a user registers or leaves the game. A distinction is made between administrators and players. Administrators can enter or leave the game at any time, players only after creating a new game and before starting the game.
+      description: Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
       message:
         payload:
           type: object
           properties:
-            user-id:
+            userId:
               type: string
               format: UUID
-            user-name:
+            userName:
               type: string
-            user-type:
-              enum: ["admin", "player"]
             lobby-action:
               enum: ["joined", "left"]
           
@@ -48,8 +46,8 @@ channels:
         payload:
           type: object
           properties:
-            round-number:  
+            roundNumber:
               type: integer
               minimum: 0
-            round-status:
+            roundStatus:
               enum: ["started", "command input ended", "ended"]

@@ -15,4 +15,10 @@ class PlayerEventDto (
         val objectMapper = ObjectMapper().findAndRegisterModules()
         return objectMapper.writeValueAsString(this)
     }
+
+    fun getPlayerId(): UUID = playerId
+
+    fun getUserName(): String = userName
+
+    fun getMailAddress(): String = mailAddress
 }
