@@ -1,10 +1,9 @@
 package microservice.dungeon.game.aggregates.command.services
 
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.domain.RoundCommands
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
-import microservice.dungeon.game.aggregates.command.repositories.RoundCommandsRepository
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -13,21 +12,30 @@ import java.util.*
 @Service
 class CommandService @Autowired constructor(
     private val commandRepository: CommandRepository,
-    private val roundCommandsRepository: RoundCommandsRepository,
-    private val robotRepository: RobotRepository
+    private val robotRepository: RobotRepository,
+    private val gameRepository: GameRepository
 ) {
 
-    fun getAllRoundCommands(roundNumber: Number): List<Command>? {
-        val roundCommands = roundCommandsRepository.findById(roundNumber.toInt())
-        if (roundCommands.isPresent) {
-            return roundCommands.get().list
+    fun getAllRoundCommands(gameId: UUID, roundNumber: Int): List<Command>? {
+        val currentRoundNumber = gameRepository.findById(gameId).get().getCurrentRoundCount()
+        val roundCommands = commandRepository.findAll()
+
+        if (currentRoundNumber >= roundNumber) {
+            throw IllegalAccessException("Current Round may not be requested")
+        }
+
+        roundCommands.removeIf { c -> c.roundNumber != roundNumber }
+        if (roundCommands.isNotEmpty()) {
+            return roundCommands
         } else {
             throw IllegalArgumentException("Round could not be found")
         }
     }
 
     fun save(dto: CommandDTO): UUID {
-        var command: Command = Command.fromDTO(dto)
+        val currentRoundNumber = gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
+
+        var command: Command = Command.fromDTO(dto, currentRoundNumber)
 
         //TODO Test ;)
         if (!robotRepository.findAll()
@@ -37,15 +45,11 @@ class CommandService @Autowired constructor(
         }
 
         val prevCommands = commandRepository.findAll()
-        prevCommands.removeIf { c -> c.robotId != command.robotId }
+        prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
         if (prevCommands.isNotEmpty()) {
             commandRepository.deleteAll(prevCommands)
         }
         command = commandRepository.save(command)
         return command.transactionId
-    }
-
-    fun saveRoundCommands(roundNumber: Int) {
-        roundCommandsRepository.save(RoundCommands(commandRepository.findAll(), roundNumber))
     }
 }

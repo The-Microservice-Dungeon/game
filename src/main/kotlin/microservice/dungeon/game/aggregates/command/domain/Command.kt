@@ -20,23 +20,25 @@ class Command constructor(
     @Type(type = "uuid-char")
     val robotId: UUID,
 
-    @Embedded(insert = "false", update = "false")
+    @Embedded(insert = "false", update = "false") //Possible breakpoint
     val commandType: CommandType,
 
     @Embedded
-    val commandObject: CommandObject
+    val commandObject: CommandObject,
+
+    val roundNumber: Int
 ) {
     fun toDTO(): CommandDTO = CommandDTO(gameId, playerId, robotId, commandType, commandObject)
 
     companion object {
-        fun fromDTO(dto: CommandDTO): Command = Command(
+        fun fromDTO(dto: CommandDTO, roundNumber: Int): Command = Command(
             transactionId = UUID.randomUUID(),
             gameId = dto.gameId,
             playerId = dto.playerId,
             robotId = dto.robotId,
             commandType = dto.commandType,
-            commandObject = dto.commandObject
+            commandObject = dto.commandObject,
+            roundNumber = roundNumber
         )
     }
 }
-
