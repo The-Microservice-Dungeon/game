@@ -9,7 +9,7 @@ class MovementCommandDTO(
     val transactionId: UUID
 ) {
     companion object {
-        fun fromCommand(command: Command) = FightCommandDTO(
+        fun fromCommand(command: Command) = MovementCommandDTO(
             command.robotId,
             command.commandObject.planetId!!,
             command.transactionId

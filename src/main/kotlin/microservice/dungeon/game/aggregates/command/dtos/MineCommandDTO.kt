@@ -8,7 +8,7 @@ class MineCommandDTO(
     val transactionId: UUID
 ) {
     companion object {
-        fun fromCommand(command: Command) = RegenerateCommandDTO(
+        fun fromCommand(command: Command) = MineCommandDTO(
             command.robotId,
             command.transactionId
         )
