@@ -4,6 +4,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.EntityNotFoundException
 import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
@@ -70,8 +71,8 @@ class GameService @Autowired constructor(
         game.endGame()
         gameRepository.save(game)
         val gameEnded = GameEnded(game)
-        eventStoreService.storeEvent(gameEnded)
-        eventPublisherService.publishEvents(listOf(gameEnded))
+ //       eventStoreService.storeEvent(gameEnded)
+ //       eventPublisherService.publishEvents(listOf(gameEnded))
     }
 
 
@@ -149,7 +150,6 @@ class GameService @Autowired constructor(
                     endCommandInputs(roundID)
                     deliverBlockingCommands(roundID)
                 }
-                //TODO("Nonblocking")
                 delay((commandCollectDuration + executionDuration).toLong())
                 with(roundService) { deliverTradingCommands(roundID) }
                 delay((commandCollectDuration + executionDuration * 2).toLong())//Test if it delays "double"

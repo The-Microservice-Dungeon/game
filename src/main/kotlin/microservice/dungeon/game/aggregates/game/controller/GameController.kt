@@ -86,14 +86,13 @@ class GameController(@Autowired private val gameService: GameService) {
         }
     }
 
-    @PostMapping("/games/gameCommands/start")
+    @PostMapping("/games/{gameId}/gameCommands/start")
     fun startGame(
-//        @PathVariable(value = "gameId") gameId: UUID,
+       @PathVariable(value = "gameId") gameId: UUID,
 //        @RequestBody (adminToken: UUID)
-        @RequestBody gameId: UUID,
-        @ModelAttribute game: Game
     ): ResponseEntity<HttpStatus> {
         try {
+            //val gameId: UUID = UUID.fromString(uuid)
             //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
             //            ?: throw EntityNotFoundException("admin does not exist")
             gameService.runGame(gameId)
@@ -126,7 +125,7 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
 
-    @PatchMapping("/game/{id}/maxRounds/{maxRounds}")
+    @PatchMapping("/games/{id}/maxRounds/{maxRounds}")
     fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): ResponseEntity<GameResponseDto?>? {
         return try {
             gameService.patchMaxRound(id, maxRounds)
@@ -136,7 +135,7 @@ class GameController(@Autowired private val gameService: GameService) {
         }
     }
 
-    @PatchMapping("/game/{id}/roundDuration/{newDuration}")
+    @PatchMapping("/games/{id}/roundDuration/{newDuration}")
     fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): ResponseEntity<GameResponseDto?>? {
         return try {
             gameService.patchRoundDuration(id, newDuration)
