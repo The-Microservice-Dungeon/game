@@ -23,7 +23,6 @@ import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
-import microservice.dungeon.game.web.CommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -44,13 +43,19 @@ class GameService @Autowired constructor(
     private val eventPublisherService: EventPublisherService
 ) {
     @Transactional
-    fun createNewGame(): Game {
-        val game = Game()
-        gameRepository.save(game)
+    fun createNewGame(game: Game): Game {
+        val newGame = Game()
+        newGame.setMaxRounds(game.getMaxRounds())
+        newGame.setMaxPlayers(game.getMaxPlayers())
+        newGame.setRoundDuration(game.getRoundDuration())
+        var commandCollectionTime = game.getRoundDuration().toDouble()
+        commandCollectionTime *=  0.75
+        newGame.setCommandCollectDuration(commandCollectionTime)
+        gameRepository.save(newGame)
         val gameStarted = GameStarted(game)
-        eventStoreService.storeEvent(gameStarted)
-        eventPublisherService.publishEvents(listOf(gameStarted))
-        return game
+//        eventStoreService.storeEvent(gameStarted)
+ //       eventPublisherService.publishEvents(listOf(gameStarted))
+        return newGame
     }
 
     @Transactional
@@ -139,21 +144,21 @@ class GameService @Autowired constructor(
             game.setCurrentRoundCount(roundCounter)
 
             scope.launch { // create new coroutine in common thread pool
-                delay(commandCollectDuration) // non-blocking delay for 45 second
+                delay(commandCollectDuration.toLong()) // non-blocking delay for 45 second
                 roundService.run {
                     endCommandInputs(roundID)
                     deliverBlockingCommands(roundID)
                 }
                 //TODO("Nonblocking")
-                delay((commandCollectDuration + executionDuration))
+                delay((commandCollectDuration + executionDuration).toLong())
                 with(roundService) { deliverTradingCommands(roundID) }
-                delay((commandCollectDuration + executionDuration * 2))//Test if it delays "double"
+                delay((commandCollectDuration + executionDuration * 2).toLong())//Test if it delays "double"
                 roundService.deliverMovementCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 3))
+                delay((commandCollectDuration + executionDuration * 3).toLong())
                 roundService.deliverBattleCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 4))
+                delay((commandCollectDuration + executionDuration * 4).toLong())
                 roundService.deliverMiningCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 5))
+                delay((commandCollectDuration + executionDuration * 5).toLong())
                 roundService.endRound(roundID)
 
             }
@@ -208,6 +213,10 @@ class GameService @Autowired constructor(
     fun patchRoundDuration(id: UUID, newDuration: Long): ResponseEntity<GameResponseDto?>? {
         val game: Game = gameRepository.findByGameId(id).get()
         game.setRoundDuration(newDuration)
+
+        var commandCollectionTime = game.getRoundDuration().toDouble()
+        commandCollectionTime *=  0.75
+        game.setCommandCollectDuration(commandCollectionTime)
 
         gameRepository.save(game)
 

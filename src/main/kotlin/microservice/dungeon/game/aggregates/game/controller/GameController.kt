@@ -63,9 +63,9 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
     @PostMapping("/games", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewGame(@RequestBody requestGame: GameResponseDto): ResponseEntity<GameResponseDto> {
+    fun createNewGame(@RequestBody game: Game): ResponseEntity<GameResponseDto> {
         try {
-            val newGame = gameService.createNewGame()
+            val newGame = gameService.createNewGame(game)
 
             val responseGame = GameResponseDto(
                 newGame.getGameId(),
@@ -86,10 +86,11 @@ class GameController(@Autowired private val gameService: GameService) {
         }
     }
 
-    @PostMapping("/games/{gameId}/gameCommands/start")
+    @PostMapping("/games/gameCommands/start")
     fun startGame(
-        @PathVariable(value = "gameId") gameId: UUID,
-        @RequestBody adminToken: UUID,
+//        @PathVariable(value = "gameId") gameId: UUID,
+//        @RequestBody (adminToken: UUID)
+        @RequestBody gameId: UUID,
         @ModelAttribute game: Game
     ): ResponseEntity<HttpStatus> {
         try {

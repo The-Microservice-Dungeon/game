@@ -10,7 +10,7 @@ class GameResponseDto(
     private var maxPlayers: Int,
     private var maxRounds: Int,
     private var roundDuration: Long?,
-    private var commandCollectDuration: Long?,
+    private var commandCollectDuration: Double,
     private var createdGameDateTime: LocalDateTime?,
 ) {
 }

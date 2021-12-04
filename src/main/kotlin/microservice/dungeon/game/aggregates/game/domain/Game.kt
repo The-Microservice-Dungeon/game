@@ -24,7 +24,7 @@ class Game(
     private var maxRounds: Int = 0,
 
     private var roundDuration: Long = 60000, // in ms
-    private var commandCollectDuration: Long = roundDuration*(3/4), // in ms
+    private var commandCollectDuration: Double = 45000.00, // in ms
 
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
     private var startTime: LocalTime? = null,
@@ -60,7 +60,7 @@ class Game(
     fun getMaxPlayers(): Int = maxPlayers
     fun getMaxRounds(): Int = maxRounds
     fun getRoundDuration(): Long = roundDuration
-    fun getCommandCollectDuration(): Long = commandCollectDuration
+    fun getCommandCollectDuration(): Double = commandCollectDuration
     fun getGameStatus(): GameStatus = gameStatus
     fun setCurrentRoundCount(updateCurrentRound : Int) {
         this.currentRoundCount = updateCurrentRound
@@ -85,6 +85,14 @@ class Game(
         if (newRoundDuration != null) {
             this.roundDuration = newRoundDuration
         }
+    }
+
+    fun setMaxPlayers(maxPlayers: Int) {
+        this.maxPlayers = maxPlayers
+    }
+
+    fun setCommandCollectDuration(l: Double) {
+        this.commandCollectDuration = l
     }
 
 
