@@ -146,6 +146,18 @@ class RoundTest {
     }
 
     @Test
+    fun shouldAllowToDeliverBattleItemUseCommandsToRobot() {
+        val expectedStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
+        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        round.deliverBattleItemUseCommandsToRobot()
+
+        assertThat(round.getRoundStatus())
+            .isEqualTo(RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED)
+    }
+
+
+
+    @Test
     fun deliverBattleCommandsToRobotShouldSetStatusToBattleCommandsDispatched() {
         val expectedStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
@@ -253,7 +265,6 @@ class RoundTest {
 
 /*
         Item-Fight      -> Battle
-        Item-Movement   -> Movement
         Item-Repair     -> Regenerate
 
         Sell Buy ersetzen Trading
