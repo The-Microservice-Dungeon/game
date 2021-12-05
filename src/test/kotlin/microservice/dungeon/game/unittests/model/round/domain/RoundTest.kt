@@ -180,6 +180,20 @@ class RoundTest {
     }
 
     @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["MINING_COMMANDS_DISPATCHED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun deliverRegeneratingCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+
+        assertThatThrownBy {
+            round.deliverRegeneratingCommandsToRobot()
+        }
+    }
+
+    @ParameterizedTest
     @EnumSource(RoundStatus::class)
     fun endRoundShouldSetStatusToRoundEnded(status: RoundStatus) {
         val round = Round(someGameId, someRoundNumber, someRoundId, status)
