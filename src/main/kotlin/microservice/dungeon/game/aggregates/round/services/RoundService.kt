@@ -47,48 +47,41 @@ class RoundService @Autowired constructor (
 
 
     @Transactional
-    //TODO("Commands + Dispatcher")
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
-//        commandDispatcherClient.dispatchBlockingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands + Dispatcher")
-    fun deliverSellingCommands(roundId: UUID) {
+    fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverSellingCommandsToRobot()
+        round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
-//        commandDispatcherClient.dispatchTradingCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands + Dispatcher")
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
+        round.deliverMovementItemUseCommandsToRobot()
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-//        commandDispatcherClient.dispatchMovementCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands + Dispatcher")
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
+        round.deliverBattleItemUseCommandsToRobot()
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-//        commandDispatcherClient.dispatchBattleCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
-    //TODO("Commands + Dispatcher")
     fun deliverMiningCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
-//        commandDispatcherClient.dispatchMiningCommands(round.getRoundNumber(), emptyList())
     }
 
     @Transactional
