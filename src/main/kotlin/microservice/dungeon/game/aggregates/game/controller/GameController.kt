@@ -30,10 +30,10 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
 
-    @PutMapping("/games/{gameId}/players")
+    @PutMapping("/games/{gameId}/players/{playerToken}")
     fun insertPlayerById(
         @PathVariable(value = "gameId") gameId: UUID,
-        @Valid @RequestBody playerToken: UUID
+        @PathVariable(value = "playerToken") playerToken: UUID
     ) {
         try {
             gameService.insertPlayer(gameId, playerToken)

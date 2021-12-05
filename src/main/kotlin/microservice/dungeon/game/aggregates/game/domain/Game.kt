@@ -1,6 +1,7 @@
 package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
+import microservice.dungeon.game.aggregates.player.domain.Player
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -33,8 +34,11 @@ class Game(
     private var lastRoundStartedAt: LocalTime? = null,
     private var currentRoundCount: Int = 0,
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "game")
-    var playerList: MutableList<PlayersInGame> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL],
+        mappedBy = "playerId",
+        orphanRemoval = true)
+//    @JoinColumn(name = "game_gameId")
+    val playerList: MutableList<PlayersInGame> = mutableListOf(),
 
     )   {
 
@@ -95,13 +99,22 @@ class Game(
         this.commandCollectDuration = l
     }
 
+    fun addPlayersToGame(newPlayer: PlayersInGame) {
+        playerList += newPlayer
+    }
 
 }
 
 @Entity
 data class PlayersInGame(
     @Id
-    private val playerInGameId: UUID?,
-    @ManyToOne
-    var game: Game
-)
+    @Type(type="uuid-char")
+    private val playerId: UUID,
+
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "gameId", nullable = false)
+    @Type(type="uuid-char")
+    var gameId: UUID
+){
+
+}

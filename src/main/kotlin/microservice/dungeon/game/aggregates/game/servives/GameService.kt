@@ -59,11 +59,11 @@ class GameService @Autowired constructor(
         return newGame
     }
 
-    @Transactional
-    fun addPlayerToGame(game: Game, token: UUID) {
-        val player = PlayersInGame(token, game)
-        gameRepository.save(player)
-    }
+//    @Transactional
+ //   fun addPlayerToGame(game: Game, token: UUID) {
+ //       val player = PlayersInGame(token, game)
+//        gameRepository.save(player)
+//    }
 
     @Transactional
     fun closeGame(gameId: UUID) {
@@ -94,12 +94,12 @@ class GameService @Autowired constructor(
 
         val game: Game = gameRepository.findByGameId(gameId).get()
 
-        val playersInGame = PlayersInGameDto(
-            token,
-            game
+        val playersInGame = PlayersInGame(
+            player.getPlayerId(),
+            gameId = game.getGameId()
         )
 
-        val playerAlreadyInGame: PlayersInGame? = game.playerList.find { it.equals(playersInGame) }
+        val playerAlreadyInGame: PlayersInGame? = game.playerList.find { it == playersInGame }
 
         if (game.getGameStatus() != GameStatus.CREATED) {
             throw MethodNotAllowedForStatusException("For Player to join requires game status ${GameStatus.CREATED}, but game status is ${game.getGameStatus()}")
@@ -109,7 +109,10 @@ class GameService @Autowired constructor(
             throw EntityAlreadyExistsException("Player is already in game")
 
         } else if (game.playerList.size < game.getMaxPlayers()) {
-            addPlayerToGame(game, token)
+ //           game.addPlayersToGame(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
+            gameRepository.save(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
+            game.playerList.add(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
+            gameRepository.save(game)
             return ResponseEntity(responsePlayer, HttpStatus.CREATED)
             //eventStoreService.storeEvent(playerJoined)
             //eventPublisherService.publishEvents(listOf(playerJoined))
