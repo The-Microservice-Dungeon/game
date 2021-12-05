@@ -97,8 +97,18 @@ class RoundTest {
     }
 
     @Test
-    fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
+    fun shouldAllowToDeliverBuyingCommands() {
         val expectedStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
+        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        round.deliverBuyingCommandsToRobot()
+
+        assertThat(round.getRoundStatus())
+            .isEqualTo(RoundStatus.BUYING_COMMANDS_DISPATCHED)
+    }
+
+    @Test
+    fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
+        val expectedStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
         round.deliverMovementItemUseCommandsToRobot()
 
