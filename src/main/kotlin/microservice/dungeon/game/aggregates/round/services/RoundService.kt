@@ -85,6 +85,14 @@ class RoundService @Autowired constructor (
     }
 
     @Transactional
+    fun deliverRegeneratingCommands(roundId: UUID) {
+        val round: Round = roundRepository.findById(roundId).get()
+        round.deliverRepairItemUseCommandsToRobot()
+        round.deliverRegeneratingCommandsToRobot()
+        roundRepository.save(round)
+    }
+
+    @Transactional
     fun endRound(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         val response = round.endRound()
