@@ -169,6 +169,16 @@ class RoundTest {
         }
     }
 
+    @Test
+    fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
+        val expectedStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
+        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        round.deliverRegeneratingCommandsToRobot()
+
+        assertThat(round.getRoundStatus())
+            .isEqualTo(RoundStatus.REGENERATING_COMMANDS_DISPATCHED)
+    }
+
     @ParameterizedTest
     @EnumSource(RoundStatus::class)
     fun endRoundShouldSetStatusToRoundEnded(status: RoundStatus) {
@@ -202,3 +212,14 @@ class RoundTest {
         assertThat(alreadyEndedResponse).isFalse
     }
 }
+
+/*
+        Regenerate ersetzt Scouting
+
+        Item-Fight      -> Battle
+        Item-Movement   -> Movement
+        Item-Repair     -> Regenerate
+
+        Sell Buy ersetzen Trading
+
+ */
