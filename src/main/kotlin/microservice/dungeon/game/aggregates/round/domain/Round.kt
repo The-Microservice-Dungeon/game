@@ -45,7 +45,7 @@ class Round(
 
     fun deliverMovementItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.TRADING_COMMANDS_DISPATCHED) {
-            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BLOCKING_COMMANDS_DISPATCHED}")
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.TRADING_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
     }
@@ -55,6 +55,13 @@ class Round(
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
+    }
+
+    fun deliverBattleItemUseCommandsToRobot() {
+        if (roundStatus != RoundStatus.MOVEMENT_COMMANDS_DISPATCHED) {
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_COMMANDS_DISPATCHED}")
+        }
+        roundStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
     }
 
     fun deliverBattleCommandsToRobot() {
