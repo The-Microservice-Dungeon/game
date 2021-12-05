@@ -65,6 +65,9 @@ class Round(
     }
 
     fun deliverRegeneratingCommandsToRobot() {
+        if (roundStatus != RoundStatus.MINING_COMMANDS_DISPATCHED) {
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MINING_COMMANDS_DISPATCHED}")
+        }
         roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
     }
 
