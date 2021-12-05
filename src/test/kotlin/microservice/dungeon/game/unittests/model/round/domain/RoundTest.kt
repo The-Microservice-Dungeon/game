@@ -106,6 +106,20 @@ class RoundTest {
             .isEqualTo(RoundStatus.BUYING_COMMANDS_DISPATCHED)
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["SELLING_COMMANDS_DISPATCHED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldNotAllowToDeliverBuyingCommandsWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+
+        assertThatThrownBy {
+            round.deliverBuyingCommandsToRobot()
+        }
+    }
+
     @Test
     fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
         val expectedStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED
@@ -119,7 +133,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(
         value = RoundStatus::class,
-        names = ["SELLING_COMMANDS_DISPATCHED"],
+        names = ["BUYING_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowMovementItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
