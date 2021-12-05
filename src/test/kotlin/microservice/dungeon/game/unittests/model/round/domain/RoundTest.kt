@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 
 class RoundTest {
@@ -74,13 +73,13 @@ class RoundTest {
     }
 
     @Test
-    fun deliverTradingCommandsToRobotShouldSetStatusToTradingCommandsDispatched() {
+    fun shouldAllowToDeliverSellingCommands() {
         val expectedStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
-        round.deliverTradingCommandsToRobot()
+        round.deliverSellingCommandsToRobot()
 
         assertThat(round.getRoundStatus())
-            .isEqualTo(RoundStatus.TRADING_COMMANDS_DISPATCHED)
+            .isEqualTo(RoundStatus.SELLING_COMMANDS_DISPATCHED)
     }
 
     @ParameterizedTest
@@ -89,17 +88,17 @@ class RoundTest {
         names = ["BLOCKING_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
-    fun deliverTradingCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+    fun shouldNotAllowToDeliverSellingCommandsWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
         val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
 
         assertThatThrownBy {
-            round.deliverTradingCommandsToRobot()
+            round.deliverSellingCommandsToRobot()
         }
     }
 
     @Test
     fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
-        val expectedStatus = RoundStatus.TRADING_COMMANDS_DISPATCHED
+        val expectedStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
         round.deliverMovementItemUseCommandsToRobot()
 
@@ -110,7 +109,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(
         value = RoundStatus::class,
-        names = ["TRADING_COMMANDS_DISPATCHED"],
+        names = ["SELLING_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowMovementItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
@@ -227,6 +226,20 @@ class RoundTest {
             .isEqualTo(RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED)
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["MINING_COMMANDS_DISPATCHED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldNotAllowRepairItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+
+        assertThatThrownBy {
+            round.deliverRepairItemUseCommandsToRobot()
+        }
+    }
+
     @Test
     fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
         val expectedStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
@@ -286,8 +299,5 @@ class RoundTest {
 }
 
 /*
-        Item-Repair     -> Regenerate
-
         Sell Buy ersetzen Trading
-
  */

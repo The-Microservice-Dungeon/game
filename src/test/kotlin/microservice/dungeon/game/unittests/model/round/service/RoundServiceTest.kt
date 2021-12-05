@@ -281,29 +281,29 @@ class RoundServiceTest {
 
 
     @Test
-    fun shouldAllowDispatchTradingCommands() {
+    fun shouldAllowToDispatchSellingCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
         // when
-        roundService!!.deliverTradingCommands(ANY_GAMEID)
+        roundService!!.deliverSellingCommands(ANY_GAMEID)
 
         // then
-        verify(spyRound).deliverTradingCommandsToRobot()
+        verify(spyRound).deliverSellingCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchTradingCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchSellingCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
 
         // when then
         assertThatThrownBy {
-            roundService!!.deliverTradingCommands(ANY_ROUND_ID)
+            roundService!!.deliverSellingCommands(ANY_ROUND_ID)
         }
         verify(mockRoundRepository!!, never()).save(any())
     }
@@ -319,7 +319,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowDispatchMovementCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.TRADING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -353,9 +353,9 @@ class RoundServiceTest {
 
 
     @Test
-    fun shouldAllowDispatchBattleCommands() {
+    fun shouldAllowToDispatchBattleCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
