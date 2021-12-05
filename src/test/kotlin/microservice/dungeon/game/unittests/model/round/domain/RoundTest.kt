@@ -99,7 +99,7 @@ class RoundTest {
 
     @Test
     fun deliverMovementCommandsToRobotShouldSetStatusToMovementCommandsDispatched() {
-        val expectedStatus = RoundStatus.TRADING_COMMANDS_DISPATCHED
+        val expectedStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
         round.deliverMovementCommandsToRobot()
 
@@ -110,7 +110,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(
         value = RoundStatus::class,
-        names = ["TRADING_COMMANDS_DISPATCHED"],
+        names = ["MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverMovementCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
@@ -123,7 +123,7 @@ class RoundTest {
 
     @Test
     fun deliverBattleCommandsToRobotShouldSetStatusToBattleCommandsDispatched() {
-        val expectedStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
+        val expectedStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
         round.deliverBattleCommandsToRobot()
 
@@ -134,7 +134,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(
         value = RoundStatus::class,
-        names = ["MOVEMENT_COMMANDS_DISPATCHED"],
+        names = ["BATTLE_ITEM_USE_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverBattleCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
@@ -171,7 +171,7 @@ class RoundTest {
 
     @Test
     fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
-        val expectedStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
+        val expectedStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
         round.deliverRegeneratingCommandsToRobot()
 
@@ -182,7 +182,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(
         value = RoundStatus::class,
-        names = ["MINING_COMMANDS_DISPATCHED"],
+        names = ["REPAIR_ITEM_USE_COMMANDS_DISPATCHED"],
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverRegeneratingCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
@@ -228,8 +228,6 @@ class RoundTest {
 }
 
 /*
-        Regenerate ersetzt Scouting
-
         Item-Fight      -> Battle
         Item-Movement   -> Movement
         Item-Repair     -> Regenerate
