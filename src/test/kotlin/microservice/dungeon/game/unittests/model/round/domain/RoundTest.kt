@@ -155,7 +155,19 @@ class RoundTest {
             .isEqualTo(RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED)
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["MOVEMENT_COMMANDS_DISPATCHED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldNotAllowBattleItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
 
+        assertThatThrownBy {
+            round.deliverBattleItemUseCommandsToRobot()
+        }
+    }
 
     @Test
     fun deliverBattleCommandsToRobotShouldSetStatusToBattleCommandsDispatched() {
