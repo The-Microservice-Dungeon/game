@@ -64,6 +64,10 @@ class Round(
         roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
     }
 
+    fun deliverRegeneratingCommandsToRobot() {
+        roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
+    }
+
     fun endRound(): Boolean {
         if (roundStatus ==  RoundStatus.ROUND_ENDED) {
             return false
