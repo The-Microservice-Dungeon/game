@@ -44,15 +44,15 @@ class Round(
     }
 
     fun deliverMovementCommandsToRobot() {
-        if (roundStatus != RoundStatus.TRADING_COMMANDS_DISPATCHED) {
-            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.TRADING_COMMANDS_DISPATCHED}")
+        if (roundStatus != RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED) {
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
     }
 
     fun deliverBattleCommandsToRobot() {
-        if (roundStatus != RoundStatus.MOVEMENT_COMMANDS_DISPATCHED) {
-            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_COMMANDS_DISPATCHED}")
+        if (roundStatus != RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED) {
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED
     }
@@ -65,8 +65,8 @@ class Round(
     }
 
     fun deliverRegeneratingCommandsToRobot() {
-        if (roundStatus != RoundStatus.MINING_COMMANDS_DISPATCHED) {
-            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MINING_COMMANDS_DISPATCHED}")
+        if (roundStatus != RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED) {
+            throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
     }
