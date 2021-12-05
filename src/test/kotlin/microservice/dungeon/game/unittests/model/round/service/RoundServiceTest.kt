@@ -362,5 +362,42 @@ class RoundServiceTest {
 
     // Dispatch REGENERATING Commands
 
+    @Test
+    fun shouldAllowToDispatchRegeneratingCommands() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
+        // when
+        roundService!!.deliverRegeneratingCommands(ANY_GAMEID)
+
+        // then
+        verify(spyRound).deliverRepairItemUseCommandsToRobot()
+        verify(spyRound).deliverRegeneratingCommandsToRobot()
+        verify(mockRoundRepository!!).save(isA<Round>())
+    }
+
+    @Test
+    fun shouldNotAllowToDispatchRegeneratingCommandsWhenRoundNotExists() {
+        // given
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
+            .thenReturn(Optional.empty())
+
+        // when then
+        assertThatThrownBy {
+            roundService!!.deliverRegeneratingCommands(ANY_ROUND_ID)
+        }
+        verify(mockRoundRepository!!, never()).save(any())
+    }
+
+    @Test
+    fun shouldSendRepairItemUseCommandsToRobotWhenDispatchingRegeneratingCommands() {
+        //TODO
+    }
+
+    @Test
+    fun shouldSendRegeneratingCommandsToRobotWhenDispatchingRegeneratingCommands() {
+        //TODO
+    }
 }
