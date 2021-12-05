@@ -98,6 +98,30 @@ class RoundTest {
     }
 
     @Test
+    fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
+        val expectedStatus = RoundStatus.TRADING_COMMANDS_DISPATCHED
+        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        round.deliverMovementItemUseCommandsToRobot()
+
+        assertThat(round.getRoundStatus())
+            .isEqualTo(RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED)
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = RoundStatus::class,
+        names = ["TRADING_COMMANDS_DISPATCHED"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
+    fun shouldNotAllowMovementItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
+        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+
+        assertThatThrownBy {
+            round.deliverMovementItemUseCommandsToRobot()
+        }
+    }
+
+    @Test
     fun deliverMovementCommandsToRobotShouldSetStatusToMovementCommandsDispatched() {
         val expectedStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
