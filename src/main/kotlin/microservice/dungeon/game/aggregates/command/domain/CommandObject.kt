@@ -6,7 +6,7 @@ import javax.persistence.Embeddable
 @Embeddable
 open class CommandObject(
 
-    var commandType: String,
+    var commandType: CommandType,
 
     var planetId: UUID?,
 
