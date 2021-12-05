@@ -7,18 +7,13 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
-import microservice.dungeon.game.aggregates.round.events.RoundEnded
-import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
-import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.*
 import java.util.*
 
@@ -61,7 +56,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldStoreCommandInputEndedWhenCommandInputEnded() {
+    fun shouldStoreCommandInputEndedEventWhenCommandInputEnded() {
         var roundCommandInputEnded: Round? = null
         var commandInputEnded: Event? = null
 
@@ -91,7 +86,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldPublishCommandInputEndedWhenCommandInputEnded() {
+    fun shouldPublishCommandInputEndedEventWhenCommandInputEnded() {
         var roundCommandInputEnded: Round? = null
         var commandInputEnded: Event? = null
 
@@ -194,35 +189,41 @@ class RoundServiceTest {
     // Dispatch TRADING Commands
 
     @Test
-    fun shouldAllowToDispatchSellingCommands() {
+    fun shouldAllowToDispatchTradingCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
         // when
-        roundService!!.deliverSellingCommands(ANY_GAMEID)
+        roundService!!.deliverTradingCommands(ANY_GAMEID)
 
         // then
         verify(spyRound).deliverSellingCommandsToRobot()
+        verify(spyRound).deliverBuyingCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowToDispatchSellingCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchTradingCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
 
         // when then
         assertThatThrownBy {
-            roundService!!.deliverSellingCommands(ANY_ROUND_ID)
+            roundService!!.deliverTradingCommands(ANY_ROUND_ID)
         }
         verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
-    fun shouldSendTradingCommandsToRobotWhenDispatchingTradingCommands() {
+    fun shouldSendSellingCommandsToRobotWhenDispatchingTradingCommands() {
+        //TODO
+    }
+
+    @Test
+    fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommands() {
         //TODO
     }
 
@@ -233,9 +234,9 @@ class RoundServiceTest {
     // Dispatch MOVEMENT Commands
 
     @Test
-    fun shouldAllowDispatchMovementCommands() {
+    fun shouldAllowToDispatchMovementCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -243,12 +244,13 @@ class RoundServiceTest {
         roundService!!.deliverMovementCommands(ANY_GAMEID)
 
         // then
+        verify(spyRound).deliverMovementItemUseCommandsToRobot()
         verify(spyRound).deliverMovementCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchMovementCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchMovementCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -258,6 +260,11 @@ class RoundServiceTest {
             roundService!!.deliverMovementCommands(ANY_ROUND_ID)
         }
         verify(mockRoundRepository!!, never()).save(any())
+    }
+
+    @Test
+    fun shouldSendMovementItemUseCommandsToRobotWhenDispatchingMovementCommands() {
+        //TODO
     }
 
     @Test
@@ -274,7 +281,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchBattleCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -282,12 +289,13 @@ class RoundServiceTest {
         roundService!!.deliverBattleCommands(ANY_GAMEID)
 
         // then
+        verify(spyRound).deliverBattleItemUseCommandsToRobot()
         verify(spyRound).deliverBattleCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchBattleCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchBattleCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -297,6 +305,11 @@ class RoundServiceTest {
             roundService!!.deliverBattleCommands(ANY_ROUND_ID)
         }
         verify(mockRoundRepository!!, never()).save(any())
+    }
+
+    @Test
+    fun shouldSendBattleItemUseCommandsToRobotWhenDispatchingBattleCommands() {
+        //TODO
     }
 
     @Test
@@ -348,6 +361,6 @@ class RoundServiceTest {
 
 
     // Dispatch REGENERATING Commands
-    //TODO
+
 
 }
