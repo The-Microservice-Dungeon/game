@@ -218,6 +218,16 @@ class RoundTest {
     }
 
     @Test
+    fun shouldAllowToDeliverRepairItemUseCommands() {
+        val expectedStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
+        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        round.deliverRepairItemUseCommandsToRobot()
+
+        assertThat(round.getRoundStatus())
+            .isEqualTo(RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED)
+    }
+
+    @Test
     fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
         val expectedStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
         val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
@@ -276,7 +286,6 @@ class RoundTest {
 }
 
 /*
-        Item-Fight      -> Battle
         Item-Repair     -> Regenerate
 
         Sell Buy ersetzen Trading
