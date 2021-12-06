@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.concurrent.thread
 
 
 @Service
@@ -139,34 +138,65 @@ class GameService @Autowired constructor(
                 game.setCurrentRoundCount(roundCounter)
 
 
-                val roundID = roundService.startNewRound(gameId, roundCounter)
+                val roundId = roundService.startNewRound(gameId, roundCounter)
                 val executionDuration = (roundDuration - commandCollectDuration) / 7
 
                 //END COLLECTIONPHASE START BLOCKING
-                roundScope.launch {
-                    delay(commandCollectDuration.toLong())
-                    roundService.run {
-                        endCommandInputs(roundID)
-                        deliverBlockingCommands(roundID)
-                    }
+
+                delay(commandCollectDuration.toLong())
+                roundService.run {
+                    endCommandInputs(roundId)
+                    deliverBlockingCommands(roundId)
                 }
 
-                //END BLOCKING START TRADING
-                roundScope.launch {
-                    delay(commandCollectDuration.toLong())
-                    roundService.run {
-                        endCommandInputs(roundID)
-                        deliverBlockingCommands(roundID)
-                    }
+
+                //START TRADING
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    deliverTradingCommands(roundId)
                 }
 
-                roundScope.launch {
-                    delay(commandCollectDuration.toLong())
-                    roundService.run {
-                        endCommandInputs(roundID)
-                        deliverBlockingCommands(roundID)
-                    }
+
+                //START Moving
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    deliverMovementCommands(roundId)
                 }
+
+
+                //START Battle
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    deliverBattleCommands(roundId)
+                }
+
+
+                //START Mining
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    deliverMiningCommands(roundId)
+                }
+
+
+                //START Regenerating
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    deliverRegeneratingCommands(roundId)
+                }
+
+
+                //END Round
+
+                delay(executionDuration.toLong())
+                roundService.run {
+                    endRound(roundId)
+                }
+
 
 
                 roundCounter += 1
