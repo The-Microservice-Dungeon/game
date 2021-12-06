@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.model.round
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.RobotCommandWrapperDTO
+import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -16,6 +17,7 @@ import java.util.*
 class RobotCommandDispatcherClientIntegrationTest {
     private var mockWebServer: MockWebServer? = null
     private var robotCommandDispatcherClient: RobotCommandDispatcherClient? = null
+
     private val objectMapper = ObjectMapper().findAndRegisterModules()
 
 
@@ -39,7 +41,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         mockWebServer!!.enqueue(mockResponse)
 
         //when
-        robotCommandDispatcherClient!!.sendBlockingCommandsToRobot(inputCommands)
+        robotCommandDispatcherClient!!.sendBlockingCommands(inputCommands)
 
         //and
         val recordedRequest = mockWebServer!!.takeRequest()
@@ -61,6 +63,43 @@ class RobotCommandDispatcherClientIntegrationTest {
 
         //and
         assertThat(recordedBlockingCommandDTOs)
+            .isEqualTo(inputCommands)
+    }
+
+    @Test
+    fun shouldAllowToSendMovementItemUseCommands() {
+        // given
+        val inputCommands = listOf(
+            UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
+            UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(202)
+        mockWebServer!!.enqueue(mockResponse)
+
+        //when
+        robotCommandDispatcherClient!!.sendMovementItemUseCommands(inputCommands)
+
+        //and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+            recordedRequest.body.readUtf8(),
+            RobotCommandWrapperDTO::class.java
+        )
+        val recordedMovementItemUseCommandDTOs: List<UseItemMovementCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> UseItemMovementCommandDTO.fromString(x)
+        }
+
+        //then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        //and
+        assertThat(recordedMovementItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
 }
