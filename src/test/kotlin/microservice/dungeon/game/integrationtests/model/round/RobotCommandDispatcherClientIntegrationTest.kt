@@ -2,6 +2,7 @@ package microservice.dungeon.game.integrationtests.model.round
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.RobotCommandWrapperDTO
 import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
@@ -68,7 +69,7 @@ class RobotCommandDispatcherClientIntegrationTest {
 
     @Test
     fun shouldAllowToSendMovementItemUseCommands() {
-        // given
+        //given
         val inputCommands = listOf(
             UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
             UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
@@ -100,6 +101,43 @@ class RobotCommandDispatcherClientIntegrationTest {
 
         //and
         assertThat(recordedMovementItemUseCommandDTOs)
+            .isEqualTo(inputCommands)
+    }
+
+    @Test
+    fun shouldAllowToSendMovementCommands() {
+        //given
+        val inputCommands = listOf(
+            MovementCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
+            MovementCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(202)
+        mockWebServer!!.enqueue(mockResponse)
+
+        //when
+        robotCommandDispatcherClient!!.sendMovementCommands(inputCommands)
+
+        //and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+            recordedRequest.body.readUtf8(),
+            RobotCommandWrapperDTO::class.java
+        )
+        val recordedMovementCommandDTOs: List<MovementCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> MovementCommandDTO.fromString(x)
+        }
+
+        //then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        //and
+        assertThat(recordedMovementCommandDTOs)
             .isEqualTo(inputCommands)
     }
 }
