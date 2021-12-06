@@ -28,7 +28,7 @@ class MineCommandDTO(
     }
 
     override fun toString(): String {
-        return "mine $robotId $transactionId"
+        return "$stringPrefix $robotId $transactionId"
     }
 
     override fun equals(other: Any?): Boolean =
