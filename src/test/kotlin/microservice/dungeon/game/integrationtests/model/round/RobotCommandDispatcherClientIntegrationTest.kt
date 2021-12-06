@@ -174,4 +174,41 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedBattleItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
+
+    @Test
+    fun shouldAllowToSendBattleCommands() {
+        //given
+        val inputCommands = listOf(
+            FightCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
+            FightCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(202)
+        mockWebServer!!.enqueue(mockResponse)
+
+        //when
+        robotCommandDispatcherClient!!.sendBattleCommands(inputCommands)
+
+        //and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+            recordedRequest.body.readUtf8(),
+            RobotCommandWrapperDTO::class.java
+        )
+        val recordedBattleCommandDTOs: List<FightCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> FightCommandDTO.fromString(x)
+        }
+
+        //then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        //and
+        assertThat(recordedBattleCommandDTOs)
+            .isEqualTo(inputCommands)
+    }
 }
