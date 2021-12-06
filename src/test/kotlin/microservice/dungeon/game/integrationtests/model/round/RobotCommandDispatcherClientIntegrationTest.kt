@@ -248,4 +248,41 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedMiningCommandDTOs)
             .isEqualTo(inputCommands)
     }
+
+    @Test
+    fun shouldAllowToSendRegeneratingCommands() {
+        //given
+        val inputCommands = listOf(
+            RegenerateCommandDTO(UUID.randomUUID(), UUID.randomUUID()),
+            RegenerateCommandDTO(UUID.randomUUID(), UUID.randomUUID())
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(202)
+        mockWebServer!!.enqueue(mockResponse)
+
+        //when
+        robotCommandDispatcherClient!!.sendRegeneratingCommands(inputCommands)
+
+        //and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+            recordedRequest.body.readUtf8(),
+            RobotCommandWrapperDTO::class.java
+        )
+        val recordedRegeneratingCommandDTOs: List<RegenerateCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> RegenerateCommandDTO.fromString(x)
+        }
+
+        //then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        //and
+        assertThat(recordedRegeneratingCommandDTOs)
+            .isEqualTo(inputCommands)
+    }
 }
