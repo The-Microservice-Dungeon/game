@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.RobotCommandWrapperDTO
+import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -20,9 +21,19 @@ class RobotCommandDispatcherClient @Autowired constructor(
     private val webClient = WebClient.create(robotBaseURL)
 
 
-    fun sendBlockingCommandsToRobot(commands: List<BlockCommandDTO>) {
-        val wrappedCommands = RobotCommandWrapperDTO.makeFromDTOList(commands)
+    fun sendBlockingCommands(commands: List<BlockCommandDTO>) {
+        transmitCommandsToRobot(
+            RobotCommandWrapperDTO.makeFromDTOList(commands)
+        )
+    }
 
+    fun sendMovementItemUseCommands(commands: List<UseItemMovementCommandDTO>) {
+        transmitCommandsToRobot(
+            RobotCommandWrapperDTO.makeFromDTOList(commands)
+        )
+    }
+
+    private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDTO) {
         webClient.post().uri("/commands")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(ObjectMapper().writeValueAsString(wrappedCommands))
