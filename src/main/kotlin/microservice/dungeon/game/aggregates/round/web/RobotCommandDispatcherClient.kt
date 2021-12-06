@@ -49,6 +49,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
         )
     }
 
+    fun sendMiningCommands(commands: List<MineCommandDTO>) {
+        transmitCommandsToRobot(
+            RobotCommandWrapperDTO.makeFromDTOList(commands)
+        )
+    }
+
     private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDTO) {
         webClient.post().uri("/commands")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
