@@ -3,18 +3,20 @@ package microservice.dungeon.game.aggregates.command.dtos
 import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
-class MineCommandDTO(
+class MovementCommandDto(
     val robotId: UUID,
+    val planetId: UUID,
     val transactionId: UUID
 ) {
     companion object {
-        fun fromCommand(command: Command) = MineCommandDTO(
+        fun fromCommand(command: Command) = MovementCommandDto(
             command.robotId,
+            command.commandObject.planetId!!,
             command.transactionId
         )
     }
 
     override fun toString(): String {
-        return "mine $robotId $transactionId"
+        return "move $robotId $planetId $transactionId"
     }
 }

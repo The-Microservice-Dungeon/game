@@ -1,7 +1,7 @@
 package microservice.dungeon.game.aggregates.command.controller
 
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.CommandDto
 import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -34,7 +34,7 @@ class CommandController(@Autowired private val commandService: CommandService) {
     }
 
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewCommand(@ModelAttribute command: CommandDTO): ResponseEntity<UUID> {
+    fun createNewCommand(@ModelAttribute command: CommandDto): ResponseEntity<UUID> {
         try {
             val commandId = commandService.save(command)
             return ResponseEntity(commandId, HttpStatus.CREATED)

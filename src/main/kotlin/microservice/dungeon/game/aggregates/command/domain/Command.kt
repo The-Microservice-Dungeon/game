@@ -1,6 +1,6 @@
 package microservice.dungeon.game.aggregates.command.domain
 
-import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.CommandDto
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
@@ -28,10 +28,10 @@ class Command constructor(
 
     val roundNumber: Int
 ) {
-    fun toDTO(): CommandDTO = CommandDTO(gameId, playerId, robotId, commandType, commandObject)
+    fun toDto(): CommandDto = CommandDto(gameId, playerId, robotId, commandType, commandObject)
 
     companion object {
-        fun fromDTO(dto: CommandDTO, roundNumber: Int): Command = Command(
+        fun fromDto(dto: CommandDto, roundNumber: Int): Command = Command(
             transactionId = UUID.randomUUID(),
             gameId = dto.gameId,
             playerId = dto.playerId,
