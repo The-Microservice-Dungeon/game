@@ -7,18 +7,13 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
-import microservice.dungeon.game.aggregates.round.events.RoundEnded
-import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
-import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.*
 import java.util.*
 
@@ -42,101 +37,8 @@ class RoundServiceTest {
     }
 
 
-    @Test
-    fun shouldAllowNewRoundCreation() {
-        // given
-        // when
-        val roundId = roundService!!.startNewRound(ANY_GAMEID, ANY_ROUND_NUMBER)
 
-        // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-
-            val round = firstValue
-            assertThat(round.getGameId())
-                .isEqualTo(ANY_GAMEID)
-            assertThat(round.getRoundNumber())
-                .isEqualTo(ANY_ROUND_NUMBER)
-            assertThat(round.getRoundStatus())
-                .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
-        }
-    }
-
-    @Test
-    fun shouldStoreRoundStartedWhenNewRoundCreated() {
-        var round: Round? = null
-        var roundStarted: Event? = null
-
-        // given
-        // when
-        val roundId = roundService!!.startNewRound(ANY_GAMEID, ANY_ROUND_NUMBER)
-
-
-        // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-            round = firstValue
-        }
-        argumentCaptor<Event>().apply {
-            verify(mockEventStoreService!!).storeEvent(capture())
-            roundStarted = firstValue
-        }
-        assertThat(roundStarted!!)
-            .isInstanceOf(RoundStarted::class.java)
-        assertThat(roundStarted!!.getTransactionId())
-            .isEqualTo(roundId)
-        assertThat(roundStarted!! as AbstractRoundEvent)
-            .matches(round!!)
-    }
-
-    @Test
-    fun shouldPublishRoundStartedWhenNewRoundCreated() {
-        var round: Round? = null
-        var roundStarted: Event? = null
-
-        // given
-        // when
-        val roundId = roundService!!.startNewRound(ANY_GAMEID, ANY_ROUND_NUMBER)
-
-        // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-            round = firstValue
-        }
-        argumentCaptor<List<Event>>().apply {
-            verify(mockEventPublisherService!!).publishEvents(capture())
-            roundStarted = firstValue.first()
-        }
-        assertThat(roundStarted!!)
-            .isInstanceOf(RoundStarted::class.java)
-        assertThat(roundStarted!!.getTransactionId())
-            .isEqualTo(roundId)
-        assertThat(roundStarted!! as AbstractRoundEvent)
-            .matches(round!!)
-    }
-
-    @Test
-    fun shouldSendPassiveScoutingCommandToRobotWhenNewRoundCreated() {
-        //TODO("blocked till commands are available and robot restapi is stable")
-
-    }
-
-    @Test
-    fun shouldNotAllowNewRoundCreationWhenSameRoundAlreadyExists() {
-        // given
-        val duplicateGameId = ANY_GAMEID
-        val duplicateRoundNumber = ANY_ROUND_NUMBER
-        whenever(mockRoundRepository!!.findByGameIdAndRoundNumber(duplicateGameId, duplicateRoundNumber))
-            .thenReturn(Optional.of(Round(duplicateGameId, duplicateRoundNumber)))
-
-        // when then
-        assertThatThrownBy {
-            roundService!!.startNewRound(duplicateGameId, duplicateRoundNumber)
-        }
-        verify(mockRoundRepository!!, never()).save(any())
-    }
-
-
+    // End Command Inputs
 
     @Test
     fun shouldAllowEndCommandInput() {
@@ -154,7 +56,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldStoreCommandInputEndedWhenCommandInputEnded() {
+    fun shouldStoreCommandInputEndedEventWhenCommandInputEnded() {
         var roundCommandInputEnded: Round? = null
         var commandInputEnded: Event? = null
 
@@ -184,7 +86,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldPublishCommandInputEndedWhenCommandInputEnded() {
+    fun shouldPublishCommandInputEndedEventWhenCommandInputEnded() {
         var roundCommandInputEnded: Round? = null
         var commandInputEnded: Event? = null
 
@@ -244,8 +146,11 @@ class RoundServiceTest {
 
 
 
+
+    // Dispatch BLOCKING Commands
+
     @Test
-    fun shouldAllowDispatchBlockingCommands() {
+    fun shouldAllowToDispatchBlockingCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
@@ -260,7 +165,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldNotAllowDispatchBlockingCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchBlockingCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -280,8 +185,11 @@ class RoundServiceTest {
 
 
 
+
+    // Dispatch TRADING Commands
+
     @Test
-    fun shouldAllowDispatchTradingCommands() {
+    fun shouldAllowToDispatchTradingCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
@@ -291,12 +199,13 @@ class RoundServiceTest {
         roundService!!.deliverTradingCommands(ANY_GAMEID)
 
         // then
-        verify(spyRound).deliverTradingCommandsToRobot()
+        verify(spyRound).deliverSellingCommandsToRobot()
+        verify(spyRound).deliverBuyingCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchTradingCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchTradingCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -309,17 +218,25 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldSendTradingCommandsToRobotWhenDispatchingTradingCommands() {
+    fun shouldSendSellingCommandsToRobotWhenDispatchingTradingCommands() {
+        //TODO
+    }
+
+    @Test
+    fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommands() {
         //TODO
     }
 
 
 
 
+
+    // Dispatch MOVEMENT Commands
+
     @Test
-    fun shouldAllowDispatchMovementCommands() {
+    fun shouldAllowToDispatchMovementCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.TRADING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -327,12 +244,13 @@ class RoundServiceTest {
         roundService!!.deliverMovementCommands(ANY_GAMEID)
 
         // then
+        verify(spyRound).deliverMovementItemUseCommandsToRobot()
         verify(spyRound).deliverMovementCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchMovementCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchMovementCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -345,6 +263,11 @@ class RoundServiceTest {
     }
 
     @Test
+    fun shouldSendMovementItemUseCommandsToRobotWhenDispatchingMovementCommands() {
+        //TODO
+    }
+
+    @Test
     fun shouldSendMovementCommandsToRobotWhenDispatchingMovementCommands() {
         //TODO
     }
@@ -352,8 +275,11 @@ class RoundServiceTest {
 
 
 
+
+    // Dispatch BATTLE Commands
+
     @Test
-    fun shouldAllowDispatchBattleCommands() {
+    fun shouldAllowToDispatchBattleCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
@@ -363,12 +289,13 @@ class RoundServiceTest {
         roundService!!.deliverBattleCommands(ANY_GAMEID)
 
         // then
+        verify(spyRound).deliverBattleItemUseCommandsToRobot()
         verify(spyRound).deliverBattleCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowDispatchBattleCommandsWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchBattleCommandsWhenRoundNotExists() {
         // given
         whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
@@ -381,12 +308,20 @@ class RoundServiceTest {
     }
 
     @Test
+    fun shouldSendBattleItemUseCommandsToRobotWhenDispatchingBattleCommands() {
+        //TODO
+    }
+
+    @Test
     fun shouldSendBattleCommandsToRobotWhenDispatchingBattleCommands() {
         //TODO
     }
 
 
 
+
+
+    // Dispatch MINING Commands
 
     @Test
     fun shouldAllowDispatchMiningCommands() {
@@ -425,119 +360,44 @@ class RoundServiceTest {
 
 
 
+    // Dispatch REGENERATING Commands
 
-
-    @ParameterizedTest
-    @EnumSource(
-        value = RoundStatus::class
-    )
-    fun shouldAllowEndRoundRegardlessOfRoundStatus(roundStatus: RoundStatus) {
-        val capturedRound: Round?
-
+    @Test
+    fun shouldAllowToDispatchRegeneratingCommands() {
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
-        whenever(mockRoundRepository!!.findById(any()))
-            .thenReturn(Optional.of(round))
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(spyRound))
 
         // when
-        roundService!!.endRound(ANY_ROUND_ID)
+        roundService!!.deliverRegeneratingCommands(ANY_GAMEID)
 
         // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-            capturedRound = firstValue
-        }
-        assertThat(capturedRound!!.getRoundId())
-            .isEqualTo(round.getRoundId())
-        assertThat(capturedRound.getRoundStatus())
-            .isEqualTo(RoundStatus.ROUND_ENDED)
-    }
-
-    @ParameterizedTest
-    @EnumSource(
-        value = RoundStatus::class,
-        names = ["ROUND_ENDED"],
-        mode = EnumSource.Mode.EXCLUDE
-    )
-    fun shouldPublishRoundEndedWhenRoundEnded(roundStatus: RoundStatus) {
-        var roundEnded: Event?
-
-        // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
-        whenever(mockRoundRepository!!.findById(any()))
-            .thenReturn(Optional.of(round))
-
-        // when
-        roundService!!.endRound(ANY_ROUND_ID)
-
-        // then
-        argumentCaptor<List<Event>>().apply {
-            verify(mockEventPublisherService!!).publishEvents(capture())
-            roundEnded = firstValue.first()
-        }
-        assertThat(roundEnded!!)
-            .isInstanceOf(RoundEnded::class.java)
-        assertThat(roundEnded!!.getTransactionId())
-            .isEqualTo(round.getRoundId())
-        assertThat(roundEnded!! as AbstractRoundEvent)
-            .matches(round)
-    }
-
-    @ParameterizedTest
-    @EnumSource(
-        value = RoundStatus::class,
-        names = ["ROUND_ENDED"],
-        mode = EnumSource.Mode.EXCLUDE
-    )
-    fun shouldStoreRoundEndedWhenRoundEnded(roundStatus: RoundStatus) {
-        var roundEnded: Event?
-
-        // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
-        whenever(mockRoundRepository!!.findById(any()))
-            .thenReturn(Optional.of(round))
-
-        // when
-        roundService!!.endRound(ANY_ROUND_ID)
-
-        // then
-        argumentCaptor<Event>().apply {
-            verify(mockEventStoreService!!).storeEvent(capture())
-            roundEnded = firstValue
-        }
-        assertThat(roundEnded!!)
-            .isInstanceOf(RoundEnded::class.java)
-        assertThat(roundEnded!!.getTransactionId())
-            .isEqualTo(round.getRoundId())
-        assertThat(roundEnded!! as AbstractRoundEvent)
-            .matches(round)
+        verify(spyRound).deliverRepairItemUseCommandsToRobot()
+        verify(spyRound).deliverRegeneratingCommandsToRobot()
+        verify(mockRoundRepository!!).save(isA<Round>())
     }
 
     @Test
-    fun shouldNotAllowEndRoundWhenRoundNotExists() {
+    fun shouldNotAllowToDispatchRegeneratingCommandsWhenRoundNotExists() {
         // given
-        whenever(mockRoundRepository!!.findById(any()))
+        whenever(mockRoundRepository!!.findById(isA<UUID>()))
             .thenReturn(Optional.empty())
 
         // when then
         assertThatThrownBy {
-            roundService!!.endRound(ANY_ROUND_ID)
+            roundService!!.deliverRegeneratingCommands(ANY_ROUND_ID)
         }
         verify(mockRoundRepository!!, never()).save(any())
     }
 
     @Test
-    fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded() {
-        // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.ROUND_ENDED)
-        whenever(mockRoundRepository!!.findById(any()))
-            .thenReturn(Optional.of(round))
+    fun shouldSendRepairItemUseCommandsToRobotWhenDispatchingRegeneratingCommands() {
+        //TODO
+    }
 
-        // when
-        roundService!!.endRound(ANY_ROUND_ID)
-
-        // then
-        verify(mockEventStoreService!!, never()).storeEvent(any())
-        verify(mockEventPublisherService!!, never()).publishEvents(any())
+    @Test
+    fun shouldSendRegeneratingCommandsToRobotWhenDispatchingRegeneratingCommands() {
+        //TODO
     }
 }
