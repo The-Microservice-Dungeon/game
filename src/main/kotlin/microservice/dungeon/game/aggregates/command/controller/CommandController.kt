@@ -1,23 +1,25 @@
 package microservice.dungeon.game.aggregates.command.controller
 
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.dtos.CommandDto
+import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
-@RequestMapping("/api")
-class CommandController(@Autowired private val commandService: CommandService) {
+class CommandController @Autowired constructor(private val commandService: CommandService) {
 
     @GetMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
     fun getAllRoundCommands(
-        @ModelAttribute gameId: UUID,
-        @ModelAttribute roundNumber: Int
+        @RequestBody gameId: UUID,
+        @RequestBody roundNumber: Int
     ): ResponseEntity<List<Command>> {
         try {
             val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
@@ -34,7 +36,7 @@ class CommandController(@Autowired private val commandService: CommandService) {
     }
 
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewCommand(@ModelAttribute command: CommandDto): ResponseEntity<UUID> {
+    fun createNewCommand(@RequestBody command: CommandDTO): ResponseEntity<UUID> {
         try {
             val commandId = commandService.save(command)
             return ResponseEntity(commandId, HttpStatus.CREATED)

@@ -1,14 +1,17 @@
 package microservice.dungeon.game.aggregates.command.domain
 
-import microservice.dungeon.game.aggregates.command.dtos.CommandDto
+import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.*
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "commands")
 class Command constructor(
-    @Id @Type(type = "uuid-char") @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @Type(type = "uuid-char")
     val transactionId: UUID = UUID.randomUUID(),
 
     @Type(type = "uuid-char")
@@ -20,7 +23,7 @@ class Command constructor(
     @Type(type = "uuid-char")
     val robotId: UUID,
 
-    @Embedded(insert = "false", update = "false") //Possible breakpoint
+    @Embedded
     val commandType: CommandType,
 
     @Embedded
@@ -28,10 +31,10 @@ class Command constructor(
 
     val roundNumber: Int
 ) {
-    fun toDto(): CommandDto = CommandDto(gameId, playerId, robotId, commandType, commandObject)
+    fun toDto(): CommandDTO = CommandDTO(gameId, playerId, robotId, commandType, commandObject)
 
     companion object {
-        fun fromDto(dto: CommandDto, roundNumber: Int): Command = Command(
+        fun fromDto(dto: CommandDTO, roundNumber: Int): Command = Command(
             transactionId = UUID.randomUUID(),
             gameId = dto.gameId,
             playerId = dto.playerId,

@@ -4,7 +4,7 @@ import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import java.util.*
 
-class CommandDto(
+class CommandDTO(
     val gameId: UUID,
 
     val playerId: UUID,

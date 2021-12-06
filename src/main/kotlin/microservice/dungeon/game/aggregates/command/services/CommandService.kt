@@ -1,7 +1,7 @@
 package microservice.dungeon.game.aggregates.command.services
 
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.dtos.CommandDto
+import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
@@ -32,7 +32,7 @@ class CommandService @Autowired constructor(
         }
     }
 
-    fun save(dto: CommandDto): UUID {
+    fun save(dto: CommandDTO): UUID {
         val currentRoundNumber = gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
 
         var command: Command = Command.fromDto(dto, currentRoundNumber)
@@ -46,6 +46,7 @@ class CommandService @Autowired constructor(
 
         val prevCommands = commandRepository.findAll()
         prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
+
         if (prevCommands.isNotEmpty()) {
             commandRepository.deleteAll(prevCommands)
         }
