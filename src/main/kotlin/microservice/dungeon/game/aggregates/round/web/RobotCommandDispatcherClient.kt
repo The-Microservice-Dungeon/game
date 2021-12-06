@@ -2,10 +2,7 @@ package microservice.dungeon.game.aggregates.round.web
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.RobotCommandWrapperDTO
-import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -35,6 +32,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendMovementCommands(commands: List<MovementCommandDTO>) {
+        transmitCommandsToRobot(
+            RobotCommandWrapperDTO.makeFromDTOList(commands)
+        )
+    }
+
+    fun sendBattleItemUseCommands(commands: List<UseItemFightCommandDTO>) {
         transmitCommandsToRobot(
             RobotCommandWrapperDTO.makeFromDTOList(commands)
         )
