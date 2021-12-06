@@ -1,9 +1,5 @@
 package microservice.dungeon.game.aggregates.game.servives
 
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.*
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.core.EntityNotFoundException
@@ -16,7 +12,6 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
-import microservice.dungeon.game.aggregates.game.dtos.PlayersInGameDto
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
@@ -32,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.concurrent.fixedRateTimer
+import kotlin.concurrent.thread
 
 
 @Service
@@ -50,18 +45,18 @@ class GameService @Autowired constructor(
         newGame.setMaxPlayers(game.getMaxPlayers())
         newGame.setRoundDuration(game.getRoundDuration())
         var commandCollectionTime = game.getRoundDuration().toDouble()
-        commandCollectionTime *=  0.75
+        commandCollectionTime *= 0.75
         newGame.setCommandCollectDuration(commandCollectionTime)
         gameRepository.save(newGame)
         val gameStarted = GameStarted(game)
 //        eventStoreService.storeEvent(gameStarted)
- //       eventPublisherService.publishEvents(listOf(gameStarted))
+        //       eventPublisherService.publishEvents(listOf(gameStarted))
         return newGame
     }
 
 //    @Transactional
- //   fun addPlayerToGame(game: Game, token: UUID) {
- //       val player = PlayersInGame(token, game)
+    //   fun addPlayerToGame(game: Game, token: UUID) {
+    //       val player = PlayersInGame(token, game)
 //        gameRepository.save(player)
 //    }
 
@@ -71,8 +66,8 @@ class GameService @Autowired constructor(
         game.endGame()
         gameRepository.save(game)
         val gameEnded = GameEnded(game)
- //       eventStoreService.storeEvent(gameEnded)
- //       eventPublisherService.publishEvents(listOf(gameEnded))
+        //       eventStoreService.storeEvent(gameEnded)
+        //       eventPublisherService.publishEvents(listOf(gameEnded))
     }
 
 
@@ -109,7 +104,7 @@ class GameService @Autowired constructor(
             throw EntityAlreadyExistsException("Player is already in game")
 
         } else if (game.playerList.size < game.getMaxPlayers()) {
- //           game.addPlayersToGame(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
+            //           game.addPlayersToGame(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             gameRepository.save(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             game.playerList.add(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             gameRepository.save(game)
@@ -127,60 +122,66 @@ class GameService @Autowired constructor(
         val game: Game = gameRepository.findByGameId(gameId).get()
         game.startGame()
         var roundCounter = 1
-        val scope = MainScope()
+        val scope = CoroutineScope(Dispatchers.Unconfined)
+        val roundScope = CoroutineScope(Dispatchers.Default)
+
+        val maxRounds = game.getMaxRounds()
 
         val roundDuration = game.getRoundDuration()
         val commandCollectDuration = game.getCommandCollectDuration()
 
-        val fixedRateTimer = fixedRateTimer(
-            name = "createNewRoundTimer",
-            initialDelay = 0, period = roundDuration
-        ) {
+
+        scope.launch {
+            while (roundCounter != (maxRounds + 1)) {
+
+                //NOT UPDATING AFTER FIRST ROUND put into Round!
+                game.setLastRoundStartedAt(LocalTime.now())
+                game.setCurrentRoundCount(roundCounter)
 
 
-            val roundID = roundService.startNewRound(gameId, roundCounter) //start new Round
+                val roundID = roundService.startNewRound(gameId, roundCounter)
+                val executionDuration = (roundDuration - commandCollectDuration) / 7
 
-            val executionDuration = (roundDuration - commandCollectDuration) / 7 // Execution time for each phase
-
-
-            game.setLastRoundStartedAt(LocalTime.now())
-            roundCounter += 1
-            game.setCurrentRoundCount(roundCounter)
-
-            scope.launch { // create new coroutine in common thread pool
-                delay(commandCollectDuration.toLong()) // non-blocking delay for 45 second
-                roundService.run {
-                    endCommandInputs(roundID)
-                    deliverBlockingCommands(roundID)
+                //END COLLECTIONPHASE START BLOCKING
+                roundScope.launch {
+                    delay(commandCollectDuration.toLong())
+                    roundService.run {
+                        endCommandInputs(roundID)
+                        deliverBlockingCommands(roundID)
+                    }
                 }
-                delay((commandCollectDuration + executionDuration).toLong())
-                with(roundService) { deliverTradingCommands(roundID) }
-                delay((commandCollectDuration + executionDuration * 2).toLong())//Test if it delays "double"
-                roundService.deliverMovementCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 3).toLong())
-                roundService.deliverBattleCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 4).toLong())
-                roundService.deliverMiningCommands(roundID)
-                delay((commandCollectDuration + executionDuration * 5).toLong())
-                roundService.endRound(roundID)
 
-            }
-            scope.cancel()
+                //END BLOCKING START TRADING
+                roundScope.launch {
+                    delay(commandCollectDuration.toLong())
+                    roundService.run {
+                        endCommandInputs(roundID)
+                        deliverBlockingCommands(roundID)
+                    }
+                }
 
-        }
-        try {
-            //val game: Game = gameRepository.findByGameId(gameId).get()
-            val gameLength: Long = (game.getMaxRounds() * 60000).toLong()
-            val gameLengthScope = MainScope()
-            gameLengthScope.launch {
-                delay(gameLength) //ehemals Thread.sleep(gameLength)
+                roundScope.launch {
+                    delay(commandCollectDuration.toLong())
+                    roundService.run {
+                        endCommandInputs(roundID)
+                        deliverBlockingCommands(roundID)
+                    }
+                }
+
+
+                roundCounter += 1
+
+                if (roundCounter == (maxRounds + 1)) {
+                    closeGame(gameId)
+                    scope.cancel()
+                }
             }
-            //Testen ob das so läuft?
-        } finally {
-            fixedRateTimer.cancel()
-            closeGame(gameId)
         }
     }
+
+
+
+
 
 
     fun getGameTime(gameId: UUID): GameTimeDto {
@@ -209,7 +210,7 @@ class GameService @Autowired constructor(
             game.getCreatedGameDateTime(),
         )
 
-       return  ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
+        return ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
 
     }
 
@@ -218,7 +219,7 @@ class GameService @Autowired constructor(
         game.setRoundDuration(newDuration)
 
         var commandCollectionTime = game.getRoundDuration().toDouble()
-        commandCollectionTime *=  0.75
+        commandCollectionTime *= 0.75
         game.setCommandCollectDuration(commandCollectionTime)
 
         gameRepository.save(game)
@@ -233,7 +234,7 @@ class GameService @Autowired constructor(
             game.getCreatedGameDateTime(),
         )
 
-        return  ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
+        return ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
     }
 
 
