@@ -55,6 +55,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
         )
     }
 
+    fun sendRepairItemUseCommands(commands: List<UseItemRepairCommandDTO>) {
+        transmitCommandsToRobot(
+            RobotCommandWrapperDTO.makeFromDTOList(commands)
+        )
+    }
+
     fun sendRegeneratingCommands(commands: List<RegenerateCommandDTO>) {
         transmitCommandsToRobot(
             RobotCommandWrapperDTO.makeFromDTOList(commands)
