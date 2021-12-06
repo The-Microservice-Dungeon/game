@@ -1,10 +1,7 @@
 package microservice.dungeon.game.integrationtests.model.round
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.RobotCommandWrapperDTO
-import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -138,6 +135,43 @@ class RobotCommandDispatcherClientIntegrationTest {
 
         //and
         assertThat(recordedMovementCommandDTOs)
+            .isEqualTo(inputCommands)
+    }
+
+    @Test
+    fun shouldAllowToSendBattleItemUseCommands() {
+        //given
+        val inputCommands = listOf(
+            UseItemFightCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID()),
+            UseItemFightCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID())
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(202)
+        mockWebServer!!.enqueue(mockResponse)
+
+        //when
+        robotCommandDispatcherClient!!.sendBattleItemUseCommands(inputCommands)
+
+        //and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+            recordedRequest.body.readUtf8(),
+            RobotCommandWrapperDTO::class.java
+        )
+        val recordedBattleItemUseCommandDTOs: List<UseItemFightCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> UseItemFightCommandDTO.fromString(x)
+        }
+
+        //then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        //and
+        assertThat(recordedBattleItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
 }
