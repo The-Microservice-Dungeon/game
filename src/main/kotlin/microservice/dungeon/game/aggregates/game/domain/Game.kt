@@ -22,9 +22,12 @@ class Game(
     private val gameId: UUID = UUID.randomUUID(),
     private var gameStatus: GameStatus = GameStatus.CREATED,
     @get: NotBlank
-    private var maxPlayers: Int? = null,
+    private var maxPlayers: Int = 0,
     @get: NotBlank
-    private var maxRounds: Int? = null,
+    private var maxRounds: Int = 0,
+
+    private var roundDuration: Long = 60000, // in ms
+    private var commandCollectDuration: Long = roundDuration*(3/4), // in ms
 
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
     private var startTime: LocalTime? = null,
@@ -33,8 +36,8 @@ class Game(
     private var lastRoundStartedAt: LocalTime? = null,
     private var currentRoundCount: Int = 0,
 
-    @OneToMany
-    val playerList: MutableList<Player> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "game")
+    var playerList: MutableList<PlayersInGame> = mutableListOf(),
 
     )   {
 
@@ -57,33 +60,44 @@ class Game(
 
 
     fun getGameId(): UUID = gameId
-    fun getMaxPlayers(): Int? = maxPlayers
-    fun getMaxRounds(): Int? = maxRounds
+    fun getMaxPlayers(): Int = maxPlayers
+    fun getMaxRounds(): Int = maxRounds
+    fun getRoundDuration(): Long = roundDuration
+    fun getCommandCollectDuration(): Long = commandCollectDuration
     fun getGameStatus(): GameStatus = gameStatus
     fun setCurrentRoundCount(updateCurrentRound : Int) {
         this.currentRoundCount = updateCurrentRound
     }
     fun getCurrentRoundCount() = currentRoundCount
     fun getGameStartTime() = startTime
+    fun getCreatedGameDateTime() = createdGameDateTime
 
     fun setLastRoundStartedAt(lastRoundStartedAt: LocalTime) {
         this.lastRoundStartedAt = lastRoundStartedAt
     }
     fun getLastRoundStartedAt(): LocalTime? = lastRoundStartedAt
 
-    fun getPlayersUUID(): UUID{
-        val playerUUID = playerList.last()
-        return playerUUID.playerId
-    }
+    fun getPlayersInGame(): MutableList<PlayersInGame> = playerList
 
+    fun setMaxRounds(newMaxRounds: Int?) {
+        if (newMaxRounds != null) {
+            this.maxRounds = newMaxRounds
+        }
+    }
+    fun setRoundDuration(newRoundDuration: Long?) {
+        if (newRoundDuration != null) {
+            this.roundDuration = newRoundDuration
+        }
+    }
 
 
 }
 
 @Entity
-data class GameTime(val currentGameTimeInMinutes: Long, val roundTimeInSeconds: Long, val currentRoundCount: Int) {
+data class PlayersInGame(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    open var id: Long? = null
+    private val playerInGameId: UUID?,
+    @ManyToOne
+    var game: Game
+){
 }
