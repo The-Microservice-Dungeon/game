@@ -131,7 +131,7 @@ paths:
         "406":
           description: The player could not be added because either no game exists with this ID, or the game is in a phase that does not allow registrations.
   
-  "/games/{gameid}/maxRounds/{maxRounds}":
+  "/games/{gameId}/maxRounds/{maxRounds}":
     patch:
       summary: Change number of rounds.
       tags:
@@ -139,10 +139,7 @@ paths:
       description: An Admin can change the maximal rounds of a game.
       parameters:
         - $ref: "#/components/parameters/gameId" 
-        - maxRounds:
-          description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
-          type: integer
-          minimum: 0
+        - $ref: "#/components/parameters/maxRounds" 
       security:
         - BearerAuth: [player]
       responses:
@@ -153,7 +150,7 @@ paths:
         "401":
           description: Game not found or missing authentication key.
 
-    "/games/{gameid}/roundDuration/{newDuration}":
+  "/games/{gameId}/roundDuration/{newDuration}":
     patch:
       summary: Change duration of the rounds.
       tags:
@@ -161,15 +158,12 @@ paths:
       description: An Admin can change the duration of the rounds from the game.
       parameters:
         - $ref: "#/components/parameters/gameId" 
-        - newDuration:
-          description: Defines the duration of an round. It is given in milliseconds.
-          type: long
-          minimum: 0
+        - $ref: "#/components/parameters/newDuration" 
       security:
         - BearerAuth: [player]
       responses:
         "200":
-          description: The durationl of the rounds have been successfully changed for the game.
+          description: The duration of the rounds have been successfully changed for the game.
         "400":
           description: Invalid input, requestbody or parameters invalid.
         "401":
@@ -290,12 +284,11 @@ paths:
                     type: array
                     items: 
                       $ref: "#/components/schemas/commandOutput"
-                  
         "400":
           description: Invalid input.
         "401":
           description: The user has no permission to access this resource.
-       "404":
+        "404":
           description: No round started yet.
         "406":
           description: The request could not be processed. Possible reason is that the round is still running.
@@ -315,11 +308,37 @@ components:
         $ref: "#/components/schemas/uuid"
       required: true
       
+    maxRounds:
+      in: path
+      name: maxRounds
+      description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
+      schema:
+        $ref: "#/components/schemas/roundNumber"
+      required: true
+ 
+    newDuration:
+      in: path
+      name: newDuration
+      description: Defines the duration of a round. 
+      schema:
+        $ref: "#/components/schemas/newDuration"
+      required: true
+    
+    
   schemas:
     uuid:
       type: string
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    
+    roundNumber:
+      type: integer
+      example: 3
+     
+    newDuration:
+      type: integer
+      format: int64
+      example: 3 
       
     commandType:
       description: Specifies the command type. Type and content must match, otherwise the command cannot be processed.
