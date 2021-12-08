@@ -48,12 +48,12 @@ class GameServiceTest {
     fun shouldAllowNewPlayerCreation() {
         // given
         // when
-        val game: Game = gameService!!.createNewGame()
+        val game: Game = gameService!!.createNewGame(ANY_GAME)
 
         // then
         verify(mockGameRepository!!).save(game)
         assertThat(game)
-//            .isCreatedFrom(maxPlayers = ANY_MAXPLAYERS, maxRounds =   ANY_MAXROUNDS)
+            .isCreatedFrom(maxPlayers = ANY_MAXPLAYERS, maxRounds =   ANY_MAXROUNDS)
     }
 
 
@@ -61,7 +61,7 @@ class GameServiceTest {
     fun shouldPublishEventWhenNewPlayerCreated() {
         // given
         // when
-        val game: Game = gameService!!.createNewGame()
+        val game: Game = gameService!!.createNewGame(ANY_GAME)
 
         // then
         val gameCreatedCaptor = argumentCaptor<List<Event>>()
@@ -80,7 +80,7 @@ class GameServiceTest {
     fun shouldStorePublishedEventWhenNewPlayerCreated() {
         // given
         // when
-        val game: Game = gameService!!.createNewGame()
+        val game: Game = gameService!!.createNewGame(ANY_GAME)
 
         // then
         val gameCreatedCaptor = argumentCaptor<Event>()
@@ -88,9 +88,9 @@ class GameServiceTest {
         val capturedEvent = gameCreatedCaptor.firstValue
 
         assertThat(capturedEvent)
-//            .isInstanceOf(GameCreated::class.java)
+ //           .isInstanceOf(GameCreated::class.java)
         assertThat(capturedEvent as AbstractGameEvent)
-//            .matches(game)
+  //          .matches(game)
         assertThat(capturedEvent.getOccurredAt().getTime())
             .isBeforeOrEqualTo(LocalDateTime.now())
     }

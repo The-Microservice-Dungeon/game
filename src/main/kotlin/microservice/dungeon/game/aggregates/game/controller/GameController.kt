@@ -30,10 +30,10 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
 
-    @PutMapping("/games/{gameId}/players")
+    @PutMapping("/games/{gameId}/players/{playerToken}")
     fun insertPlayerById(
         @PathVariable(value = "gameId") gameId: UUID,
-        @Valid @RequestBody playerToken: UUID
+        @PathVariable(value = "playerToken") playerToken: UUID
     ) {
         try {
             gameService.insertPlayer(gameId, playerToken)
@@ -63,9 +63,9 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
     @PostMapping("/games", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewGame(@RequestBody requestGame: GameResponseDto): ResponseEntity<GameResponseDto> {
+    fun createNewGame(@RequestBody game: Game): ResponseEntity<GameResponseDto> {
         try {
-            val newGame = gameService.createNewGame()
+            val newGame = gameService.createNewGame(game)
 
             val responseGame = GameResponseDto(
                 newGame.getGameId(),
@@ -73,7 +73,7 @@ class GameController(@Autowired private val gameService: GameService) {
                 newGame.getMaxPlayers(),
                 newGame.getMaxRounds(),
                 newGame.getRoundDuration(),
-                newGame.getCommandCollectDuration(),
+                newGame.getCommandCollectDuration(), // wird gelöscht
                 newGame.getCreatedGameDateTime(),
             )
 
@@ -88,11 +88,11 @@ class GameController(@Autowired private val gameService: GameService) {
 
     @PostMapping("/games/{gameId}/gameCommands/start")
     fun startGame(
-        @PathVariable(value = "gameId") gameId: UUID,
-        @RequestBody adminToken: UUID,
-        @ModelAttribute game: Game
+       @PathVariable(value = "gameId") gameId: UUID,
+//        @RequestBody (adminToken: UUID)
     ): ResponseEntity<HttpStatus> {
         try {
+            //val gameId: UUID = UUID.fromString(uuid)
             //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
             //            ?: throw EntityNotFoundException("admin does not exist")
             gameService.runGame(gameId)
@@ -125,7 +125,7 @@ class GameController(@Autowired private val gameService: GameService) {
     }
 
 
-    @PatchMapping("/game/{id}/maxRounds/{maxRounds}")
+    @PatchMapping("/games/{id}/maxRounds/{maxRounds}")
     fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): ResponseEntity<GameResponseDto?>? {
         return try {
             gameService.patchMaxRound(id, maxRounds)
@@ -135,7 +135,7 @@ class GameController(@Autowired private val gameService: GameService) {
         }
     }
 
-    @PatchMapping("/game/{id}/roundDuration/{newDuration}")
+    @PatchMapping("/games/{id}/roundDuration/{newDuration}")
     fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): ResponseEntity<GameResponseDto?>? {
         return try {
             gameService.patchRoundDuration(id, newDuration)

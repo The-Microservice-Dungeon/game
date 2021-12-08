@@ -2,14 +2,12 @@ package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.player.domain.Player
-import org.hibernate.Hibernate
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
-
 
 
 @Entity
@@ -27,7 +25,7 @@ class Game(
     private var maxRounds: Int = 0,
 
     private var roundDuration: Long = 60000, // in ms
-    private var commandCollectDuration: Long = roundDuration*(3/4), // in ms
+    private var commandCollectDuration: Double = 45000.00, // in ms
 
     private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
     private var startTime: LocalTime? = null,
@@ -36,8 +34,11 @@ class Game(
     private var lastRoundStartedAt: LocalTime? = null,
     private var currentRoundCount: Int = 0,
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "game")
-    var playerList: MutableList<PlayersInGame> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL],
+        mappedBy = "playerId",
+        orphanRemoval = true)
+//    @JoinColumn(name = "game_gameId")
+    val playerList: MutableList<PlayersInGame> = mutableListOf(),
 
     )   {
 
@@ -63,7 +64,7 @@ class Game(
     fun getMaxPlayers(): Int = maxPlayers
     fun getMaxRounds(): Int = maxRounds
     fun getRoundDuration(): Long = roundDuration
-    fun getCommandCollectDuration(): Long = commandCollectDuration
+    fun getCommandCollectDuration(): Double = commandCollectDuration
     fun getGameStatus(): GameStatus = gameStatus
     fun setCurrentRoundCount(updateCurrentRound : Int) {
         this.currentRoundCount = updateCurrentRound
@@ -90,14 +91,30 @@ class Game(
         }
     }
 
+    fun setMaxPlayers(maxPlayers: Int) {
+        this.maxPlayers = maxPlayers
+    }
+
+    fun setCommandCollectDuration(l: Double) {
+        this.commandCollectDuration = l
+    }
+
+    fun addPlayersToGame(newPlayer: PlayersInGame) {
+        playerList += newPlayer
+    }
 
 }
 
 @Entity
 data class PlayersInGame(
     @Id
-    private val playerInGameId: UUID?,
-    @ManyToOne
-    var game: Game
+    @Type(type="uuid-char")
+    private val playerId: UUID,
+
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "gameId", nullable = false)
+    @Type(type="uuid-char")
+    var gameId: UUID
 ){
+
 }
