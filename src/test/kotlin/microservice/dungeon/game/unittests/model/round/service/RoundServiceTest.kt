@@ -490,7 +490,21 @@ class RoundServiceTest {
 
     @Test
     fun shouldSendRepairItemUseCommandsToRobotWhenDispatchingRegeneratingCommands() {
-        //TODO
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
+            .thenReturn(Optional.of(spyRound))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REPAIRITEMUSE))
+            .thenReturn(
+                getListOfBlockingCommands(CommandType.REPAIRITEMUSE)
+            )
+
+        // when
+        roundService!!.deliverRegeneratingCommands(ANY_ROUND_ID)
+
+        // then
+        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REPAIRITEMUSE)
+        verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
     }
 
     @Test
