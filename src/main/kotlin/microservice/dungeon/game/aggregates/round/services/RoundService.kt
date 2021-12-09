@@ -136,6 +136,12 @@ class RoundService @Autowired constructor (
                 .map { command -> UseItemRepairCommandDTO.fromCommand(command) }
         )
         round.deliverRegeneratingCommandsToRobot()
+        robotCommandDispatcherClient.sendRegeneratingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.REGENERATE
+            )
+                .map { command -> RegenerateCommandDTO.fromCommand(command) }
+        )
         roundRepository.save(round)
     }
 
