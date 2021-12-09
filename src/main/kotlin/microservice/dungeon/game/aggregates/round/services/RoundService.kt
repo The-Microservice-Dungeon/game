@@ -1,5 +1,8 @@
 package microservice.dungeon.game.aggregates.round.services
 
+import microservice.dungeon.game.aggregates.command.domain.CommandType
+import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
+import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -9,7 +12,7 @@ import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
 import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
-import microservice.dungeon.game.web.CommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,8 +22,10 @@ import java.util.*
 @Service
 class RoundService @Autowired constructor (
     private val roundRepository: RoundRepository,
+    private val commandRepository: CommandRepository,
     private val eventStoreService: EventStoreService,
-    private val eventPublisherService: EventPublisherService
+    private val eventPublisherService: EventPublisherService,
+    private val robotCommandDispatcherClient: RobotCommandDispatcherClient
 ) {
     @Transactional
     fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
@@ -49,6 +54,12 @@ class RoundService @Autowired constructor (
     @Transactional
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
+        robotCommandDispatcherClient.sendBlockingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.BLOCKING
+            )
+            .map { command -> BlockCommandDTO.fromCommand(command) }
+        )
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
     }
