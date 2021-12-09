@@ -436,7 +436,21 @@ class RoundServiceTest {
 
     @Test
     fun shouldSendMiningCommandsToRobotWhenDispatchingMiningCommands() {
-        //TODO
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BATTLE_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
+            .thenReturn(Optional.of(spyRound))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MINING))
+            .thenReturn(
+                getListOfBlockingCommands(CommandType.MINING)
+            )
+
+        // when
+        roundService!!.deliverMiningCommands(ANY_ROUND_ID)
+
+        // then
+        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MINING)
+        verify(mockRobotCommandDispatcherClient!!).sendMiningCommands(any())
     }
 
 
