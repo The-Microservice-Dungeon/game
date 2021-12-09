@@ -129,6 +129,12 @@ class RoundService @Autowired constructor (
     fun deliverRegeneratingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverRepairItemUseCommandsToRobot()
+        robotCommandDispatcherClient.sendRepairItemUseCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.REPAIRITEMUSE
+            )
+                .map { command -> UseItemRepairCommandDTO.fromCommand(command) }
+        )
         round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)
     }
