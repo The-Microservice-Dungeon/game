@@ -2,6 +2,7 @@ package microservice.dungeon.game.aggregates.round.services
 
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
@@ -76,6 +77,12 @@ class RoundService @Autowired constructor (
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMovementItemUseCommandsToRobot()
+        robotCommandDispatcherClient.sendMovementItemUseCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.MOVEITEMUSE
+            )
+            .map { command -> UseItemMovementCommandDTO.fromCommand(command) }
+        )
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
     }
