@@ -1,10 +1,7 @@
 package microservice.dungeon.game.aggregates.round.services
 
 import microservice.dungeon.game.aggregates.command.domain.CommandType
-import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.UseItemFightCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
@@ -106,6 +103,12 @@ class RoundService @Autowired constructor (
             .map { command -> UseItemFightCommandDTO.fromCommand(command) }
         )
         round.deliverBattleCommandsToRobot()
+        robotCommandDispatcherClient.sendBattleCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.BATTLE
+            )
+                .map { command -> FightCommandDTO.fromCommand(command) }
+        )
         roundRepository.save(round)
     }
 
