@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
@@ -205,7 +206,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING)
-        verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(any<List<BlockCommandDTO>>())
+        verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(any())
     }
 
 
@@ -290,7 +291,21 @@ class RoundServiceTest {
 
     @Test
     fun shouldSendMovementItemUseCommandsToRobotWhenDispatchingMovementCommands() {
-        //TODO
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
+            .thenReturn(Optional.of(spyRound))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEITEMUSE))
+            .thenReturn(
+                getListOfBlockingCommands(CommandType.MOVEITEMUSE)
+            )
+
+        // when
+        roundService!!.deliverMovementCommands(ANY_ROUND_ID)
+
+        // then
+        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEITEMUSE)
+        verify(mockRobotCommandDispatcherClient!!).sendMovementItemUseCommands(any())
     }
 
     @Test
