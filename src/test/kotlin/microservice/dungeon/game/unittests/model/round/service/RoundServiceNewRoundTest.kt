@@ -1,5 +1,6 @@
 package microservice.dungeon.game.unittests.model.round.service
 
+import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -9,6 +10,7 @@ import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
+import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +21,9 @@ import java.util.*
 class RoundServiceNewRoundTest {
     private var mockEventStoreService: EventStoreService? = null
     private var mockEventPublisherService: EventPublisherService? = null
+    private var mockRobotCommandDispatcherClient: RobotCommandDispatcherClient? = null
     private var mockRoundRepository: RoundRepository? = null
+    private var mockCommandRepository: CommandRepository? = null
     private var roundService: RoundService? = null
 
     private val ANY_ROUND_ID = UUID.randomUUID()
@@ -31,8 +35,10 @@ class RoundServiceNewRoundTest {
     fun setUp() {
         mockEventStoreService = mock()
         mockEventPublisherService = mock()
+        mockRobotCommandDispatcherClient = mock()
         mockRoundRepository = mock()
-        roundService = RoundService(mockRoundRepository!!, mockEventStoreService!!, mockEventPublisherService!!)
+        mockCommandRepository = mock()
+        roundService = RoundService(mockRoundRepository!!, mockCommandRepository!!, mockEventStoreService!!, mockEventPublisherService!!, mockRobotCommandDispatcherClient!!)
     }
 
 
