@@ -310,7 +310,21 @@ class RoundServiceTest {
 
     @Test
     fun shouldSendMovementCommandsToRobotWhenDispatchingMovementCommands() {
-        //TODO
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
+            .thenReturn(Optional.of(spyRound))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT))
+            .thenReturn(
+                getListOfBlockingCommands(CommandType.MOVEMENT)
+            )
+
+        // when
+        roundService!!.deliverMovementCommands(ANY_ROUND_ID)
+
+        // then
+        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT)
+        verify(mockRobotCommandDispatcherClient!!).sendMovementCommands(any())
     }
 
 
