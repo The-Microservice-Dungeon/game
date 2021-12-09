@@ -116,6 +116,12 @@ class RoundService @Autowired constructor (
     fun deliverMiningCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMiningCommandsToRobot()
+        robotCommandDispatcherClient.sendMiningCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.MINING
+            )
+                .map { command -> MineCommandDTO.fromCommand(command) }
+        )
         roundRepository.save(round)
     }
 
