@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.round.services
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.UseItemFightCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
@@ -98,6 +99,12 @@ class RoundService @Autowired constructor (
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverBattleItemUseCommandsToRobot()
+        robotCommandDispatcherClient.sendBattleItemUseCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.BATTLEITEMUSE
+            )
+            .map { command -> UseItemFightCommandDTO.fromCommand(command) }
+        )
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
     }
