@@ -70,6 +70,12 @@ class RoundService @Autowired constructor (
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverSellingCommandsToRobot()
+        tradingCommandDispatcherClient.sendSellingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.SELLING
+            )
+            .map { command -> SellCommandDTO.fromCommand (command) }
+        )
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
     }
