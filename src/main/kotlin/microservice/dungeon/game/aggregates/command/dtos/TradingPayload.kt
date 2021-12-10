@@ -6,5 +6,5 @@ class TradingPayload(
     commandType: String,
     amount: Int,
     planetId: UUID,
-    itemname: String
+    itemName: String
 )
