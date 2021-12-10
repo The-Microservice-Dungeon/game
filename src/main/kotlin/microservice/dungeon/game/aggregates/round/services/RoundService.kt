@@ -13,6 +13,7 @@ import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +26,8 @@ class RoundService @Autowired constructor (
     private val commandRepository: CommandRepository,
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService,
-    private val robotCommandDispatcherClient: RobotCommandDispatcherClient
+    private val robotCommandDispatcherClient: RobotCommandDispatcherClient,
+    private val tradingCommandDispatcherClient: TradingCommandDispatcherClient
 ) {
     @Transactional
     fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
@@ -68,7 +70,19 @@ class RoundService @Autowired constructor (
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverSellingCommandsToRobot()
+        tradingCommandDispatcherClient.sendSellingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.SELLING
+            )
+            .map { command -> SellCommandDTO.fromCommand (command) }
+        )
         round.deliverBuyingCommandsToRobot()
+        tradingCommandDispatcherClient.sendBuyingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.BUYING
+            )
+                .map { command -> BuyCommandDTO.fromCommand (command) }
+        )
         roundRepository.save(round)
     }
 

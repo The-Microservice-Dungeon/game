@@ -4,9 +4,9 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
 class BuyCommandDTO(
-    transactionId: UUID,
-    playerId: UUID,
-    payload: TradingPayload
+    val transactionId: UUID,
+    val playerId: UUID,
+    val payload: TradingPayload
 ) {
     companion object {
         fun fromCommand(command: Command): BuyCommandDTO {
@@ -22,4 +22,10 @@ class BuyCommandDTO(
             )
         }
     }
+
+    override fun equals(other: Any?): Boolean =
+        (other is BuyCommandDTO)
+                && transactionId == other.transactionId
+                && playerId == other.playerId
+                && payload == other.payload
 }

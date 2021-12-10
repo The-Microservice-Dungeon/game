@@ -11,6 +11,7 @@ import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -24,6 +25,7 @@ class RoundServiceEndRoundTest {
     private var mockEventStoreService: EventStoreService? = null
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockRobotCommandDispatcherClient: RobotCommandDispatcherClient? = null
+    private var mockTradingCommandDispatcherClient: TradingCommandDispatcherClient? = null
     private var mockRoundRepository: RoundRepository? = null
     private var mockCommandRepository: CommandRepository? = null
     private var roundService: RoundService? = null
@@ -38,9 +40,17 @@ class RoundServiceEndRoundTest {
         mockEventStoreService = mock()
         mockEventPublisherService = mock()
         mockRobotCommandDispatcherClient = mock()
+        mockTradingCommandDispatcherClient = mock()
         mockRoundRepository = mock()
         mockCommandRepository = mock()
-        roundService = RoundService(mockRoundRepository!!, mockCommandRepository!!, mockEventStoreService!!, mockEventPublisherService!!, mockRobotCommandDispatcherClient!!)
+        roundService = RoundService(
+            mockRoundRepository!!,
+            mockCommandRepository!!,
+            mockEventStoreService!!,
+            mockEventPublisherService!!,
+            mockRobotCommandDispatcherClient!!,
+            mockTradingCommandDispatcherClient!!
+        )
     }
 
 
