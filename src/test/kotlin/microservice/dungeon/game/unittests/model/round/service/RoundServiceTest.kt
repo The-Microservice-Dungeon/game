@@ -348,7 +348,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldSendMovementCommandsToRobotWhenDispatchingMovementCommands() {
+    fun shouldSendMovementCommandsToRobotWhenDispatchingMovementCommandsAfterSendingMovementItemUseCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
@@ -363,6 +363,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT)
+        verify(mockRobotCommandDispatcherClient!!).sendMovementItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendMovementCommands(any())
     }
 
@@ -421,7 +422,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldSendBattleCommandsToRobotWhenDispatchingBattleCommands() {
+    fun shouldSendBattleCommandsToRobotWhenDispatchingBattleCommandsAfterSendingBattleItemUseCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
@@ -436,6 +437,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLE)
+        verify(mockRobotCommandDispatcherClient!!).sendBattleItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendBattleCommands(any())
     }
 
@@ -547,7 +549,7 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldSendRegeneratingCommandsToRobotWhenDispatchingRegeneratingCommands() {
+    fun shouldSendRegeneratingCommandsToRobotWhenDispatchingRegeneratingCommandsAfterSendingRepairItemUseCommands() {
         // given
         val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
@@ -562,6 +564,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REGENERATE)
+        verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendRegeneratingCommands(any())
     }
 
