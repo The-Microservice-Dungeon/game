@@ -5,12 +5,21 @@ import java.util.*
 
 class BuyCommandDTO(
     transactionId: UUID,
-    playerId: UUID
-// TODO Waiting on Trading to tell us what they need in the payload
+    playerId: UUID,
+    payload: TradingPayload
 ) {
     companion object {
-        fun fromCommand(command: Command): SellCommandDTO {
-            return SellCommandDTO(command.transactionId, command.playerId)
+        fun fromCommand(command: Command): BuyCommandDTO {
+            return BuyCommandDTO(
+                command.transactionId,
+                command.playerId,
+                TradingPayload(
+                    "buy",
+                    command.commandObject.ItemQuantity!!,
+                    command.commandObject.planetId!!,
+                    command.commandObject.itemName!!
+                )
+            )
         }
     }
 }
