@@ -24,7 +24,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendBuyingCommands(commands: List<BuyCommandDTO>) {
-
+        transmitCommandsToTrading(commands)
     }
 
     private fun transmitCommandsToTrading(commands: List<Any>) {
