@@ -6,13 +6,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
+import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
-import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
-import org.json.JSONArray
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
@@ -68,7 +67,35 @@ class TradingCommandDispatcherClientIntegrationTest {
 
     @Test
     fun shouldAllowToSendBuyingCommands() {
+        // given
+        val inputCommands = listOf(
+            BuyCommandDTO.fromCommand(makeAnyTradingCommand(CommandType.BUYING)),
+            BuyCommandDTO.fromCommand(makeAnyTradingCommand(CommandType.BUYING))
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(200)
+        mockWebServer!!.enqueue(mockResponse)
 
+        // when
+        tradingCommandDispatcherClient!!.sendBuyingCommands(inputCommands)
+
+        // and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedBuyingCommandDTOs: List<BuyCommandDTO> = objectMapper.readValue(
+            recordedRequest.body.readUtf8()
+        )
+
+        // then
+        assertThat(recordedRequest.method)
+            .isEqualTo("POST")
+        assertThat(recordedRequest.path)
+            .isEqualTo("/commands")
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        // and
+        assertThat(recordedBuyingCommandDTOs)
+            .isEqualTo(inputCommands)
     }
 
     private fun makeAnyTradingCommand(commandType: CommandType) =
