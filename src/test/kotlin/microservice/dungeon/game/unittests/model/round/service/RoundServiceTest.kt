@@ -274,8 +274,23 @@ class RoundServiceTest {
     }
 
     @Test
-    fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommands() {
-        //TODO
+    fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommandsAfterSendingSellingCommands() {
+        // given
+        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
+            .thenReturn(Optional.of(spyRound))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BUYING))
+            .thenReturn(
+                getListOfBlockingCommands(CommandType.BUYING)
+            )
+
+        // when
+        roundService!!.deliverTradingCommands(ANY_ROUND_ID)
+
+        // then
+        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BUYING)
+        verify(mockTradingCommandDispatcherCLient!!).sendSellingCommands(any())
+        verify(mockTradingCommandDispatcherCLient!!).sendBuyingCommands(any())
     }
 
 
