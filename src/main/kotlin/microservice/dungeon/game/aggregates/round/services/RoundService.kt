@@ -77,6 +77,12 @@ class RoundService @Autowired constructor (
             .map { command -> SellCommandDTO.fromCommand (command) }
         )
         round.deliverBuyingCommandsToRobot()
+        tradingCommandDispatcherClient.sendBuyingCommands(
+            commandRepository.findByGameIdAndRoundNumberAndCommandType(
+                round.getGameId(), round.getRoundNumber(), CommandType.BUYING
+            )
+                .map { command -> BuyCommandDTO.fromCommand (command) }
+        )
         roundRepository.save(round)
     }
 
