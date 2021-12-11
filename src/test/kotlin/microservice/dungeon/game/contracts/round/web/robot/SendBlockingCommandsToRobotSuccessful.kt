@@ -1,13 +1,14 @@
-package microservice.dungeon.game.contracts.round.web.trading
+package microservice.dungeon.game.contracts.round.web.robot
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.contracts.RestProducerContract
+import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import microservice.dungeon.game.contracts.round.web.trading.resources.TradingCommandInput
 import org.springframework.http.MediaType
 import java.util.*
 
-class SendBuyingCommandsToTradingSuccessful: RestProducerContract {
+class SendBlockingCommandsToRobotSuccessful: RestProducerContract {
 
     // for
     private val requestVerb = "POST"
@@ -16,35 +17,26 @@ class SendBuyingCommandsToTradingSuccessful: RestProducerContract {
 
 
     // with
-    private val commandInput = TradingCommandInput(
+    private val commandInput = RobotCommandInput(
         transactionId = UUID.randomUUID(),
-        gameId = UUID.randomUUID(),
-        playerId = UUID.randomUUID(),
-        commandType = CommandType.BUYING,
-        amount = 5,
-        planetId = UUID.randomUUID(),
-        itemName = "ROBOT"
+        robotId = UUID.randomUUID(),
+        commandType = CommandType.BLOCKING
     )
-    fun makeCommandFromContract(builder: (TradingCommandInput) -> Command): Command = builder(commandInput)
+    fun makeCommandFromContract(builder: (RobotCommandInput) -> Command): Command = builder(commandInput)
 
 
     // expect
-    private val expectedResponseCode = 200
+    private val expectedResponseCode = 202
     private val expectedResponseBody =
         """
-        |[{
-            |"transactionId":"${commandInput.transactionId}",
-            |"playerId":"${commandInput.playerId}",
-            |"payload":{
-                |"commandType":"buy",
-                |"amount":${commandInput.amount},
-                |"planetId":"${commandInput.planetId}",
-                |"itemName":"${commandInput.itemName}"
+            |{
+                |"commands":[
+                    |"block ${commandInput.robotId} ${commandInput.transactionId}"
+                |]
             |}
-        |}]
         """
-        .trimMargin()
-        .replace("\n", "")
+            .trimMargin()
+            .replace("\n", "")
 
     override fun getRequestVerb() = requestVerb
 

@@ -2,14 +2,17 @@ package microservice.dungeon.game.contracts.round.web.trading
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandType
+import microservice.dungeon.game.contracts.RestProducerContract
 import microservice.dungeon.game.contracts.round.web.trading.resources.TradingCommandInput
+import org.springframework.http.MediaType
 import java.util.*
 
-class SendSellingCommandsToTradingSuccessful {
+class SendSellingCommandsToTradingSuccessful: RestProducerContract {
 
     // for
-    val requestVerb = "POST"
-    val requestPath = "/commands"
+    private val requestVerb = "POST"
+    private val requestPath = "/commands"
+    private val requestHttpHeaderContentType = MediaType.APPLICATION_JSON_VALUE
 
 
     // with
@@ -26,8 +29,8 @@ class SendSellingCommandsToTradingSuccessful {
 
 
     // expect
-    val expectedResponseCode = 200
-    val expectedResponseBody =
+    private val expectedResponseCode = 200
+    private val expectedResponseBody =
         """
         |[{
             |"transactionId":"${commandInput.transactionId}",
@@ -42,4 +45,14 @@ class SendSellingCommandsToTradingSuccessful {
         """
         .trimMargin()
         .replace("\n", "")
+
+    override fun getRequestVerb() = requestVerb
+
+    override fun getRequestPath() = requestPath
+
+    override fun getRequestHttpHeaderContentType() = requestHttpHeaderContentType
+
+    override fun getExpectedResponseCode() = expectedResponseCode
+
+    override fun getExpectedResponseBody() = expectedResponseBody
 }
