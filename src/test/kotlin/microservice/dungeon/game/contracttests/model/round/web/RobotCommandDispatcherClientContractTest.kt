@@ -194,6 +194,33 @@ class RobotCommandDispatcherClientContractTest {
             .conformsWithRequestBody(recordedRequestBody)
     }
 
+    @Test
+    fun shouldConformToSendItemUseRepairCommandsSuccessful() {
+        // given
+        val contract = SendItemUseRepairCommandsToRobotSuccessful()
+        val inputCommands = listOf(
+            UseItemRepairCommandDTO.fromCommand(
+                contract.makeCommandFromContract(buildRobotCommand())
+            )
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(contract.getExpectedResponseCode())
+        mockWebServer!!.enqueue(mockResponse)
+
+        // when
+        robotCommandDispatcherClient!!.sendRepairItemUseCommands(inputCommands)
+
+        // and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRequestBody = recordedRequest.body.readUtf8()
+
+        // then
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
+    }
+
 
 
     private fun buildRobotCommand(): (RobotCommandInput) -> Command = { input ->
