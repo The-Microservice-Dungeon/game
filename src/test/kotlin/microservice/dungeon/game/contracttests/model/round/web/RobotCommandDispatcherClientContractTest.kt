@@ -3,11 +3,13 @@ package microservice.dungeon.game.contracttests.model.round.web
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.MovementCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.robot.SendBlockingCommandsToRobotSuccessful
+import microservice.dungeon.game.contracts.round.web.robot.SendMovementCommandsToRobotSuccessful
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import microservice.dungeon.game.contracts.round.web.trading.SendSellingCommandsToTradingSuccessful
 import okhttp3.mockwebserver.MockResponse
@@ -48,6 +50,33 @@ class RobotCommandDispatcherClientContractTest {
 
         // when
         robotCommandDispatcherClient!!.sendBlockingCommands(inputCommands)
+
+        // and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRequestBody = recordedRequest.body.readUtf8()
+
+        // then
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
+    }
+
+    @Test
+    fun shouldConformToSendMovementCommandsSuccessful() {
+        // given
+        val contract = SendMovementCommandsToRobotSuccessful()
+        val inputCommands = listOf(
+            MovementCommandDTO.fromCommand(
+                contract.makeCommandFromContract(buildRobotCommand())
+            )
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(contract.getExpectedResponseCode())
+        mockWebServer!!.enqueue(mockResponse)
+
+        // when
+        robotCommandDispatcherClient!!.sendMovementCommands(inputCommands)
 
         // and
         val recordedRequest = mockWebServer!!.takeRequest()
