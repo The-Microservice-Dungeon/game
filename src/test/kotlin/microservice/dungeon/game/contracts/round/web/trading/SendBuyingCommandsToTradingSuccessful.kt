@@ -13,7 +13,6 @@ class SendBuyingCommandsToTradingSuccessful {
 
 
     // with
-    // with
     private val commandInput = TradingCommandInput(
         transactionId = UUID.randomUUID(),
         gameId = UUID.randomUUID(),
