@@ -5,6 +5,8 @@ import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.assertions.CustomAssertions
+import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.robot.SendBlockingCommandsToRobotSuccessful
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import microservice.dungeon.game.contracts.round.web.trading.SendSellingCommandsToTradingSuccessful
@@ -41,7 +43,7 @@ class RobotCommandDispatcherClientContractTest {
             )
         )
         val mockResponse = MockResponse()
-            .setResponseCode(contract.expectedResponseCode)
+            .setResponseCode(contract.getExpectedResponseCode())
         mockWebServer!!.enqueue(mockResponse)
 
         // when
@@ -52,16 +54,10 @@ class RobotCommandDispatcherClientContractTest {
         val recordedRequestBody = recordedRequest.body.readUtf8()
 
         // then
-        assertThat(recordedRequest.method)
-            .isEqualTo(contract.requestVerb)
-        assertThat(recordedRequest.path)
-            .isEqualTo(contract.requestPath)
-        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
-            .isEqualTo(MediaType.APPLICATION_JSON.toString())
-
-        // and
-        assertThat(recordedRequestBody)
-            .isEqualTo(contract.expectedResponseBody)
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
     }
 
 

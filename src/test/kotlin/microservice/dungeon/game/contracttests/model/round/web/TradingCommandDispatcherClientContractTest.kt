@@ -4,20 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
-import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
+import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.trading.SendBuyingCommandsToTradingSuccessful
 import microservice.dungeon.game.contracts.round.web.trading.SendSellingCommandsToTradingSuccessful
 import microservice.dungeon.game.contracts.round.web.trading.resources.TradingCommandInput
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import java.util.*
 
 class TradingCommandDispatcherClientContractTest {
@@ -50,7 +47,7 @@ class TradingCommandDispatcherClientContractTest {
             )
         )
         val mockResponse = MockResponse()
-            .setResponseCode(contract.expectedResponseCode)
+            .setResponseCode(contract.getExpectedResponseCode())
         mockWebServer!!.enqueue(mockResponse)
 
         // when
@@ -61,16 +58,10 @@ class TradingCommandDispatcherClientContractTest {
         val recordedRequestBody = recordedRequest.body.readUtf8()
 
         // then
-        assertThat(recordedRequest.method)
-            .isEqualTo(contract.requestVerb)
-        assertThat(recordedRequest.path)
-            .isEqualTo(contract.requestPath)
-        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
-            .isEqualTo(MediaType.APPLICATION_JSON.toString())
-
-        // and
-        assertThat(recordedRequestBody)
-            .isEqualTo(contract.expectedResponseBody)
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
     }
 
 
@@ -85,7 +76,7 @@ class TradingCommandDispatcherClientContractTest {
             )
         )
         val mockResponse = MockResponse()
-            .setResponseCode(contract.expectedResponseCode)
+            .setResponseCode(contract.getExpectedResponseCode())
         mockWebServer!!.enqueue(mockResponse)
 
         // when
@@ -96,16 +87,10 @@ class TradingCommandDispatcherClientContractTest {
         val recordedRequestBody = recordedRequest.body.readUtf8()
 
         // then
-        assertThat(recordedRequest.method)
-            .isEqualTo(contract.requestVerb)
-        assertThat(recordedRequest.path)
-            .isEqualTo(contract.requestPath)
-        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
-            .isEqualTo(MediaType.APPLICATION_JSON.toString())
-
-        // and
-        assertThat(recordedRequestBody)
-            .isEqualTo(contract.expectedResponseBody)
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
     }
 
     private fun builtTradingCommand(): (TradingCommandInput) -> Command = { input ->

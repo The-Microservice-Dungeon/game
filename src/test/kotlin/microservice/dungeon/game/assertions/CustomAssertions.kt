@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerEventDto
 import microservice.dungeon.game.aggregates.player.events.AbstractPlayerEvent
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
+import microservice.dungeon.game.contracts.RestProducerContract
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.assertj.core.api.Assertions
 
@@ -20,6 +21,6 @@ class CustomAssertions: Assertions() {
         fun assertThat(actual: Player) = PlayerAssertion(actual)
         fun assertThat(actual: Game) = GameAssertion(actual)
         fun assertThat(actual: ProducerRecord<String, String>) = ProducerRecordAssertion(actual)
-
+        fun assertThat(actual: RestProducerContract) = RestProducerContractAssertion(actual)
     }
 }
