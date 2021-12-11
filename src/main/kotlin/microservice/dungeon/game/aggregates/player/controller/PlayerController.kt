@@ -21,12 +21,8 @@ class PlayerController @Autowired constructor(
     fun createNewPlayer(@RequestBody requestPlayer: PlayerResponseDto): ResponseEntity<PlayerResponseDto> {
         try {
             val newPlayer = playerService.createNewPlayer(requestPlayer.name, requestPlayer.email)
+            val responsePlayer = PlayerResponseDto.makeFromPlayer(newPlayer)
 
-            val responsePlayer = PlayerResponseDto(
-                newPlayer.getPlayerToken(),
-                newPlayer.getUserName(),
-                newPlayer.getMailAddress()
-            )
             return ResponseEntity(responsePlayer, HttpStatus.CREATED)
         } catch (e: EntityAlreadyExistsException) {
             throw ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Player with same mail or username already exists.")
