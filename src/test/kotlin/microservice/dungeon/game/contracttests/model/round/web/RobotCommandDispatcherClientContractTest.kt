@@ -6,10 +6,7 @@ import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
-import microservice.dungeon.game.contracts.round.web.robot.SendBattleCommandsToRobotSuccessful
-import microservice.dungeon.game.contracts.round.web.robot.SendBlockingCommandsToRobotSuccessful
-import microservice.dungeon.game.contracts.round.web.robot.SendMiningCommandsToRobotSuccessful
-import microservice.dungeon.game.contracts.round.web.robot.SendMovementCommandsToRobotSuccessful
+import microservice.dungeon.game.contracts.round.web.robot.*
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import microservice.dungeon.game.contracts.round.web.trading.SendSellingCommandsToTradingSuccessful
 import okhttp3.mockwebserver.MockResponse
@@ -131,6 +128,33 @@ class RobotCommandDispatcherClientContractTest {
 
         // when
         robotCommandDispatcherClient!!.sendMiningCommands(inputCommands)
+
+        // and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRequestBody = recordedRequest.body.readUtf8()
+
+        // then
+        assertThat(contract)
+            .conformsWithRequest(recordedRequest)
+        assertThat(contract)
+            .conformsWithRequestBody(recordedRequestBody)
+    }
+
+    @Test
+    fun shouldConformToSendRegeneratingCommandsSuccessful() {
+        // given
+        val contract = SendRegeneratingCommandsToRobotSuccessful()
+        val inputCommands = listOf(
+            RegenerateCommandDTO.fromCommand(
+                contract.makeCommandFromContract(buildRobotCommand())
+            )
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(contract.getExpectedResponseCode())
+        mockWebServer!!.enqueue(mockResponse)
+
+        // when
+        robotCommandDispatcherClient!!.sendRegeneratingCommands(inputCommands)
 
         // and
         val recordedRequest = mockWebServer!!.takeRequest()
