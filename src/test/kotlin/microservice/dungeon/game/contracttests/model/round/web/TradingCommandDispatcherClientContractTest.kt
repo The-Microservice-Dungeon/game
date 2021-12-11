@@ -73,6 +73,41 @@ class TradingCommandDispatcherClientContractTest {
             .isEqualTo(contract.expectedResponseBody)
     }
 
+
+
+    @Test
+    fun shouldSendBuyingCommandsSuccessful() {
+        // given
+        val contract = SendBuyingCommandsToTradingSuccessful()
+        val inputCommands = listOf(
+            BuyCommandDTO.fromCommand(
+                contract.makeCommandFromContract(builtTradingCommand())
+            )
+        )
+        val mockResponse = MockResponse()
+            .setResponseCode(contract.expectedResponseCode)
+        mockWebServer!!.enqueue(mockResponse)
+
+        // when
+        tradingCommandDispatcherClient!!.sendBuyingCommands(inputCommands)
+
+        // and
+        val recordedRequest = mockWebServer!!.takeRequest()
+        val recordedRequestBody = recordedRequest.body.readUtf8()
+
+        // then
+        assertThat(recordedRequest.method)
+            .isEqualTo(contract.requestVerb)
+        assertThat(recordedRequest.path)
+            .isEqualTo(contract.requestPath)
+        assertThat(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE))
+            .isEqualTo(MediaType.APPLICATION_JSON.toString())
+
+        // and
+        assertThat(recordedRequestBody)
+            .isEqualTo(contract.expectedResponseBody)
+    }
+
     private fun builtTradingCommand(): (TradingCommandInput) -> Command = { input ->
         Command(
             transactionId = input.transactionId,
