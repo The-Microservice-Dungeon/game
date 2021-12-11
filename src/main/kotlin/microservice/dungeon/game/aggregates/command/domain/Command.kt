@@ -3,10 +3,7 @@ package microservice.dungeon.game.aggregates.command.domain
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "commands")
