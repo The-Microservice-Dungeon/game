@@ -14,4 +14,12 @@ class CommandDTO(
     val commandType: CommandType,
 
     val commandObject: CommandObject
-)
+) {
+    override fun equals(other: Any?): Boolean =
+        (other is CommandDTO)
+                && gameId == other.gameId
+                && playerId == other.playerId
+                && robotId == other.robotId
+                && commandType == other.commandType
+                && commandObject == other.commandObject
+}

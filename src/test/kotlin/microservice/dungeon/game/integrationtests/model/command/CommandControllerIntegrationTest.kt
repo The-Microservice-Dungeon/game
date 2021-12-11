@@ -6,9 +6,12 @@ import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.services.CommandService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
@@ -71,24 +74,24 @@ class CommandControllerIntegrationTest {
     }
 
     @Test
-    fun shouldAllowNewCommandCreation() {
+    fun shouldAllowToCreateNewCommand() {
         // given
         val requestEntity = CommandDTO(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            CommandType.BATTLE,
-            CommandObject(
-                CommandType.BATTLE,
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "",
-                1
+            gameId = UUID.randomUUID(),
+            playerId = UUID.randomUUID(),
+            robotId = UUID.randomUUID(),
+            commandType = CommandType.BATTLE,
+            commandObject = CommandObject(
+                commandType = CommandType.BATTLE,
+                planetId = UUID.randomUUID(),
+                targetId = UUID.randomUUID(),
+                itemName = "ANY NAME",
+                ItemQuantity = 1
             )
         )
-        val uuid = UUID.randomUUID()
+        val expectedCommandId = UUID.randomUUID()
         whenever(mockCommandService!!.save(requestEntity))
-            .thenReturn(uuid)
+            .thenReturn(expectedCommandId)
 
         // when
         val result = webTestClient!!.post()
@@ -101,8 +104,11 @@ class CommandControllerIntegrationTest {
             .expectBody<UUID>()
             .returnResult()
 
-        //val responseBody = result.responseBody!!
+        // then
+        assertThat(result.responseBody!!)
+            .isEqualTo(expectedCommandId)
 
-        //assertTrue(result.responseBody!!.equals(uuid))
+        // and
+        verify(mockCommandService!!).save(any())
     }
 }
