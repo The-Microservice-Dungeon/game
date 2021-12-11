@@ -49,7 +49,7 @@ jobs:
       - name: stop-pull-run
         uses: appleboy/ssh-action@master
         env:
-          SERVICE_NAME: devops
+          SERVICE_NAME: game
         with:
           host: cides03.gm.fh-koeln.de
           username: ${{ secrets.PROD_USER }}
