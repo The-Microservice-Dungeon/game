@@ -34,12 +34,15 @@ class CommandControllerIntegrationTest {
     private var commandController: CommandController? = null
     private var webTestClient: WebTestClient? = null
 
+
     @BeforeEach
     fun setUp() {
         mockCommandService = mock()
         commandController = CommandController(mockCommandService!!)
         webTestClient = WebTestClient.bindToController(commandController!!).build()
     }
+
+
 
     @Test
     fun contextLoads() {
@@ -76,22 +79,10 @@ class CommandControllerIntegrationTest {
     @Test
     fun shouldAllowToCreateNewCommand() {
         // given
-        val requestEntity = CommandDTO(
-            gameId = UUID.randomUUID(),
-            playerId = UUID.randomUUID(),
-            robotId = UUID.randomUUID(),
-            commandType = CommandType.BATTLE,
-            commandObject = CommandObject(
-                commandType = CommandType.BATTLE,
-                planetId = UUID.randomUUID(),
-                targetId = UUID.randomUUID(),
-                itemName = "ANY NAME",
-                ItemQuantity = 1
-            )
-        )
-        val expectedCommandId = UUID.randomUUID()
+        val requestEntity = makeAnyValidCommandDTO()
+        val responseCommandId = UUID.randomUUID()
         whenever(mockCommandService!!.save(requestEntity))
-            .thenReturn(expectedCommandId)
+            .thenReturn(responseCommandId)
 
         // when
         val result = webTestClient!!.post()
@@ -106,9 +97,25 @@ class CommandControllerIntegrationTest {
 
         // then
         assertThat(result.responseBody!!)
-            .isEqualTo(expectedCommandId)
+            .isEqualTo(responseCommandId)
 
         // and
-        verify(mockCommandService!!).save(any())
+        verify(mockCommandService!!).save(requestEntity)
     }
+
+
+    private fun makeAnyValidCommandDTO(): CommandDTO =
+        CommandDTO(
+            gameId = UUID.randomUUID(),
+            playerId = UUID.randomUUID(),
+            robotId = UUID.randomUUID(),
+            commandType = CommandType.BATTLE,
+            commandObject = CommandObject(
+                commandType = CommandType.BATTLE,
+                planetId = UUID.randomUUID(),
+                targetId = UUID.randomUUID(),
+                itemName = "ANY NAME",
+                ItemQuantity = 1
+            )
+        )
 }
