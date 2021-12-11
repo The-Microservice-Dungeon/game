@@ -41,7 +41,7 @@ class TradingCommandDispatcherClientContractTest {
 
 
     @Test
-    fun shouldSendSellingCommandsSuccessful() {
+    fun shouldConformToSendSellingCommandsSuccessful() {
         // given
         val contract = SendSellingCommandsToTradingSuccessful()
         val inputCommands = listOf(
@@ -76,7 +76,7 @@ class TradingCommandDispatcherClientContractTest {
 
 
     @Test
-    fun shouldSendBuyingCommandsSuccessful() {
+    fun shouldConformToSendBuyingCommandsSuccessful() {
         // given
         val contract = SendBuyingCommandsToTradingSuccessful()
         val inputCommands = listOf(
