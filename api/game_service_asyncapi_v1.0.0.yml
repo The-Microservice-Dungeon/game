@@ -1,9 +1,8 @@
-asyncapi: '2.2.0'
+asyncapi: 2.2.0
 info:
   title: Game
   version: '1.0.0'
   description: Represents the administrative service of the game. Administrators can create a new game, players can join it and issue commands that control their robots. The game service forwards them accordingly and takes care of the synchronization of the game.
-
 servers:
   production:
     url: todo
@@ -11,7 +10,6 @@ servers:
     #variables:
       #port:
 defaultContentType: application/json
-
 channels:
   status:
     publish:
