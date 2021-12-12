@@ -1,8 +1,9 @@
-asyncapi: 2.2.0
+asyncapi: '2.2.0'
 info:
-  title: game_service
-  version: 1.0.0
+  title: Game
+  version: '1.0.0'
   description: Represents the administrative service of the game. Administrators can create a new game, players can join it and issue commands that control their robots. The game service forwards them accordingly and takes care of the synchronization of the game.
+
 servers:
   production:
     url: todo
@@ -10,44 +11,103 @@ servers:
     #variables:
       #port:
 defaultContentType: application/json
+
 channels:
-  game/status:
+  status:
     publish:
-      summary: Publishes all game relevant status changes
-      description: All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
       message:
-        payload:
-          type: object
-          properties:
-            gameStatus:
-              enum: ["created", "started", "ended"]
+        $ref: '#/components/messages/status'
           
-  game/playerStatus:
+  playerStatus:
     publish:
-      summary: Publishes user activities related to their participation in the game. 
-      description: Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
       message:
-        payload:
-          type: object
-          properties:
-            userId:
-              type: string
-              format: UUID
-            userName:
-              type: string
-            lobby-action:
-              enum: ["joined", "left"]
+        $ref: '#/components/messages/playerStatus'
           
-  game/round/status:
+  roundStatus:
     publish:
-      summary: Publishes status changes of a round
-      description: Publishes all the status changes of each round of the game.
       message:
-        payload:
-          type: object
-          properties:
-            roundNumber:
-              type: integer
-              minimum: 0
-            roundStatus:
-              enum: ["started", "command input ended", "ended"]
+        $ref: '#/components/messages/roundStatus'
+
+components:
+  messageTraits:
+    DefaultTradingKafkaMessage:
+      bindings:
+        kafka:
+          key:
+            type: string
+            format: uuid
+          bindingVersion: '0.1.0'
+      correlationId:
+        location: "$message.header#/transactionId"
+      headers:
+        type: object
+        required:
+          - eventId
+          - transactionId
+          - version
+          - timestamp
+          - type
+        properties:
+          eventId:
+            type: string
+            format: uuid
+            description: Generated UUID of the event
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
+          transactionId:
+            type: string
+            format: uuid
+            description: TransactionID if available or UUID of the entity concerned
+            example: 0cfc04f1-6df5-42c6-a19a-146128b8a3b4
+          version:
+            type: integer
+            description: Consecutive number for the comparability of the actuality of the event
+            example: 42
+          timestamp:
+            type: string
+            format: date-time
+            description: >
+              timestamp as specified in [time-format-decision](https://the-microservice-dungeon.github.io/decisionlog/decisions/time-format.html)
+            example: 2020-01-10T12:00:00Z
+          type:
+            type: string
+            description: The type of event
+            example: event-example-uploaded
+messages:
+  status:
+    description: >
+      All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
+    traits:
+      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+    payload:
+      type: object
+      properties:
+        status:
+          enum: [ "created", "started", "ended" ]
+  playerStatus:
+    description: >
+        Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
+    traits:
+        - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+    payload:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: UUID
+        userName:
+          type: string
+        lobbyAction:
+          enum: [ "joined", "left" ]
+  roundStatus:
+    description: Publishes all the status changes of each round of the game.
+    payload:
+      type: object
+      properties:
+        roundNumber:
+          type: integer
+          minimum: 0
+        roundStatus:
+          enum: [ "started", "command input ended", "ended" ]
+
+
+
