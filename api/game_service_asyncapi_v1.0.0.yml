@@ -1,14 +1,8 @@
-asyncapi: 2.2.0
+openapi: 2.0.0
 info:
   title: Game
   version: '1.0.0'
   description: Represents the administrative service of the game. Administrators can create a new game, players can join it and issue commands that control their robots. The game service forwards them accordingly and takes care of the synchronization of the game.
-servers:
-  production:
-    url: todo
-    protocol: kafka
-    #variables:
-      #port:
 defaultContentType: application/json
 channels:
   status:
@@ -60,7 +54,7 @@ components:
           timestamp:
             type: string
             format: date-time
-            description: >
+            description:
               timestamp as specified in [time-format-decision](https://the-microservice-dungeon.github.io/decisionlog/decisions/time-format.html)
             example: 2020-01-10T12:00:00Z
           type:
@@ -69,7 +63,7 @@ components:
             example: event-example-uploaded
 messages:
   status:
-    description: >
+    description:
       All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
     traits:
       - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
@@ -79,10 +73,10 @@ messages:
         status:
           enum: [ "created", "started", "ended" ]
   playerStatus:
-    description: >
-        Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
+    description:
+      Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
     traits:
-        - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
     payload:
       type: object
       properties:
@@ -105,6 +99,3 @@ messages:
           minimum: 0
         roundStatus:
           enum: [ "started", "command input ended", "ended" ]
-
-
-
