@@ -17,17 +17,14 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/status'
-          
   playerStatus:
     publish:
       message:
         $ref: '#/components/messages/playerStatus'
-          
   roundStatus:
     publish:
       message:
         $ref: '#/components/messages/roundStatus'
-
 components:
   messageTraits:
     DefaultTradingKafkaMessage:
@@ -100,6 +97,8 @@ messages:
           enum: [ "joined", "left" ]
   roundStatus:
     description: Publishes all the status changes of each round of the game.
+    traits:
+      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
     payload:
       type: object
       properties:
