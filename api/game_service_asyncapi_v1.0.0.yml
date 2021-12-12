@@ -1,4 +1,4 @@
-openapi: 2.0.0
+asyncapi: 2.0.0
 info:
   title: Game
   version: '1.0.0'
@@ -99,3 +99,6 @@ messages:
           minimum: 0
         roundStatus:
           enum: [ "started", "command input ended", "ended" ]
+
+
+
