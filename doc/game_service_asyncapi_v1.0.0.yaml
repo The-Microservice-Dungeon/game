@@ -62,7 +62,7 @@ components:
             description: The type of event
             example: event-example-uploaded
   messages:
-      status:
+    status:
       description: >
         All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
       traits:
@@ -89,7 +89,7 @@ components:
             enum: [ "joined", "left" ]
     roundStatus:
       description: >
-      Publishes all the status changes of each round of the game.
+        Publishes all the status changes of each round of the game.
       traits:
         - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
       payload:
@@ -100,6 +100,3 @@ components:
             minimum: 0
           roundStatus:
             enum: [ "started", "command input ended", "ended" ]
-
-
-
