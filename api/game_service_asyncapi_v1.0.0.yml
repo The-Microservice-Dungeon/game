@@ -62,7 +62,7 @@ components:
             description: The type of event
             example: event-example-uploaded
   messages:
-    status:
+      status:
       description: >
         All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
       traits:
