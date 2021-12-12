@@ -1,4 +1,4 @@
-asyncapi: 2.0.0
+asyncapi: '2.0.0'
 info:
   title: Game
   version: '1.0.0'
@@ -61,44 +61,45 @@ components:
             type: string
             description: The type of event
             example: event-example-uploaded
-messages:
-  status:
-    description:
-      All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
-    traits:
-      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
-    payload:
-      type: object
-      properties:
-        status:
-          enum: [ "created", "started", "ended" ]
-  playerStatus:
-    description:
-      Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
-    traits:
-      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
-    payload:
-      type: object
-      properties:
-        userId:
-          type: string
-          format: UUID
-        userName:
-          type: string
-        lobbyAction:
-          enum: [ "joined", "left" ]
-  roundStatus:
-    description: Publishes all the status changes of each round of the game.
-    traits:
-      - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
-    payload:
-      type: object
-      properties:
-        roundNumber:
-          type: integer
-          minimum: 0
-        roundStatus:
-          enum: [ "started", "command input ended", "ended" ]
+  messages:
+    status:
+      description: >
+        All status changes relevant to the game will be published. A new game is created and waits for the participation of players, then it is started by an admin and also ended by him.
+      traits:
+        - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+      payload:
+        type: object
+        properties:
+          status:
+            enum: [ "created", "started", "ended" ]
+    playerStatus:
+      description: >
+        Publishes whenever a user registers or leaves the game. Players can leave only after creating a new game and before starting the game.
+      traits:
+        - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+      payload:
+        type: object
+        properties:
+          userId:
+            type: string
+            format: UUID
+          userName:
+            type: string
+          lobbyAction:
+            enum: [ "joined", "left" ]
+    roundStatus:
+      description: >
+      Publishes all the status changes of each round of the game.
+      traits:
+        - $ref: '#/components/messageTraits/DefaultTradingKafkaMessage'
+      payload:
+        type: object
+        properties:
+          roundNumber:
+            type: integer
+            minimum: 0
+          roundStatus:
+            enum: [ "started", "command input ended", "ended" ]
 
 
 
