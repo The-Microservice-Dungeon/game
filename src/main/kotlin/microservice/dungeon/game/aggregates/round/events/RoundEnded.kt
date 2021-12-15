@@ -14,7 +14,7 @@ class RoundEnded (
     gameId: UUID,
     roundNumber: Int,
     roundStatus: RoundStatus
-) : AbstractRoundEvent(id, occurredAt, roundId, gameId, roundNumber, roundStatus, "roundEnded", "testTopic", 1) {
+) : AbstractRoundEvent(id, occurredAt, roundId, gameId, roundNumber, roundStatus, "roundEnded", "roundStatus", 1) {
 
     constructor(round: Round):
             this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()), round.getRoundId(), round.getGameId(), round.getRoundNumber(), round.getRoundStatus())

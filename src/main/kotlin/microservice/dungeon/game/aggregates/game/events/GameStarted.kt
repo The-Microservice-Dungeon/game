@@ -19,8 +19,8 @@ class GameStarted(
             this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), game.getGameStatus())
 
     init {
-        if (gameStatus != GameStatus.IN_PREPARATION)
-            throw MethodNotAllowedForStatusException("RoundStarted cannot created with round.status = $gameStatus")
+        if (gameStatus != GameStatus.CREATED)
+            throw MethodNotAllowedForStatusException("GameStarted cannot created with game.status = $gameStatus")
     }
 
     override fun getTransactionId(): UUID {
