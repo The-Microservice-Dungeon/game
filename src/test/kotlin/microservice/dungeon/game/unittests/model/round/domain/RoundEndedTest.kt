@@ -3,32 +3,22 @@ package microservice.dungeon.game.unittests.model.round.domain
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundEnded
-import microservice.dungeon.game.aggregates.round.events.RoundStarted
-import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.lang.Exception
 import java.util.*
 
 class RoundEndedTest {
-    private var validRound: Round? = null
-
-    @BeforeEach
-    fun setUp() {
-        validRound = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.ROUND_ENDED)
-    }
+    private var TEST_ROUND = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.ROUND_ENDED)
 
 
     @Test
     fun newRoundEndedShouldInitialize() {
-        val roundEnded = RoundEnded(validRound!!)
+        val roundEnded = RoundEnded(TEST_ROUND)
 
         assertThat(roundEnded)
-            .matches(validRound!!)
+            .matches(TEST_ROUND)
     }
 
     @Test
