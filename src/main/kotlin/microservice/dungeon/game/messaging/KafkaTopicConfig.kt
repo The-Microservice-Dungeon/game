@@ -32,12 +32,6 @@ class KafkaTopicConfig @Autowired constructor(
     }
 
     @Bean
-    fun testTopic(): NewTopic = NewTopic("testTopic", 1, 1)
-
-    @Bean
-    fun mockTopic(): NewTopic = NewTopic(topicMock, 1, 1)
-
-    @Bean
     fun prodRoundTopic(): NewTopic = NewTopic(topicProdRound, 1, 1)
 
     @Bean
