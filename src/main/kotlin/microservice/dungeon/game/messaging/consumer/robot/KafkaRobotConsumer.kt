@@ -13,7 +13,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import java.util.*
 
-@Component
+//@Component
 class KafkaRobotConsumer @Autowired constructor(
     private val eventConsumerService: EventConsumerService,
     private val robotService: RobotService
