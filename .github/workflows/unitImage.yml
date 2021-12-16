@@ -44,7 +44,7 @@ jobs:
         run: >
           mvn compile
           com.google.cloud.tools:jib-maven-plugin:3.1.4:build
-          -Djib.to.image=ghcr.io/the-microservice-dungeon/gamelog/gamelogservice
+          -Djib.to.image=ghcr.io/the-microservice-dungeon/game/gameservice
           -Djib.from.image=eclipse-temurin:17-alpine
   deploy:
     needs: build-image
