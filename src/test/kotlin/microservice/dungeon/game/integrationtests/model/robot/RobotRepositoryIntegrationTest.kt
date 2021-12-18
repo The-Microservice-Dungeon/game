@@ -33,8 +33,7 @@ class RobotRepositoryIntegrationTest @Autowired constructor(
     fun saveRobotShouldPersistRobot() {
         val robotId = UUID.randomUUID()
         val playerId = UUID.randomUUID()
-        val gameId = UUID.randomUUID()
-        val robot = Robot(robotId, playerId, gameId)
+        val robot = Robot(robotId, playerId)
 
         transactionTemplate.execute {
             robotRepository.save(robot)
