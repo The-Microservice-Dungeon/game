@@ -14,8 +14,6 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import javax.persistence.EntityManagerFactory
 
 
-
-
 @EnableKafka
 @Configuration
 class KafkaConsumerConfig {
@@ -45,7 +43,6 @@ class KafkaConsumerConfig {
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = consumerFactory()
-        //TODO("Transaction Manager")
         return factory
     }
 }
