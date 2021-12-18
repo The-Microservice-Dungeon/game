@@ -11,8 +11,6 @@ import org.springframework.kafka.core.KafkaAdmin
 
 @Configuration
 class KafkaTopicConfig @Autowired constructor(
-    @Value("\${kafka.topicMock}")
-    private val topicMock: String,
     @Value("\${kafka.topicProdRound}")
     private val topicProdRound: String,
     @Value("\${kafka.topicProdGame}")
