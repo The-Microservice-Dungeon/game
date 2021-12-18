@@ -27,7 +27,19 @@ class KafkaRobotConsumerTest {
 
 
     @Test
-    fun shouldDestroyRobotWhenReceivingValidMessage() {
+    fun shouldCreateNewRobotWhenReceivingValidRobotSpawnedMessage() {
+        // given
+        val validRecord = makeValidProducerRecord(ROBOT_ID, PLAYER_ID)
+
+        // when
+        kafkaRobotConsumer!!.makeNewRobot(validRecord)
+
+        // then
+        verify(mockRobotService!!).newRobot(ROBOT_ID, PLAYER_ID)
+    }
+
+    @Test
+    fun shouldDestroyRobotWhenReceivingValidRobotDestroyedMessage() {
         // given
         val validRecord = makeValidProducerRecord(ROBOT_ID, PLAYER_ID)
 
