@@ -14,6 +14,10 @@ class RobotDestroyedDto(
             objectMapper.readValue(serial, RobotDestroyedDto::class.java)
     }
 
+    fun serialize(): String {
+        val objectMapper = ObjectMapper().findAndRegisterModules()
+        return objectMapper.writeValueAsString(this)
+    }
 
     override fun equals(other: Any?): Boolean =
         (other is RobotDestroyedDto)
