@@ -23,11 +23,9 @@ class RobotServiceTest {
 
     private val ROBOT_ID = UUID.randomUUID()
     private val PLAYER_ID = UUID.randomUUID()
-    private val GAME_ID = UUID.randomUUID()
 
     private val ANY_ROBOT_ID = UUID.randomUUID()
     private val ANY_PLAYER_ID = UUID.randomUUID()
-    private val ANY_GAME_ID = UUID.randomUUID()
 
 
     @BeforeEach
@@ -40,7 +38,7 @@ class RobotServiceTest {
     @Test
     fun shouldAllowToCreateNewActiveRobot() {
         // when
-        robotService!!.newRobot(ROBOT_ID, PLAYER_ID, GAME_ID)
+        robotService!!.newRobot(ROBOT_ID, PLAYER_ID)
 
         // then
         argumentCaptor<Robot>().apply {
@@ -51,8 +49,6 @@ class RobotServiceTest {
                 .isEqualTo(ROBOT_ID)
             assertThat(newRobot.getPlayerId())
                 .isEqualTo(PLAYER_ID)
-            assertThat(newRobot.getGameId())
-                .isEqualTo(GAME_ID)
             assertThat(newRobot.getRobotStatus())
                 .isEqualTo(RobotStatus.ACTIVE)
         }
@@ -63,11 +59,11 @@ class RobotServiceTest {
         // given
         whenever(robotRepositoryMock!!.findById(any()))
             .thenReturn(Optional.of(
-                Robot(ROBOT_ID, ANY_PLAYER_ID, ANY_GAME_ID))
+                Robot(ROBOT_ID, ANY_PLAYER_ID))
             )
 
         // when
-        robotService!!.newRobot(ROBOT_ID, ANY_PLAYER_ID, ANY_GAME_ID)
+        robotService!!.newRobot(ROBOT_ID, ANY_PLAYER_ID)
 
         // then
         verify(robotRepositoryMock!!, never()).save(any())
@@ -79,7 +75,7 @@ class RobotServiceTest {
         // given
         whenever(robotRepositoryMock!!.findById(any()))
             .thenReturn(Optional.of(
-                Robot(ROBOT_ID, ANY_PLAYER_ID, ANY_GAME_ID))
+                Robot(ROBOT_ID, ANY_PLAYER_ID))
             )
 
         // when

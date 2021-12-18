@@ -12,15 +12,11 @@ class Robot constructor(
     private val robotId: UUID,
     @Type(type="uuid-char")
     private val playerId: UUID,
-    @Type(type="uuid-char")
-    private val gameId: UUID,
     private var robotStatus: RobotStatus = RobotStatus.ACTIVE
 ) {
     fun getRobotId(): UUID = robotId
 
     fun getPlayerId(): UUID = playerId
-
-    fun getGameId(): UUID = gameId
 
     fun getRobotStatus(): RobotStatus = robotStatus
 

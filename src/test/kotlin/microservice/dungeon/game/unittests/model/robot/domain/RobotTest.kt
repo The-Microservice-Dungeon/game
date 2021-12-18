@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class RobotTest {
-    private var ANY_ROBOT = Robot(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+    private var ANY_ROBOT = Robot(UUID.randomUUID(), UUID.randomUUID())
 
 
     @Test
