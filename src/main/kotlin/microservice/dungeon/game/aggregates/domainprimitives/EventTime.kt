@@ -38,5 +38,9 @@ class EventTime (
         fun makeFromLocalDateTime(time: LocalDateTime): EventTime {
             return EventTime(time.truncatedTo(ChronoUnit.SECONDS))
         }
+
+        fun makeFromNow(): EventTime {
+            return EventTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+        }
     }
 }
