@@ -4,13 +4,13 @@ import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.events.AbstractPlayerEvent
 import microservice.dungeon.game.aggregates.player.events.PlayerCreated
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -60,7 +60,7 @@ class PlayerServiceTest {
             ))
 
         // when, then
-        assertThatThrownBy {
+        assertThatExceptionOfType(PlayerAlreadyExistsException::class.java).isThrownBy {
             playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
         }
     }

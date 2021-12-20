@@ -19,13 +19,8 @@ class PlayerController @Autowired constructor(
 
     @PostMapping("/players", consumes = ["application/json"], produces = ["application/json"])
     fun createNewPlayer(@RequestBody requestPlayer: PlayerResponseDto): ResponseEntity<PlayerResponseDto> {
-        try {
             val newPlayer = playerService.createNewPlayer(requestPlayer.name, requestPlayer.email)
             val responsePlayer = PlayerResponseDto.makeFromPlayer(newPlayer)
-
             return ResponseEntity(responsePlayer, HttpStatus.CREATED)
-        } catch (e: EntityAlreadyExistsException) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Player with same mail or username already exists.")
-        }
     }
 }
