@@ -25,7 +25,7 @@ class PlayerController @Autowired constructor(
 
             return ResponseEntity(responsePlayer, HttpStatus.CREATED)
         } catch (e: EntityAlreadyExistsException) {
-            throw ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Player with same mail or username already exists.")
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Player with same mail or username already exists.")
         }
     }
 }
