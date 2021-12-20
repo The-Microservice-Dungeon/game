@@ -3,6 +3,7 @@ package microservice.dungeon.game.contracttests.model.player.controller
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.controller.PlayerController
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import org.assertj.core.api.Assertions
@@ -76,7 +77,9 @@ class PlayerControllerPostCreateNewPlayerContractTest {
         // given
         val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
         whenever(mockPlayerService!!.createNewPlayer(anyString(), anyString()))
-            .doAnswer{ throw EntityAlreadyExistsException("Player already exists") }
+            .doAnswer{
+                throw PlayerAlreadyExistsException()
+            }
 
         // when then
         webTestClient!!.post().uri("/players")
@@ -84,7 +87,7 @@ class PlayerControllerPostCreateNewPlayerContractTest {
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(requestEntity)
             .exchange()
-            .expectStatus().isEqualTo(406)
+            .expectStatus().isEqualTo(409)
     }
 
     @Test

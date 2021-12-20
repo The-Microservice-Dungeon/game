@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.events.PlayerCreated
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,8 +21,9 @@ class PlayerService @Autowired constructor(
     @Transactional
     fun createNewPlayer(userName: String, mailAddress: String): Player {
         if(!playerRepository.findByUserNameOrMailAddress(userName, mailAddress).isEmpty) {
-            throw EntityAlreadyExistsException("Player already exists")
+            throw PlayerAlreadyExistsException()
         }
+
         val player = Player(userName, mailAddress)
         playerRepository.save(player)
         return player
