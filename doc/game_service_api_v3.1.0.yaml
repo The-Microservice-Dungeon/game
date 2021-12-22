@@ -111,7 +111,7 @@ paths:
         "406":
           description: The command could not be accepted. Either no game is currently taking place, or the game has not started yet.
           
-  "/games/{gameId}/players":
+  "/games/{gameId}/players/{playerToken}":
     put:
       summary: Registers a player for the game.
       tags:
@@ -119,6 +119,7 @@ paths:
       description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
         - $ref: "#/components/parameters/gameId"
+        - $ref: "#/components/parameters/playerToken"
       security:
         - BearerAuth: [player]
       responses:
