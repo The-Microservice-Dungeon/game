@@ -29,7 +29,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/parameters/gameId"
-        "406":.
+        "406":
           description: Invalid input, object invalid.
   
     get:
@@ -270,6 +270,14 @@ components:
       schema:
         $ref: "#/components/schemas/newDuration"
       required: true
+      
+     playerToken:
+      in: path
+      name: playerToken
+      description: Defines a token given for a player. 
+      schema:
+        $ref: "#/components/schemas/playerToken"
+      required: true  
     
     
   schemas:
@@ -287,6 +295,12 @@ components:
       format: int64
       example: 3 
       
+    playerToken:
+      type: string
+      format: uuid
+      example: d290f1ee-6c54-4b01-90e6-d701748f0852
+    
+    
     commandType:
       description: Specifies the command type. Type and content must match, otherwise the command cannot be processed.
       type: string
@@ -354,30 +368,6 @@ components:
           description: Elapsed time in seconds since the start of the round.
           type: integer
           example: 33
-          
-    admin:
-      type: object
-      required:
-        - authToken
-        - name
-        - email
-      properties:
-        bearerToken:
-          allOf:
-            - description: This field is left blank during registration. The admin receives the token as a confirmation in response to his successful registration.
-            - $ref: "#/components/schemas/uuid"
-        authToken:
-          allOf:
-            - description: The authentication token must be included when registering for an administrator to confirm authorization.
-            - $ref: "#/components/schemas/uuid"
-        name:
-          description: The name the admin chooses to be displayed in the game.
-          type: string
-          example: "Rigatoni"
-        email:
-          description: An email address through which the admin can have his token restored.
-          type: string
-          format: email
           
     player:
       type: object
