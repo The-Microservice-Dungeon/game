@@ -15,6 +15,7 @@ import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.events.GameCreated
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
+import microservice.dungeon.game.aggregates.game.events.PlayerJoined
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
@@ -108,9 +109,13 @@ class GameService @Autowired constructor(
             gameRepository.save(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             game.playerList.add(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             gameRepository.save(game)
+
+            val playerJoined = PlayerJoined(game,player)
+            eventStoreService.storeEvent(playerJoined)
+            eventPublisherService.publishEvents(listOf(playerJoined))
+
             return ResponseEntity(responsePlayer, HttpStatus.CREATED)
-            //eventStoreService.storeEvent(playerJoined)
-            //eventPublisherService.publishEvents(listOf(playerJoined))
+
         } else {
             throw GameAlreadyFullException("Game is full")
         }
