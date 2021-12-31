@@ -271,7 +271,7 @@ components:
         $ref: "#/components/schemas/newDuration"
       required: true
       
-     playerToken:
+    playerToken:
       in: path
       name: playerToken
       description: Defines a token given for a player. 
