@@ -12,6 +12,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
+import microservice.dungeon.game.aggregates.game.events.GameCreated
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
@@ -47,9 +48,9 @@ class GameService @Autowired constructor(
         commandCollectionTime *= 0.75
         newGame.setCommandCollectDuration(commandCollectionTime)
         gameRepository.save(newGame)
-        val gameStarted = GameStarted(game)
-//        eventStoreService.storeEvent(gameStarted)
-        //       eventPublisherService.publishEvents(listOf(gameStarted))
+        val gameCreated = GameCreated(game)
+        eventStoreService.storeEvent(gameCreated)
+        eventPublisherService.publishEvents(listOf(gameCreated))
         return newGame
     }
 
@@ -65,8 +66,8 @@ class GameService @Autowired constructor(
         game.endGame()
         gameRepository.save(game)
         val gameEnded = GameEnded(game)
-        //       eventStoreService.storeEvent(gameEnded)
-        //       eventPublisherService.publishEvents(listOf(gameEnded))
+        eventStoreService.storeEvent(gameEnded)
+        eventPublisherService.publishEvents(listOf(gameEnded))
     }
 
 
@@ -119,7 +120,14 @@ class GameService @Autowired constructor(
     @Transactional
     fun runGame(gameId: UUID) {
         val game: Game = gameRepository.findByGameId(gameId).get()
+
         game.startGame()
+
+        val gameStarted = GameStarted(game)
+        eventStoreService.storeEvent(gameStarted)
+        eventPublisherService.publishEvents(listOf(gameStarted))
+
+
         var roundCounter = 1
         val scope = CoroutineScope(Dispatchers.Unconfined)
         val roundScope = CoroutineScope(Dispatchers.Default)

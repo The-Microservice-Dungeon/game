@@ -23,6 +23,8 @@ abstract class AbstractPlayerJoinedEvent(
     override fun getId(): UUID = id
     override fun getOccurredAt(): EventTime = occurredAt
 
+    override fun getTransactionId(): UUID = gameId
+
     fun getGameId(): UUID = gameId
     fun getPlayerId(): UUID = playerId
 
@@ -38,7 +40,7 @@ abstract class AbstractPlayerJoinedEvent(
     }
 
     override fun toDTO(): EventDto {
-        return PlayerJoinedEventDto(id, occurredAt,  gameId, playerId)
+        return PlayerJoinedEventDto(playerId)
     }
 
     override fun equals(other: Any?): Boolean =

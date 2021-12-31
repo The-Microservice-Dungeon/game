@@ -20,9 +20,13 @@ abstract class AbstractGameEvent(
 ): Event  {
 
     override fun getId(): UUID = id
+
     override fun getOccurredAt(): EventTime = occurredAt
 
+    override fun getTransactionId(): UUID = gameId
+
     fun getGameId(): UUID = gameId
+
     fun getGameStatus(): GameStatus = gameStatus
 
     override fun getEventName(): String = eventName
@@ -37,7 +41,7 @@ abstract class AbstractGameEvent(
     }
 
     override fun toDTO(): EventDto {
-        return GameEventDto(id, occurredAt,  gameId, gameStatus)
+        return GameEventDto(gameStatus)
     }
 
     override fun equals(other: Any?): Boolean =

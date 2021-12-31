@@ -7,9 +7,6 @@ import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import java.util.*
 
 class PlayerJoinedEventDto(
-    val id: UUID,
-    val occurredAt: EventTime,
-    val gameId: UUID,
     val playerId: UUID
 ): EventDto {
 
