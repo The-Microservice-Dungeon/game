@@ -19,12 +19,7 @@ class GameEnded (
 
     init {
         if (gameStatus != GameStatus.GAME_FINISHED)
-            throw MethodNotAllowedForStatusException("GameEnd cannot created with game.status = $gameStatus")
+            throw MethodNotAllowedForStatusException("GameEnd cannot be used with game.status = $gameStatus")
     }
-
-    override fun getTransactionId(): UUID {
-        TODO("Not yet implemented")
-    }
-
 
 }
