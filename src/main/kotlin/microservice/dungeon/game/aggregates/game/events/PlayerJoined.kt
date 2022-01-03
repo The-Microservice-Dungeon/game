@@ -15,7 +15,7 @@ class PlayerJoined (
     occurredAt: EventTime,
     gameId: UUID,
     playerId: UUID
-): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "gameTopic", 1){
+): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "playerStatus", 1){
 
     constructor(game: Game, player: Player):
             this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), player.getPlayerId())

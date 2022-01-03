@@ -12,7 +12,7 @@ class GameStarted(
     occurredAt: EventTime,
     gameId: UUID,
     gameStatus: GameStatus
-) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameStarted", "gameStatus", 1) {
+) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameStarted", "status", 1) {
 
     constructor(game: Game):
             this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), game.getGameStatus())
