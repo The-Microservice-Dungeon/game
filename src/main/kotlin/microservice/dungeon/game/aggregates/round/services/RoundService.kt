@@ -6,6 +6,8 @@ import microservice.dungeon.game.aggregates.command.repositories.CommandReposito
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 @Service
@@ -25,6 +28,7 @@ class RoundService @Autowired constructor (
     private val roundRepository: RoundRepository,
     private val commandRepository: CommandRepository,
     private val eventStoreService: EventStoreService,
+    private val gameRepository: GameRepository,
     private val eventPublisherService: EventPublisherService,
     private val robotCommandDispatcherClient: RobotCommandDispatcherClient,
     private val tradingCommandDispatcherClient: TradingCommandDispatcherClient
@@ -35,6 +39,11 @@ class RoundService @Autowired constructor (
             throw EntityAlreadyExistsException("A round with number $roundNumber for game $gameId already exists.")
         }
         val round = Round(gameId, roundNumber)
+        
+        val game: Game = gameRepository.findByGameId(gameId).get()
+        game.setLastRoundStartedAt(LocalTime.now())
+        game.setCurrentRoundCount(roundNumber)
+
         roundRepository.save(round)
         val roundStarted = RoundStarted(round)
         eventStoreService.storeEvent(roundStarted)

@@ -12,19 +12,14 @@ class GameEnded (
     occurredAt: EventTime,
     gameId: UUID,
     gameStatus: GameStatus
-) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameEnded", "testTopic", 1) {
+) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameEnded", "status", 1) {
 
     constructor(game: Game):
             this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(),  game.getGameStatus())
 
     init {
         if (gameStatus != GameStatus.GAME_FINISHED)
-            throw MethodNotAllowedForStatusException("GameEnd cannot created with game.status = $gameStatus")
+            throw MethodNotAllowedForStatusException("GameEnd cannot be used with game.status = $gameStatus")
     }
-
-    override fun getTransactionId(): UUID {
-        TODO("Not yet implemented")
-    }
-
 
 }
