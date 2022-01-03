@@ -40,9 +40,9 @@ class RoundService @Autowired constructor (
         }
         val round = Round(gameId, roundNumber)
         
-        val game: Game = gameRepository.findByGameId(gameId).get()
-        game.setLastRoundStartedAt(LocalTime.now())
-        game.setCurrentRoundCount(roundNumber)
+        //val game: Game = gameRepository.findByGameId(gameId).get()
+        //game.setLastRoundStartedAt(LocalTime.now())
+        //game.setCurrentRoundCount(roundNumber)
 
         roundRepository.save(round)
         val roundStarted = RoundStarted(round)
