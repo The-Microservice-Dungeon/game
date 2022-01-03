@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.command.repositories.CommandReposito
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
@@ -25,6 +26,7 @@ class RoundServiceEndRoundTest {
     private var mockEventStoreService: EventStoreService? = null
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockRobotCommandDispatcherClient: RobotCommandDispatcherClient? = null
+    private var mockGameRepository: GameRepository? = null
     private var mockTradingCommandDispatcherClient: TradingCommandDispatcherClient? = null
     private var mockRoundRepository: RoundRepository? = null
     private var mockCommandRepository: CommandRepository? = null
@@ -47,6 +49,7 @@ class RoundServiceEndRoundTest {
             mockRoundRepository!!,
             mockCommandRepository!!,
             mockEventStoreService!!,
+            mockGameRepository!!,
             mockEventPublisherService!!,
             mockRobotCommandDispatcherClient!!,
             mockTradingCommandDispatcherClient!!
