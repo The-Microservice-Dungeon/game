@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 @Service
@@ -40,6 +41,7 @@ class RoundService @Autowired constructor (
         val round = Round(gameId, roundNumber)
         
         val game: Game = gameRepository.findByGameId(gameId).get()
+        game.setLastRoundStartedAt(LocalTime.now())
         game.setCurrentRoundCount(roundNumber)
 
         roundRepository.save(round)

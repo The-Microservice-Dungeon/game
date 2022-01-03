@@ -148,12 +148,12 @@ class GameService @Autowired constructor(
         scope.launch {
             while (roundCounter != (maxRounds + 1)) {
 
-                //NOT UPDATING AFTER FIRST ROUND put into Round!
-                game.setLastRoundStartedAt(LocalTime.now())
-                game.setCurrentRoundCount(roundCounter)
-
-
                 val roundId = roundService.startNewRound(gameId, roundCounter)
+
+                if (roundCounter == 1){
+                    eventPublisherService.publishEvents(eventStoreService.fetchUnpublishedEvents())
+                }
+
                 val executionDuration = (roundDuration - commandCollectDuration) / 7
 
                 //END COLLECTIONPHASE START BLOCKING
