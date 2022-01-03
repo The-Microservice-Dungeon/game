@@ -43,6 +43,7 @@ class RoundServiceEndRoundTest {
         mockEventPublisherService = mock()
         mockRobotCommandDispatcherClient = mock()
         mockTradingCommandDispatcherClient = mock()
+        mockGameRepository = mock()
         mockRoundRepository = mock()
         mockCommandRepository = mock()
         roundService = RoundService(
