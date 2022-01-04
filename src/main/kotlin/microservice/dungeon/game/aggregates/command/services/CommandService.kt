@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.robot.domain.RobotStatus
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -39,9 +40,9 @@ class CommandService @Autowired constructor(
 
         //TODO Test ;)
         if (!robotRepository.findAll()
-                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId }
+                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId && r.getRobotStatus() == RobotStatus.ACTIVE }
         ) {
-            throw IllegalAccessException("Player is not allowed to send commands to this robot.")
+            throw IllegalAccessException("Player is not allowed to send commands to this robot or robot is inactive.")
         }
 
         val prevCommands = commandRepository.findAll()
