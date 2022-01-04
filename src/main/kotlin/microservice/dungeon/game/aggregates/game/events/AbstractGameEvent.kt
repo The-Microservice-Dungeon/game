@@ -41,7 +41,7 @@ abstract class AbstractGameEvent(
     }
 
     override fun toDTO(): EventDto {
-        return GameEventDto(gameStatus)
+        return GameEventDto(gameId, gameStatus)
     }
 
     override fun equals(other: Any?): Boolean =
