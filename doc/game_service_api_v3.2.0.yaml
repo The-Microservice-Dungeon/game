@@ -258,7 +258,7 @@ components:
     maxRounds:
       in: path
       name: maxRounds
-      description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
+      description: Defines the maximum possible number of rounds. 
       schema:
         $ref: "#/components/schemas/roundNumber"
       required: true
@@ -343,9 +343,9 @@ components:
         - numberOfMaxPlayers
       properties:
         numberOfRounds:
-          description: Defines the maximum possible number of rounds. If the value is 0, there is no limit and the game can only be ended manually.
+          description: Defines the maximum possible number of rounds.
           type: integer
-          minimum: 0
+          minimum: 1
           example: 58
         numberOfMaxPlayers:
           description: Defines the maximum possible number of players.
