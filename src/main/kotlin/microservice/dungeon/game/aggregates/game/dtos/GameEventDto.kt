@@ -10,11 +10,11 @@ import java.time.LocalDateTime
 import java.util.*
 
 class GameEventDto(
-    val gameStatus: String
+    val gameId: UUID,
+    val status: String
 ): EventDto {
-
-    constructor(gameStatus: GameStatus):
-            this(GameEventDto.mapStatusToOutputStatus(gameStatus))
+    constructor(gameId: UUID, gameStatus: GameStatus):
+            this(gameId, GameEventDto.mapStatusToOutputStatus(gameStatus))
 
     override fun serialize(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()
@@ -25,8 +25,8 @@ class GameEventDto(
         private fun mapStatusToOutputStatus(status: GameStatus): String {
             return when (status) {
                 GameStatus.CREATED          -> "created"
-                GameStatus.GAME_RUNNING     -> "game started"
-                GameStatus.GAME_FINISHED    -> "game ended"
+                GameStatus.GAME_RUNNING     -> "started"
+                GameStatus.GAME_FINISHED    -> "ended"
                 else -> {
                     throw RuntimeException("invalid gameStatus -> event api status mapping")
                 }
