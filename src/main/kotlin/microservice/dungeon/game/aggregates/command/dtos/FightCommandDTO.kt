@@ -12,7 +12,7 @@ class FightCommandDTO(
         const val stringPrefix = "fight"
 
         fun fromCommand(command: Command) = FightCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.commandObject.targetId!!,
             command.transactionId
         )

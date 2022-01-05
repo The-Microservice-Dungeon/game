@@ -12,7 +12,7 @@ class MovementCommandDTO(
         const val stringPrefix = "move"
 
         fun fromCommand(command: Command) = MovementCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.commandObject.planetId!!,
             command.transactionId
         )

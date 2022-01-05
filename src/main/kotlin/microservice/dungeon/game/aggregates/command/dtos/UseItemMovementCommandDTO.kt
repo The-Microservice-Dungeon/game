@@ -12,7 +12,7 @@ class UseItemMovementCommandDTO(
         const val stringPrefix = "use-item-movement"
 
         fun fromCommand(command: Command) = UseItemMovementCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.commandObject.itemName!!,
             command.transactionId
         )

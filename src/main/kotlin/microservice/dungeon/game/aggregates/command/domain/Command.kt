@@ -3,7 +3,10 @@ package microservice.dungeon.game.aggregates.command.domain
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.*
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "commands")
@@ -18,7 +21,7 @@ class Command constructor(
     val playerId: UUID,
 
     @Type(type = "uuid-char")
-    val robotId: UUID,
+    val robotId: UUID?,
 
     val commandType: CommandType,
 
