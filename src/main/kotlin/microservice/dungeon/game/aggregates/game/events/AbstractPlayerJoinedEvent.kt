@@ -26,6 +26,7 @@ abstract class AbstractPlayerJoinedEvent(
     override fun getTransactionId(): UUID = gameId
 
     fun getGameId(): UUID = gameId
+
     fun getPlayerId(): UUID = playerId
 
     override fun getEventName(): String = eventName
