@@ -109,7 +109,7 @@ class TradingCommandDispatcherClientIntegrationTest {
                 planetId = UUID.randomUUID(),
                 targetId = UUID.randomUUID(),
                 itemName = "ANY ITEM_NAME",
-                ItemQuantity = 3
+                itemQuantity = 3
             ),
             roundNumber = 5
         )

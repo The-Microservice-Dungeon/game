@@ -9,7 +9,6 @@ import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -115,7 +114,7 @@ class CommandControllerIntegrationTest {
                 planetId = UUID.randomUUID(),
                 targetId = UUID.randomUUID(),
                 itemName = "ANY NAME",
-                ItemQuantity = 1
+                itemQuantity = 1
             )
         )
 }

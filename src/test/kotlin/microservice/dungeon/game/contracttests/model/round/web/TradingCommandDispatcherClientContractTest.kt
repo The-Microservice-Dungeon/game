@@ -106,7 +106,7 @@ class TradingCommandDispatcherClientContractTest {
                 planetId = input.planetId,
                 targetId = ANY_TARGET_ID,
                 itemName = input.itemName,
-                ItemQuantity = input.amount
+                itemQuantity = input.amount
             )
         ) }
 }
