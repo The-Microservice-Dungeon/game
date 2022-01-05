@@ -15,15 +15,16 @@ import javax.validation.constraints.NotBlank
 @Table(name = "games", indexes = [
     Index(name = "GameIndex", columnList = "gameId", unique = true)
 ])
-class Game constructor(
+
+class Game(
     @Id
     @Type(type="uuid-char")
     private val gameId: UUID = UUID.randomUUID(),
     private var gameStatus: GameStatus = GameStatus.CREATED,
-
+    @get: NotBlank
     private var maxPlayers: Int = 0,
-
-    private var maxRounds: Int = 1,
+    @get: NotBlank
+    private var maxRounds: Int = 0,
 
     private var roundDuration: Long = 60000, // in ms
     private var commandCollectDuration: Double = 45000.00, // in ms
