@@ -14,11 +14,12 @@ class PlayerJoined (
     id: UUID,
     occurredAt: EventTime,
     gameId: UUID,
-    playerId: UUID
-): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "playerStatus", 1){
+    playerId: UUID,
+    transactionId: UUID
+): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "playerStatus", 1, transactionId){
 
-    constructor(game: Game, player: Player):
-            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), player.getPlayerId())
+    constructor(game: Game, player: Player, transactionId: UUID):
+            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), player.getPlayerId(), transactionId)
 
 
 

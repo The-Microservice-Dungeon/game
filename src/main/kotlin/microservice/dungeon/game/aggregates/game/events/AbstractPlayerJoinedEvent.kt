@@ -17,13 +17,14 @@ abstract class AbstractPlayerJoinedEvent(
     private val playerId: UUID,
     private val eventName: String,
     private val topic: String,
-    private val version: Int
+    private val version: Int,
+    private val transactionId: UUID
 ): Event  {
 
     override fun getId(): UUID = id
     override fun getOccurredAt(): EventTime = occurredAt
 
-    override fun getTransactionId(): UUID = gameId
+    override fun getTransactionId(): UUID = transactionId
 
     fun getGameId(): UUID = gameId
 
