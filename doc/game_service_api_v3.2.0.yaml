@@ -115,7 +115,10 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/uuid"
+                type: object
+                properties:
+                  transactionId:
+                    $ref: "#/components/schemas/uuid"
         "400":
           description: Player not found, wrong game status or the game is already full.
         "406":
@@ -198,7 +201,10 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/uuid"
+                type: object
+                properties:
+                  transactionId:
+                    $ref: "#/components/schemas/uuid"
         "404":
           description: The user has no permission to access this resource.
         "500":
@@ -349,7 +355,8 @@ components:
           $ref: "#/components/schemas/uuid"
         itemName:
           $ref: "#/components/schemas/commandItem"  
-      
+        itemQuantity:
+          $ref: "#/components/schemas/itemQuantity"        
     commandItem:
       description: Defines whether a command is bound to an object. The corresponding syntax is given by the robot service.
       type: string
@@ -463,6 +470,7 @@ components:
       required:
         - gameId
         - playerId
+        - robotId
         - commandType
         - commandObject
       properties:
@@ -476,8 +484,6 @@ components:
           $ref: "#/components/schemas/commandType"
         commandObject:
           $ref: "#/components/schemas/commandObject"
-        itemQuantity:
-          $ref: "#/components/schemas/itemQuantity"  
     commandOutput:
       description: The command that has been accepted from a player for a specific game, round and robot.
       type: object
