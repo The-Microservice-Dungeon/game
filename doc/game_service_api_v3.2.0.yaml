@@ -28,7 +28,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/parameters/gameId"
+                type: object
+                properties:
+                  gameId:
+                    $ref: "#/components/schemas/uuid"
         "406":
           description: Invalid input, object invalid.
   
@@ -45,7 +48,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/game"
+                  $ref: "#/components/schemas/gameInfo"
             
   "/games/{gameId}/time":
     get:
@@ -108,7 +111,11 @@ paths:
         - BearerAuth: [player]
       responses:
         "200":
-          description: The player has been successfully registered for the game.
+          description: Returns the UUID of the action that the player registered. Its NOT the playerId.
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/uuid"
         "400":
           description: Player not found, wrong game status or the game is already full.
         "406":
@@ -268,7 +275,7 @@ components:
       name: newDuration
       description: Defines the duration of a round. 
       schema:
-        $ref: "#/components/schemas/newDuration"
+        $ref: "#/components/schemas/duration"
       required: true
       
     playerToken:
@@ -290,16 +297,28 @@ components:
       type: integer
       example: 3
      
-    newDuration:
+    duration:
       type: integer
       format: int64
       example: 3 
-      
+    
+    gameStatus:
+      description: The different status that a game can have.
+      type: string
+      enum:
+        - Created
+        - Game_Running
+        - Game_Finished
+    
     playerToken:
       type: string
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0852
-    
+      
+    itemQuantity:
+      type: integer
+      format: int64
+      example: 5
     
     commandType:
       description: Specifies the command type. Type and content must match, otherwise the command cannot be processed.
@@ -353,6 +372,56 @@ components:
           minimum: 1
           example: 6
           
+    gameInfo:
+      type: object
+      properties:
+        gameId:
+          $ref: "#/components/schemas/uuid"      
+        gameStatus:
+          $ref: "#/components/schemas/gameStatus"
+        maxPlayer:
+          description: Defines the maximum possible number of players.
+          type: integer
+          minimum: 1
+          example: 6      
+        maxRounds:
+          description: Defines the maximum possible number of rounds.
+          type: integer
+          minimum: 1
+          example: 58
+        roundDuration:  
+          $ref: "#/components/schemas/duration"  
+        commandCollectDuration:
+          description: Defines the time, how long the commands can get collected.
+          type: number
+          example: 45000.0
+        createdGameDateTime:
+          type: string
+          format: date-time
+          example: "2022-01-06T09:49:06"
+        lastRoundStartedAt:
+          type: string
+          format: date-time
+          example: "2020-02-06T09:49:07"
+        currentRoundCount:
+          description: Amount of rounds, that happend in the current game.
+          type: integer
+        playerList:
+          description: List of all the player in the game.
+          type: array  
+          items: 
+             $ref: "#/components/schemas/uuid"
+        gameStartTime:
+          description: Date when the current game started.
+          type: string
+          format: date-time
+          example: "2020-02-06T07:49:07
+        playersInGame:
+          description: List of all the player in the game.
+          type: array 
+          items:
+            $ref: "#/components/schemas/uuid"
+
     roundTime:
       type: object
       properties:
@@ -397,6 +466,7 @@ components:
         - robotId
         - commandType
         - commandObject
+        - itemQuantity
       properties:
         gameId:
           $ref: "#/components/schemas/uuid"
@@ -408,6 +478,8 @@ components:
           $ref: "#/components/schemas/commandType"
         commandObject:
           $ref: "#/components/schemas/commandObject"
+        itemQuantity:
+          $ref: "#/components/schemas/itemQuantity"  
     commandOutput:
       description: The command that has been accepted from a player for a specific game, round and robot.
       type: object
