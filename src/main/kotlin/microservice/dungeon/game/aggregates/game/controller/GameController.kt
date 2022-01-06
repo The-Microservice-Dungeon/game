@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusExcept
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
+import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -31,13 +32,12 @@ class GameController(@Autowired private val gameService: GameService) {
 
 
     @PutMapping("/games/{gameId}/players/{playerToken}")
-    fun insertPlayerById(
+    fun insertPlayerById (
         @PathVariable(value = "gameId") gameId: UUID,
         @PathVariable(value = "playerToken") playerToken: UUID
-    ) {
+    ): ResponseEntity<PlayerJoinGameDto> {
         try {
-            gameService.insertPlayer(gameId, playerToken)
-
+            return gameService.insertPlayer(gameId, playerToken)
 
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
