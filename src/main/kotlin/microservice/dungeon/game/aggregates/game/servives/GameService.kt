@@ -12,6 +12,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
+import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.events.GameCreated
 import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
@@ -76,17 +77,12 @@ class GameService @Autowired constructor(
 
 
     @Transactional
-    fun insertPlayer(gameId: UUID, token: UUID): ResponseEntity<PlayerResponseDto> {
+    fun insertPlayer(gameId: UUID, token: UUID): ResponseEntity<PlayerJoinGameDto> {
+        val transactionId = UUID.randomUUID()
 
         val player: Player = playerRepository.findByPlayerToken(token).get() // is empty?
             ?: throw EntityNotFoundException("Player does not exist")
 
-
-        val responsePlayer = PlayerResponseDto(//nochmal anascheun warum es hier ist
-            player.getPlayerToken(),
-            player.getUserName(),
-            player.getMailAddress()
-        )
 
         val game: Game = gameRepository.findByGameId(gameId).get()
 
@@ -114,7 +110,8 @@ class GameService @Autowired constructor(
             eventStoreService.storeEvent(playerJoined)
             eventPublisherService.publishEvents(listOf(playerJoined))
 
-            return ResponseEntity(responsePlayer, HttpStatus.CREATED)
+            val responseDto = PlayerJoinGameDto(transactionId)
+            return ResponseEntity(responseDto, HttpStatus.OK)
 
         } else {
             throw GameAlreadyFullException("Game is full")
