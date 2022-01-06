@@ -463,10 +463,8 @@ components:
       required:
         - gameId
         - playerId
-        - robotId
         - commandType
         - commandObject
-        - itemQuantity
       properties:
         gameId:
           $ref: "#/components/schemas/uuid"
