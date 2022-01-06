@@ -106,7 +106,7 @@ class GameService @Autowired constructor(
             game.playerList.add(PlayersInGame(playerId = player.getPlayerId(), gameId = game.getGameId()))
             gameRepository.save(game)
 
-            val playerJoined = PlayerJoined(game,player)
+            val playerJoined = PlayerJoined(game,player, transactionId)
             eventStoreService.storeEvent(playerJoined)
             eventPublisherService.publishEvents(listOf(playerJoined))
 
