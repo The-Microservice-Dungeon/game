@@ -25,6 +25,7 @@ components:
           key:
             type: string
             format: uuid
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
           bindingVersion: '0.1.0'
       correlationId:
         location: "$message.header#/transactionId"
@@ -70,6 +71,10 @@ components:
       payload:
         type: object
         properties:
+          gameId:
+            type: string
+            format: UUID
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
           status:
             enum: [ "created", "started", "ended" ]
     playerStatus:
