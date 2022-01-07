@@ -88,6 +88,9 @@ components:
           userId:
             type: string
             format: UUID
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
+          name:
+            type: string  
           lobbyAction:
             enum: [ "joined" ]
     roundStatus:
@@ -98,6 +101,10 @@ components:
       payload:
         type: object
         properties:
+          roundId:
+            type: string
+            format: UUID
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
           roundNumber:
             type: integer
             minimum: 0
