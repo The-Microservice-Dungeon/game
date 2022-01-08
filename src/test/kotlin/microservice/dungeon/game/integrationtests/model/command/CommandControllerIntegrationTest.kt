@@ -9,7 +9,6 @@ import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -19,6 +18,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import java.net.URI
 import java.util.*
 
 @SpringBootTest(
@@ -55,7 +55,7 @@ class CommandControllerIntegrationTest {
 
         val command = Command(
             UUID.randomUUID(),
-            UUID.randomUUID(),
+            gameId,
             UUID.randomUUID(),
             UUID.randomUUID(),
             CommandType.BATTLE,
@@ -69,10 +69,22 @@ class CommandControllerIntegrationTest {
             roundNumber
         )
 
-        whenever(mockCommandService!!.getAllRoundCommands(gameId, roundNumber))
+        whenever(mockCommandService!!.getAllRoundCommands(command.gameId, roundNumber))
             .thenReturn(listOf(command))
 
-        val result = webTestClient!!.get().uri("/commands")
+        val uri = URI.create("/commands?gameId=${command.gameId}&roundNumber=${command.roundNumber}")
+
+        val result = webTestClient!!.get()
+            .uri(uri)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<Command>>()
+            .returnResult()
+
+        println(uri.toString())
+        println(listOf(command))
+        println(result.responseBody!!)
+        assertThat(result.responseBody!!.contains(command))
 
     }
 

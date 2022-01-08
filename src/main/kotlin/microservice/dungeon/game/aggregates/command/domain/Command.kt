@@ -3,7 +3,10 @@ package microservice.dungeon.game.aggregates.command.domain
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.*
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "commands")
@@ -28,6 +31,16 @@ class Command constructor(
     val roundNumber: Int
 ) {
     fun toDto(): CommandDTO = CommandDTO(gameId, playerId, robotId, commandType, commandObject)
+
+    override fun equals(other: Any?): Boolean =
+        (other is Command)
+                && transactionId == other.transactionId
+                && gameId == other.gameId
+                && playerId == other.playerId
+                && robotId == other.robotId
+                && commandType == other.commandType
+                && commandObject == other.commandObject
+                && roundNumber == other.roundNumber
 
     companion object {
         fun fromDto(dto: CommandDTO, roundNumber: Int): Command = Command(

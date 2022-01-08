@@ -6,20 +6,17 @@ import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
 class CommandController @Autowired constructor(private val commandService: CommandService) {
 
-    @GetMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
+    @GetMapping("/commands", produces = ["application/json"])
     fun getAllRoundCommands(
-        @RequestBody gameId: UUID,
-        @RequestBody roundNumber: Int
+        @RequestParam gameId: UUID,
+        @RequestParam roundNumber: Int
     ): ResponseEntity<List<Command>> {
         try {
             val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
