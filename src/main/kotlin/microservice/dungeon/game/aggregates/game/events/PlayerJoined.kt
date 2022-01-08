@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.domain.PlayersInGame
+import microservice.dungeon.game.aggregates.player.domain.Player
 import java.time.LocalDateTime
 import java.util.*
 
@@ -13,13 +14,13 @@ class PlayerJoined (
     id: UUID,
     occurredAt: EventTime,
     gameId: UUID,
-    playerId: UUID
-): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "testTopic", 1){
+    playerId: UUID,
+    transactionId: UUID
+): AbstractPlayerJoinedEvent(id, occurredAt,  gameId,  playerId, "playerJoined", "playerStatus", 1, transactionId){
 
-    //TODO("Constructror")
+    constructor(game: Game, player: Player, transactionId: UUID):
+            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), player.getPlayerId(), transactionId)
 
-    override fun getTransactionId(): UUID {
-        TODO("Not yet implemented")
-    }
+
 
 }

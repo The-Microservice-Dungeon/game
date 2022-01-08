@@ -127,7 +127,7 @@ class CommandControllerIntegrationTest {
                 planetId = UUID.randomUUID(),
                 targetId = UUID.randomUUID(),
                 itemName = "ANY NAME",
-                ItemQuantity = 1
+                itemQuantity = 1
             )
         )
 }

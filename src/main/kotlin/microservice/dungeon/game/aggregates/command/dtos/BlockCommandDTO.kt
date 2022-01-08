@@ -11,7 +11,7 @@ class BlockCommandDTO(
         const val stringPrefix = "block"
 
         fun fromCommand(command: Command) = BlockCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.transactionId
         )
 

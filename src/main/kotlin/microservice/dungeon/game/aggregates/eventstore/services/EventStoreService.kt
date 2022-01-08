@@ -40,6 +40,7 @@ open class EventStoreService @Autowired constructor(
         }
     }
 
+    @Transactional
     fun fetchUnpublishedEvents(): List<Event> {
         return eventDescriptorRepository.findByStatus(EventDescriptorStatus.CREATED)
             .map{ descriptor: EventDescriptor -> descriptor.getAsEvent(environment, applicationContext)}

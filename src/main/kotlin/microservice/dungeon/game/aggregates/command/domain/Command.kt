@@ -21,7 +21,7 @@ class Command constructor(
     val playerId: UUID,
 
     @Type(type = "uuid-char")
-    val robotId: UUID,
+    val robotId: UUID?,
 
     val commandType: CommandType,
 

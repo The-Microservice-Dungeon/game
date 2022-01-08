@@ -9,7 +9,7 @@ class CommandDTO(
 
     val playerId: UUID,
 
-    val robotId: UUID,
+    val robotId: UUID?,
 
     val commandType: CommandType,
 

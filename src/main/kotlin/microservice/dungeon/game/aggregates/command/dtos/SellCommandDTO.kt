@@ -15,7 +15,7 @@ class SellCommandDTO(
                 command.playerId,
                 TradingPayload(
                     "sell",
-                    command.commandObject.ItemQuantity!!,
+                    command.commandObject.itemQuantity!!,
                     command.commandObject.planetId!!,
                     command.commandObject.itemName!!
                 )

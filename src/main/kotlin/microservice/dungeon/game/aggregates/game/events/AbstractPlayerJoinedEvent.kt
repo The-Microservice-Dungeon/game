@@ -17,13 +17,17 @@ abstract class AbstractPlayerJoinedEvent(
     private val playerId: UUID,
     private val eventName: String,
     private val topic: String,
-    private val version: Int
+    private val version: Int,
+    private val transactionId: UUID
 ): Event  {
 
     override fun getId(): UUID = id
     override fun getOccurredAt(): EventTime = occurredAt
 
+    override fun getTransactionId(): UUID = transactionId
+
     fun getGameId(): UUID = gameId
+
     fun getPlayerId(): UUID = playerId
 
     override fun getEventName(): String = eventName
@@ -38,7 +42,7 @@ abstract class AbstractPlayerJoinedEvent(
     }
 
     override fun toDTO(): EventDto {
-        return PlayerJoinedEventDto(id, occurredAt,  gameId, playerId)
+        return PlayerJoinedEventDto(playerId)
     }
 
     override fun equals(other: Any?): Boolean =

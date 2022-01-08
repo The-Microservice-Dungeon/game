@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.game.domain
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.player.domain.Player
 import org.hibernate.annotations.Type
+
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotBlank
 @Table(name = "games", indexes = [
     Index(name = "GameIndex", columnList = "gameId", unique = true)
 ])
+
 class Game(
     @Id
     @Type(type="uuid-char")

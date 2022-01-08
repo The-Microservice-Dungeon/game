@@ -19,7 +19,7 @@ open class CommandObject(
     var itemName: String?,
 
     @Column(name = "object_itemQuantity")
-    var ItemQuantity: Int?
+    var itemQuantity: Int?
 ) {
     override fun equals(other: Any?): Boolean =
         (other is CommandObject)
@@ -27,5 +27,5 @@ open class CommandObject(
                 && planetId == other.planetId
                 && targetId == other.targetId
                 && itemName == other.itemName
-                && ItemQuantity == other.ItemQuantity
+                && itemQuantity == other.itemQuantity
 }

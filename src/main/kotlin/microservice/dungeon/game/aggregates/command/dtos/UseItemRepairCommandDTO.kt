@@ -12,7 +12,7 @@ class UseItemRepairCommandDTO(
         const val stringPrefix = "use-item-repair"
 
         fun fromCommand(command: Command) = UseItemRepairCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.commandObject.itemName!!,
             command.transactionId
         )

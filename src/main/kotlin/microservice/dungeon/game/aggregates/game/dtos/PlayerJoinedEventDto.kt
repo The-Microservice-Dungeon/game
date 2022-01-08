@@ -3,15 +3,14 @@ package microservice.dungeon.game.aggregates.game.dtos
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.EventDto
-import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import java.util.*
 
+
 class PlayerJoinedEventDto(
-    val id: UUID,
-    val occurredAt: EventTime,
-    val gameId: UUID,
-    val playerId: UUID
+    val userId: UUID,
+    val lobbyAction: String = "joined"
 ): EventDto {
+    constructor(playerId: UUID ): this(playerId,"joined")
 
     override fun serialize(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()

@@ -4,20 +4,13 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
-import microservice.dungeon.game.assertions.CustomAssertions
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.robot.*
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
-import microservice.dungeon.game.contracts.round.web.trading.SendSellingCommandsToTradingSuccessful
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import java.util.*
 
 class RobotCommandDispatcherClientContractTest {
     private var mockWebServer: MockWebServer? = null
@@ -263,7 +256,7 @@ class RobotCommandDispatcherClientContractTest {
                 planetId = input.planetId,
                 targetId = input.targetId,
                 itemName = input.itemName,
-                ItemQuantity = input.itemQuantity
+                itemQuantity = input.itemQuantity
             )
         ) }
 }

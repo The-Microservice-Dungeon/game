@@ -11,7 +11,7 @@ class MineCommandDTO(
         const val stringPrefix = "mine"
 
         fun fromCommand(command: Command) = MineCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.transactionId
         )
 

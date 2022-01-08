@@ -11,7 +11,7 @@ class RegenerateCommandDTO(
         const val stringPrefix = "regenerate"
 
         fun fromCommand(command: Command) = RegenerateCommandDTO(
-            command.robotId,
+            command.robotId!!,
             command.transactionId
         )
 
