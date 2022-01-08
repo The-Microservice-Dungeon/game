@@ -365,15 +365,15 @@ components:
     game:
       type: object
       required:
-        - numberOfRounds
-        - numberOfMaxPlayers
+        - maxRounds
+        - maxPlayer
       properties:
-        numberOfRounds:
+        maxRounds:
           description: Defines the maximum possible number of rounds.
           type: integer
           minimum: 1
           example: 58
-        numberOfMaxPlayers:
+        maxPlayer:
           description: Defines the maximum possible number of players.
           type: integer
           minimum: 1
@@ -422,7 +422,7 @@ components:
           description: Date when the current game started.
           type: string
           format: date-time
-          example: "2020-02-06T07:49:07
+          example: "2020-02-06T07:49:07"
         playersInGame:
           description: List of all the player in the game.
           type: array 
