@@ -366,19 +366,19 @@ components:
       type: object
       required:
         - maxRounds
-        - maxPlayer
+        - maxPlayers
       properties:
         maxRounds:
           description: Defines the maximum possible number of rounds.
           type: integer
           minimum: 1
           example: 58
-        maxPlayer:
+        maxPlayers:
           description: Defines the maximum possible number of players.
           type: integer
           minimum: 1
           example: 6
-          
+
     gameInfo:
       type: object
       properties:
@@ -386,11 +386,11 @@ components:
           $ref: "#/components/schemas/uuid"      
         gameStatus:
           $ref: "#/components/schemas/gameStatus"
-        maxPlayer:
+        maxPlayers:
           description: Defines the maximum possible number of players.
           type: integer
           minimum: 1
-          example: 6      
+          example: 6
         maxRounds:
           description: Defines the maximum possible number of rounds.
           type: integer
