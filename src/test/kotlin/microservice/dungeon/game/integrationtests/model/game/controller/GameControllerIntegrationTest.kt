@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.game
+package microservice.dungeon.game.integrationtests.model.game.controller
 
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -11,7 +11,6 @@ import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
