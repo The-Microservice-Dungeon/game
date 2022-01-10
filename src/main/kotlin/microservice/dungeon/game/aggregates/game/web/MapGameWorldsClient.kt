@@ -17,18 +17,21 @@ class MapGameWorldsClient @Autowired constructor(
     private val webClient = WebClient.create(mapBaseUrl)
 
     fun createNewGameWorld(): Boolean {
-        val requestBody = NewGameWorldDto.makeDefault()
-        webClient.post().uri("/gameworlds")
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(ObjectMapper().writeValueAsString(requestBody))
-            .exchangeToMono{ clientResponse ->
-                if (clientResponse.statusCode() == HttpStatus.CREATED) {
-                    clientResponse.bodyToMono(JsonNode::class.java)
-                }
-                else {
-                    throw Exception("Err")
-                }
-            }.block()
-        return true
+        try {
+            val requestBody = NewGameWorldDto.makeDefault()
+            webClient.post().uri("/gameworlds")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(ObjectMapper().writeValueAsString(requestBody))
+                .exchangeToMono { clientResponse ->
+                    if (clientResponse.statusCode() == HttpStatus.CREATED) {
+                        clientResponse.bodyToMono(JsonNode::class.java)
+                    } else {
+                        throw Exception("Connection failed w/ status-code: ${clientResponse.statusCode()}")
+                    }
+                }.block()
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 }
