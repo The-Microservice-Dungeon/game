@@ -54,7 +54,6 @@ class GameControllerIntegrationTest {
     }
 
     @Test
-    @Disabled
     fun shouldReturnTransactionIdWhenPlayerJoinsGame() {
         // given
         whenever(mockPlayerRepository!!.findByPlayerToken(ANY_PLAYER.getPlayerToken()))
