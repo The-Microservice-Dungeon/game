@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
@@ -25,6 +26,7 @@ class GameControllerIntegrationTest {
     private var mockRoundService: RoundService? = null
     private var mockEventStoreService: EventStoreService? = null
     private var mockEventPublisherService: EventPublisherService? = null
+    private var mockMapGameWorldsClient: MapGameWorldsClient? = null
 
     private var gameService: GameService? = null
     private var gameController: GameController? = null
@@ -41,12 +43,14 @@ class GameControllerIntegrationTest {
         mockRoundService = mock()
         mockEventStoreService = mock()
         mockEventPublisherService = mock()
+        mockMapGameWorldsClient = mock()
         gameService = GameService(
             mockRoundService!!,
             mockGameRepository!!,
             mockPlayerRepository!!,
             mockEventStoreService!!,
-            mockEventPublisherService!!
+            mockEventPublisherService!!,
+            mockMapGameWorldsClient!!
         )
         gameController = GameController(gameService!!)
         webTestClient = WebTestClient.bindToController(gameController!!).build()
