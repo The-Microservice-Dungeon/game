@@ -18,6 +18,7 @@ import microservice.dungeon.game.aggregates.game.events.GameEnded
 import microservice.dungeon.game.aggregates.game.events.GameStarted
 import microservice.dungeon.game.aggregates.game.events.PlayerJoined
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
@@ -38,7 +39,8 @@ class GameService @Autowired constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
     private val eventStoreService: EventStoreService,
-    private val eventPublisherService: EventPublisherService
+    private val eventPublisherService: EventPublisherService,
+    private val mapGameWorldsClient: MapGameWorldsClient
 ) {
     @Transactional
     fun createNewGame(game: Game): Game {
@@ -126,6 +128,8 @@ class GameService @Autowired constructor(
         val gameStarted = GameStarted(game)
         eventStoreService.storeEvent(gameStarted)
         eventPublisherService.publishEvents(listOf(gameStarted))
+
+        mapGameWorldsClient.createNewGameWorld(game.getPlayersInGame().size)
 
         game.startGame()
 
