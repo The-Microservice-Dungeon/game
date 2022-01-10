@@ -4,11 +4,13 @@ class NewGameWorldDto(
     val gameworld: NewGameWorldInnerDto
 ) {
     companion object {
-        fun makeDefault(): NewGameWorldDto {
-            return NewGameWorldDto(NewGameWorldInnerDto(1))
+        fun makeFromNumberOfPlayer(numberOfPlayer: Int): NewGameWorldDto {
+            return NewGameWorldDto(NewGameWorldInnerDto(numberOfPlayer))
         }
     }
 
     override fun equals(other: Any?): Boolean =
         (other is NewGameWorldDto) && gameworld == other.gameworld
+
+    override fun hashCode(): Int = gameworld.hashCode()
 }

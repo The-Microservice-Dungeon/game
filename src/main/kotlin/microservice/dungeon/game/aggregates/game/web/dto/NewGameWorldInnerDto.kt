@@ -5,4 +5,6 @@ class NewGameWorldInnerDto(
 ) {
     override fun equals(other: Any?): Boolean =
         (other is NewGameWorldInnerDto) && player_amount == other.player_amount
+
+    override fun hashCode(): Int = player_amount
 }

@@ -16,9 +16,9 @@ class MapGameWorldsClient @Autowired constructor(
 ) {
     private val webClient = WebClient.create(mapBaseUrl)
 
-    fun createNewGameWorld(): Boolean {
+    fun createNewGameWorld(numberOfPlayer: Int): Boolean {
         try {
-            val requestBody = NewGameWorldDto.makeDefault()
+            val requestBody = NewGameWorldDto.makeFromNumberOfPlayer(numberOfPlayer)
             webClient.post().uri("/gameworlds")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(ObjectMapper().writeValueAsString(requestBody))

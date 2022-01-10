@@ -30,12 +30,13 @@ class MapGameWorldsClientIntegrationTest {
     @Test
     fun shouldAllowToCreateANewGameWorld() {
         // given
+        val numberOfPlayer = 5
         val mockResponse = MockResponse()
             .setResponseCode(201)
         mockWebServer!!.enqueue(mockResponse)
 
         // when
-        val response = mapGameWorldsClient!!.createNewGameWorld()
+        val response = mapGameWorldsClient!!.createNewGameWorld(numberOfPlayer)
 
         // and
         val capturedRequest = mockWebServer!!.takeRequest()
@@ -57,18 +58,19 @@ class MapGameWorldsClientIntegrationTest {
 
         // and
         assertThat(capturedNewGameWorldDto)
-            .isEqualTo(capturedNewGameWorldDto)
+            .isEqualTo(NewGameWorldDto.makeFromNumberOfPlayer(numberOfPlayer))
     }
 
     @Test
     fun shouldReturnFalseWhenGameWorldCreationFailed() {
         // given
+        val anyPlayerNumber = 3
         val mockResponse = MockResponse()
             .setResponseCode(500)
         mockWebServer!!.enqueue(mockResponse)
 
         // when
-        val response = mapGameWorldsClient!!.createNewGameWorld()
+        val response = mapGameWorldsClient!!.createNewGameWorld(anyPlayerNumber)
 
         // then
         assertThat(response)
