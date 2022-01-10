@@ -415,19 +415,19 @@ components:
           type: integer
         playerList:
           description: List of all the player in the game.
-          type: array  
-          items: 
-             $ref: "#/components/schemas/uuid"
+          type: array
+          items:
+            $ref: "#/components/schemas/uuid"
+        playersInGame:
+          description: List of all the player in the game.
+          type: array
+          items:
+            $ref: "#/components/schemas/uuid"
         gameStartTime:
           description: Date when the current game started.
           type: string
           format: date-time
           example: "2020-02-06T07:49:07"
-        playersInGame:
-          description: List of all the player in the game.
-          type: array 
-          items:
-            $ref: "#/components/schemas/uuid"
 
     roundTime:
       type: object
