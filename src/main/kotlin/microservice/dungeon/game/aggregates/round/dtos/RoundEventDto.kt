@@ -9,12 +9,13 @@ import java.time.LocalDateTime
 import java.util.*
 
 class RoundEventDto constructor(
+    val roundId: UUID,
     val roundNumber: Int,
     val roundStatus: String
 ): EventDto {
 
-    constructor(roundNumber: Int, roundStatus: RoundStatus):
-            this(roundNumber, mapStatusToOutputStatus(roundStatus))
+    constructor(roundId: UUID, roundNumber: Int, roundStatus: RoundStatus):
+            this(roundId, roundNumber, mapStatusToOutputStatus(roundStatus))
 
     override fun serialize(): String {
         val objectMapper = ObjectMapper().findAndRegisterModules()

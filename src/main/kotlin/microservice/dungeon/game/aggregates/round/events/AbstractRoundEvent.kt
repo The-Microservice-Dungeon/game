@@ -47,7 +47,7 @@ abstract class AbstractRoundEvent constructor(
     }
 
     override fun toDTO(): EventDto {
-        return RoundEventDto(roundNumber, roundStatus)
+        return RoundEventDto(roundId, roundNumber, roundStatus)
     }
 
     override fun equals(other: Any?): Boolean =
