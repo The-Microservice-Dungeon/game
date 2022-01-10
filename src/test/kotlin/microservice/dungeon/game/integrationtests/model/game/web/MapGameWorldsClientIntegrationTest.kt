@@ -59,4 +59,19 @@ class MapGameWorldsClientIntegrationTest {
         assertThat(capturedNewGameWorldDto)
             .isEqualTo(capturedNewGameWorldDto)
     }
+
+    @Test
+    fun shouldReturnFalseWhenGameWorldCreationFailed() {
+        // given
+        val mockResponse = MockResponse()
+            .setResponseCode(500)
+        mockWebServer!!.enqueue(mockResponse)
+
+        // when
+        val response = mapGameWorldsClient!!.createNewGameWorld()
+
+        // then
+        assertThat(response)
+            .isFalse
+    }
 }
