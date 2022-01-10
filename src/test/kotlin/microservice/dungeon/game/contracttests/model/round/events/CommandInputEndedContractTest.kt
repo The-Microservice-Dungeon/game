@@ -21,11 +21,11 @@ class CommandInputEndedContractTest {
         val roundEventDTO = roundStarted.toDTO()
 
         // then
-        val expectedMessage = getSpecifiedOutputMessage(roundStarted.getRoundNumber())
+        val expectedMessage = getSpecifiedOutputMessage(TEST_ROUND)
         assertThat(roundEventDTO.serialize())
             .isEqualTo(expectedMessage)
     }
 
-    private fun getSpecifiedOutputMessage(roundNumber: Int) =
-        "{\"roundNumber\":${roundNumber},\"roundStatus\":\"command input ended\"}"
+    private fun getSpecifiedOutputMessage(round: Round) =
+        "{\"roundId\":\"${round.getRoundId()}\",\"roundNumber\":${round.getRoundNumber()},\"roundStatus\":\"command input ended\"}"
 }
