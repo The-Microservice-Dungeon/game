@@ -41,7 +41,7 @@ paths:
       - games
       description: Returns a list of all open or active games. For a list of all players refer to the GameLog.
       responses:
-        "201":
+        "200":
           description: A list of all open or running games at the moment.
           content:
             application/json:
@@ -98,7 +98,7 @@ paths:
         "406":
           description: Only admins are allowed to end the game.
           
-  "/games/{gameId}/players/{playerToken}":
+  "/games/{gameId}/players/{bearerToken}":
     put:
       summary: Registers a player for the game.
       tags:
@@ -106,7 +106,7 @@ paths:
       description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
         - $ref: "#/components/parameters/gameId"
-        - $ref: "#/components/parameters/playerToken"
+        - $ref: "#/components/parameters/bearerToken"
       security:
         - BearerAuth: [player]
       responses:
@@ -284,12 +284,12 @@ components:
         $ref: "#/components/schemas/duration"
       required: true
       
-    playerToken:
+    bearerToken:
       in: path
-      name: playerToken
+      name: bearerToken
       description: Defines a token given for a player. 
       schema:
-        $ref: "#/components/schemas/playerToken"
+        $ref: "#/components/schemas/bearerToken"
       required: true  
     
     
@@ -316,7 +316,7 @@ components:
         - Game_Running
         - Game_Finished
     
-    playerToken:
+    bearerToken:
       type: string
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0852
