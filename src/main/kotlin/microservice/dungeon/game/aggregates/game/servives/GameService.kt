@@ -51,7 +51,8 @@ class GameService @Autowired constructor(
         var commandCollectionTime = game.getRoundDuration().toDouble()
         commandCollectionTime *= 0.75
         newGame.setCommandCollectDuration(commandCollectionTime)
-        val gameCreated = GameCreated(gameRepository.save(newGame))
+        gameRepository.save(newGame)
+        val gameCreated = GameCreated(game)
         eventStoreService.storeEvent(gameCreated)
         eventPublisherService.publishEvents(listOf(gameCreated))
         return newGame
@@ -124,16 +125,13 @@ class GameService @Autowired constructor(
     fun runGame(gameId: UUID) {
         val game: Game = gameRepository.findByGameId(gameId).get()
 
+        game.startGame()
+
         val gameStarted = GameStarted(game)
         eventStoreService.storeEvent(gameStarted)
         eventPublisherService.publishEvents(listOf(gameStarted))
 
         mapGameWorldsClient.createNewGameWorld(game.getPlayersInGame().size)
-
-        game.startGame()
-
-
-
 
         var roundCounter = 1
         val scope = CoroutineScope(Dispatchers.Unconfined)
