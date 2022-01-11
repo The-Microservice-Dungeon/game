@@ -51,7 +51,8 @@ class GameService @Autowired constructor(
         var commandCollectionTime = game.getRoundDuration().toDouble()
         commandCollectionTime *= 0.75
         newGame.setCommandCollectDuration(commandCollectionTime)
-        val gameCreated = GameCreated(gameRepository.save(newGame))
+        gameRepository.save(newGame)
+        val gameCreated = GameCreated(game)
         eventStoreService.storeEvent(gameCreated)
         eventPublisherService.publishEvents(listOf(gameCreated))
         return newGame
