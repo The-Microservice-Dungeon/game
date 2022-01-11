@@ -124,16 +124,13 @@ class GameService @Autowired constructor(
     fun runGame(gameId: UUID) {
         val game: Game = gameRepository.findByGameId(gameId).get()
 
+        game.startGame()
+
         val gameStarted = GameStarted(game)
         eventStoreService.storeEvent(gameStarted)
         eventPublisherService.publishEvents(listOf(gameStarted))
 
         mapGameWorldsClient.createNewGameWorld(game.getPlayersInGame().size)
-
-        game.startGame()
-
-
-
 
         var roundCounter = 1
         val scope = CoroutineScope(Dispatchers.Unconfined)
