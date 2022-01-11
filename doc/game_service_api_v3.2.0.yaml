@@ -23,7 +23,7 @@ paths:
             schema:
               $ref: "#/components/schemas/game"
       responses:
-        "200":
+        "201":
           description: A new game has been successfully created.
           content:
             application/json:
@@ -41,7 +41,7 @@ paths:
       - games
       description: Returns a list of all open or active games. For a list of all players refer to the GameLog.
       responses:
-        "201":
+        "200":
           description: A list of all open or running games at the moment.
           content:
             application/json:
