@@ -23,7 +23,7 @@ paths:
             schema:
               $ref: "#/components/schemas/game"
       responses:
-        "201":
+        "200":
           description: A new game has been successfully created.
           content:
             application/json:
