@@ -7,7 +7,7 @@ import java.util.*
 class CommandDTO(
     val gameId: UUID,
 
-    val playerId: UUID,
+    val playerToken: UUID,
 
     val robotId: UUID?,
 
@@ -18,7 +18,7 @@ class CommandDTO(
     override fun equals(other: Any?): Boolean =
         (other is CommandDTO)
                 && gameId == other.gameId
-                && playerId == other.playerId
+                && playerToken == other.playerToken
                 && robotId == other.robotId
                 && commandType == other.commandType
                 && commandObject == other.commandObject

@@ -43,10 +43,10 @@ class Command constructor(
                 && roundNumber == other.roundNumber
 
     companion object {
-        fun fromDto(dto: CommandDTO, roundNumber: Int): Command = Command(
+        fun fromDto(dto: CommandDTO, roundNumber: Int, playerId: UUID): Command = Command(
             transactionId = UUID.randomUUID(),
             gameId = dto.gameId,
-            playerId = dto.playerId,
+            playerId = playerId,
             robotId = dto.robotId,
             commandType = dto.commandType,
             commandObject = dto.commandObject,

@@ -119,7 +119,7 @@ class CommandControllerIntegrationTest {
     private fun makeAnyValidCommandDTO(): CommandDTO =
         CommandDTO(
             gameId = UUID.randomUUID(),
-            playerId = UUID.randomUUID(),
+            playerToken = UUID.randomUUID(),
             robotId = UUID.randomUUID(),
             commandType = CommandType.BATTLE,
             commandObject = CommandObject(
