@@ -98,15 +98,15 @@ paths:
         "406":
           description: Only admins are allowed to end the game.
           
-  "/games/{gameId}/players/{bearerToken}":
+  "/games/{gameId}/players/{playerToken}":
     put:
       summary: Registers a player for the game.
       tags:
       - games
-      description: Registers the player, according to his token, for the game. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
+      description: Registers the player, according to his token, for the game. The playerToken is the bearertoken. Registration is only possible if the game exists and is in a startup phase that makes registrations possible. Once the game has been started, further registrations are not possible.
       parameters:
         - $ref: "#/components/parameters/gameId"
-        - $ref: "#/components/parameters/bearerToken"
+        - $ref: "#/components/parameters/playerToken"
       security:
         - BearerAuth: [player]
       responses:
@@ -284,12 +284,12 @@ components:
         $ref: "#/components/schemas/duration"
       required: true
       
-    bearerToken:
+    playerToken:
       in: path
-      name: bearerToken
+      name: playerToken
       description: Defines a token given for a player. 
       schema:
-        $ref: "#/components/schemas/bearerToken"
+        $ref: "#/components/schemas/playerToken"
       required: true  
     
     
@@ -316,7 +316,7 @@ components:
         - Game_Running
         - Game_Finished
     
-    bearerToken:
+    playerToken:
       type: string
       format: uuid
       example: d290f1ee-6c54-4b01-90e6-d701748f0852
