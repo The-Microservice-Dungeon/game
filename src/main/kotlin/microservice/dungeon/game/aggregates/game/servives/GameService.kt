@@ -86,6 +86,7 @@ class GameService @Autowired constructor(
             ?: throw EntityNotFoundException("Player does not exist")
 
 
+
         val game: Game = gameRepository.findByGameId(gameId).get()
 
         val playersInGame = PlayersInGame(
@@ -144,7 +145,7 @@ class GameService @Autowired constructor(
 
 
         scope.launch {
-            while (roundCounter != (maxRounds + 1)) {
+            while (roundCounter != (maxRounds + 1) && (game.getGameStatus() != GameStatus.GAME_FINISHED)) {
 
                 val roundId = roundService.startNewRound(gameId, roundCounter)
 
@@ -236,28 +237,18 @@ class GameService @Autowired constructor(
         )
     }
 
-    fun patchMaxRound(id: UUID, maxRounds: Int): ResponseEntity<GameResponseDto?>? {
+    fun patchMaxRound(id: UUID, maxRounds: Int) {
 
         val game: Game = gameRepository.findByGameId(id).get()
         game.setMaxRounds(maxRounds)
 
         gameRepository.save(game)
 
-        val responseGame = GameResponseDto(
-            game.getGameId(),
-            game.getGameStatus(),
-            game.getMaxPlayers(),
-            game.getMaxRounds(),
-            game.getRoundDuration(),
-            game.getCommandCollectDuration(),
-            game.getCreatedGameDateTime(),
-        )
 
-        return ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
 
     }
 
-    fun patchRoundDuration(id: UUID, newDuration: Long): ResponseEntity<GameResponseDto?>? {
+    fun patchRoundDuration(id: UUID, newDuration: Long){
         val game: Game = gameRepository.findByGameId(id).get()
         game.setRoundDuration(newDuration)
 
@@ -267,17 +258,7 @@ class GameService @Autowired constructor(
 
         gameRepository.save(game)
 
-        val responseGame = GameResponseDto(
-            game.getGameId(),
-            game.getGameStatus(),
-            game.getMaxPlayers(),
-            game.getMaxRounds(),
-            game.getRoundDuration(),
-            game.getCommandCollectDuration(),
-            game.getCreatedGameDateTime(),
-        )
 
-        return ResponseEntity<GameResponseDto?>(responseGame, HttpStatus.OK)
     }
 
 

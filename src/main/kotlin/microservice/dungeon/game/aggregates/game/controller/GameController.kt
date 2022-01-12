@@ -126,22 +126,22 @@ class GameController(@Autowired private val gameService: GameService) {
 
 
     @PatchMapping("/games/{id}/maxRounds/{maxRounds}")
-    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): ResponseEntity<GameResponseDto?>? {
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): HttpStatus  {
         return try {
             gameService.patchMaxRound(id, maxRounds)
-
+            HttpStatus.OK
         } catch (e: Exception) {
-            ResponseEntity<GameResponseDto?>(HttpStatus.INTERNAL_SERVER_ERROR)
+            HttpStatus.INTERNAL_SERVER_ERROR
         }
     }
 
     @PatchMapping("/games/{id}/roundDuration/{newDuration}")
-    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): ResponseEntity<GameResponseDto?>? {
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): HttpStatus {
         return try {
             gameService.patchRoundDuration(id, newDuration)
-
+            HttpStatus.OK
         } catch (e: Exception) {
-            ResponseEntity<GameResponseDto?>(HttpStatus.INTERNAL_SERVER_ERROR)
+            HttpStatus.INTERNAL_SERVER_ERROR
         }
     }
 
