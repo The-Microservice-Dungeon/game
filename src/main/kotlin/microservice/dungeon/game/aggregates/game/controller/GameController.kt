@@ -89,18 +89,16 @@ class GameController(@Autowired private val gameService: GameService) {
     @PostMapping("/games/{gameId}/gameCommands/start")
     fun startGame(
        @PathVariable(value = "gameId") gameId: UUID,
-//        @RequestBody (adminToken: UUID)
+
     ): ResponseEntity<HttpStatus> {
         try {
-            //val gameId: UUID = UUID.fromString(uuid)
-            //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
-            //            ?: throw EntityNotFoundException("admin does not exist")
+
             gameService.runGame(gameId)
             return ResponseEntity(HttpStatus.ACCEPTED)
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
-                HttpStatus.NOT_ACCEPTABLE,
-                "Admin only."
+                HttpStatus.INTERNAL_SERVER_ERROR,
+
             )
         }
     }
@@ -109,39 +107,37 @@ class GameController(@Autowired private val gameService: GameService) {
     @PostMapping("/games/{gameId}/gameCommands/end")
     fun endGame(
         @PathVariable(value = "gameId") gameId: UUID,
-        @RequestBody adminToken: UUID,
     ): ResponseEntity<HttpStatus> {
         try {
-            //val admin: Admin = adminRepository.findByAdminToken(adminToken).get()
-            //            ?: throw EntityNotFoundException("admin does not exist")
+
             gameService.closeGame(gameId)
             return ResponseEntity(HttpStatus.ACCEPTED)
         } catch (e: EntityNotFoundException) {
             throw ResponseStatusException(
-                HttpStatus.NOT_ACCEPTABLE,
-                "Admin only."
+                HttpStatus.INTERNAL_SERVER_ERROR,
+
             )
         }
     }
 
 
     @PatchMapping("/games/{id}/maxRounds/{maxRounds}")
-    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int): HttpStatus  {
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable maxRounds: Int):ResponseEntity<HttpStatus>  {
         return try {
             gameService.patchMaxRound(id, maxRounds)
-            HttpStatus.OK
+            ResponseEntity(HttpStatus.OK)
         } catch (e: Exception) {
-            HttpStatus.INTERNAL_SERVER_ERROR
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
     @PatchMapping("/games/{id}/roundDuration/{newDuration}")
-    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long): HttpStatus {
+    fun updateEmployeePartially(@PathVariable id: UUID, @PathVariable newDuration: Long):ResponseEntity<HttpStatus> {
         return try {
             gameService.patchRoundDuration(id, newDuration)
-            HttpStatus.OK
+            ResponseEntity(HttpStatus.OK)
         } catch (e: Exception) {
-            HttpStatus.INTERNAL_SERVER_ERROR
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
