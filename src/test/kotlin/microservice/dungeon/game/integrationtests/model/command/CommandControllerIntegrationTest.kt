@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.command.dtos.CommandResponseDTO
 import microservice.dungeon.game.aggregates.command.services.CommandService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -104,11 +105,12 @@ class CommandControllerIntegrationTest {
             .bodyValue(requestEntity)
             .exchange()
             .expectStatus().isCreated
-            .expectBody<UUID>()
+            .expectBody<CommandResponseDTO>()
             .returnResult()
 
         // then
-        assertThat(result.responseBody!!)
+        println(result.responseBody)
+        assertThat(result.responseBody!!.commandId)
             .isEqualTo(responseCommandId)
 
         // and
