@@ -2,9 +2,11 @@ package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.round.domain.Round
+import mu.KotlinLogging
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
 @Table(name = "GAMES")
@@ -40,7 +42,6 @@ class Game constructor (
     private var rounds: MutableSet<Round>
 
 ) {
-
     constructor(maximumPlayers: Int, maximumRounds: Int): this(
         gameId = UUID.randomUUID(),
         gameStatus = GameStatus.CREATED,
@@ -52,21 +53,30 @@ class Game constructor (
         rounds = mutableSetOf()
     )
 
+    @Transient
+    private val logger = KotlinLogging.logger {}
+
     fun startGame() {
+        if (gameStatus != GameStatus.CREATED) {
+            logger.warn("Failed to start Game, because Status is other then CREATED. {}", gameStatus)
+            throw GameStateException("Game can not be started, because its status is other than CREATED. Status is $gameStatus.")
+        }
         gameStatus = GameStatus.GAME_RUNNING
-        rounds.add(Round(game = this, roundNumber = 1))
+        logger.debug("Game-Status set to $gameStatus")
+
+        val newRound = Round(game = this, roundNumber = 1)
+        rounds.add(newRound)
+        logger.debug("Round added to Game.")
+        logger.trace(newRound.toString())
     }
 
     fun startNewRound() {
 
     }
 
-    fun endCommandInputPhase() {
-
-    }
-
     fun endGame() {
         gameStatus = GameStatus.GAME_FINISHED
+        logger.debug("GameStatus set to $gameStatus")
     }
 
 
