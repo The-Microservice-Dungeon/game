@@ -95,11 +95,19 @@ class Game constructor (
 
     fun getGameStatus(): GameStatus = gameStatus
 
+    fun getMaxPlayers(): Int = maxPlayers
+
+    fun getMaxRounds(): Int = maxRounds
+
     fun getCurrentRound(): Round? = rounds.fold(null) { acc: Round?, e: Round ->
      if (acc != null && acc.getRoundNumber() > e.getRoundNumber()) acc else e
     }
 
     fun getRound(roundNumber: Int): Round = rounds.first { round ->
         round.getRoundNumber() == roundNumber
+    }
+
+    override fun toString(): String {
+        return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
     }
 }
