@@ -14,4 +14,8 @@ class PlayerResponseDto(
                 player.getPlayerToken(), player.getUserName(), player.getMailAddress()
             )
     }
+
+    override fun toString(): String {
+        return "PlayerResponseDto(bearerToken=$bearerToken, name='$name', email='$email')"
+    }
 }

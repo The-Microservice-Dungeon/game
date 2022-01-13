@@ -33,6 +33,16 @@ class LogbackEndpoint @Autowired constructor(
         return  getLogOutput("$logFilePath/error.log")
     }
 
+    @GetMapping("/logs/game-info", produces = [MediaType.TEXT_PLAIN_VALUE])
+    fun getGameInfoLog(): String {
+        return getLogOutput("$logFilePath/game-info.log")
+    }
+
+    @GetMapping("/logs/game-trace", produces = [MediaType.TEXT_PLAIN_VALUE])
+    fun getGameTraceLog(): String {
+        return getLogOutput("$logFilePath/game-trace.log")
+    }
+
 
     private fun getLogOutput(logPath: String): String {
         val path: Path = Paths.get(logPath)
