@@ -21,6 +21,9 @@ class KafkaConsumerConfig {
     @Value(value = "\${kafka.bootstrapAddress}")
     private val bootstrapAddress: String = ""
 
+    @Value(value = "\${kafka.groupId}")
+    private val groupId: String = ""
+
     @Bean
     fun transactionManager(entityManagerFactory: EntityManagerFactory): JpaTransactionManager {
         return JpaTransactionManager(entityManagerFactory)
@@ -30,6 +33,7 @@ class KafkaConsumerConfig {
     fun consumerFactory(): ConsumerFactory<String, String> {
         val props: MutableMap<String, Any?> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapAddress
+        props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         return DefaultKafkaConsumerFactory(props)
