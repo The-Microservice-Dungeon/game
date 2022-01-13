@@ -77,9 +77,4 @@ class GameServiceTest {
     fun shouldPublishWhenGameCreated() {
         assertTrue(false)
     }
-
-    // should save
-    // should publish
-    // should prevent if active game already exists
-    // return transactionID
 }

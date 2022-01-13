@@ -2,12 +2,15 @@ package microservice.dungeon.game.aggregates.game.servives
 
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 
 
 @Service
@@ -19,6 +22,19 @@ class GameService @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val mapGameWorldsClient: MapGameWorldsClient
 ) {
+    private val logger = KotlinLogging.logger {}
+
+    fun createNewGame(maxPlayers: Int, maxRounds: Int): Pair<UUID, Game> {
+        val newGame: Game = Game(maxPlayers, maxRounds)
+        val transactionId = UUID.randomUUID()
+
+        gameRepository.save(newGame)
+        logger.info("New Game created. [transactionId=$transactionId]")
+        logger.trace(newGame.toString())
+
+        return Pair(transactionId, newGame)
+    }
+
 
 //    fun createNewGame(): Game {
 //
