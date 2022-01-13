@@ -48,7 +48,38 @@ class GameTest {
         }
     }
 
-    // same for round
+    @Test
+    fun shouldAllowToStartANewRound() {
+        // given
+        val game: Game = Game(10, 100)
+        game.startGame()
+
+        // when
+        game.startNewRound()
+
+        // then
+        val currentRound: Round = game.getCurrentRound()!!
+        assertThat(currentRound.getRoundNumber())
+            .isEqualTo(2)
+        assertThat(currentRound.getRoundStatus())
+            .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
+
+        // and
+        val previousRound: Round = game.getRound(1)
+        assertThat(previousRound.getRoundStatus())
+            .isEqualTo(RoundStatus.ROUND_ENDED)
+    }
+
+    @Test
+    fun shouldOnlyBeAbleToStartANewRoundWhenGameIsRunning() {
+        // given
+        val game: Game = Game(10, 100)
+
+        // when
+        assertThatThrownBy {
+            game.startNewRound()
+        }
+    }
 
     @Test
     fun shouldAllowToEndTheGame() {
