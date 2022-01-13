@@ -14,6 +14,7 @@ class KafkaRobotConsumer @Autowired constructor(
     private val robotService: RobotService
 ) {
     private val logger = KotlinLogging.logger {}
+
     @KafkaListener(id = "\${kafka.topicSubRobotSpawned.group}", topics = ["\${kafka.topicSubRobotSpawned}"])
     fun makeNewRobot(record: ConsumerRecord<String, String>) {
         try {
