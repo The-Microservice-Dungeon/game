@@ -34,11 +34,12 @@ class Game constructor (
         name = "GAME_PARTICIPATIONS",
         joinColumns = [JoinColumn(name = "GAME_ID")],
         inverseJoinColumns = [JoinColumn(name = "ROUND_ID")])
-    private var participatingPlayers: Set<Player>,
+    private var participatingPlayers: MutableSet<Player>,
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    private var rounds: Set<Round>
-    ) {
+    private var rounds: MutableSet<Round>
+
+) {
 
     constructor(maximumPlayers: Int, maximumRounds: Int): this(
         gameId = UUID.randomUUID(),
@@ -47,12 +48,13 @@ class Game constructor (
         maxRounds = maximumRounds,
         totalRoundTimespanInMS = 60000.00,
         relativeCommandInputTimespanInPercent = 75,
-        participatingPlayers = emptySet(),
-        rounds = emptySet()
+        participatingPlayers = mutableSetOf(),
+        rounds = mutableSetOf()
     )
 
     fun startGame() {
-
+        gameStatus = GameStatus.GAME_RUNNING
+        rounds.add(Round(game = this, roundNumber = 1))
     }
 
     fun startNewRound() {
@@ -65,5 +67,14 @@ class Game constructor (
 
     fun endGame() {
 
+    }
+
+
+    fun getGameId(): UUID = gameId
+
+    fun getGameStatus(): GameStatus = gameStatus
+
+    fun getCurrentRound(): Round? = rounds.fold(null) { acc: Round?, e: Round ->
+     if (acc != null && acc.getRoundNumber() > e.getRoundNumber()) acc else e
     }
 }
