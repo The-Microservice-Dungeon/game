@@ -115,6 +115,8 @@ class Round(
 
     fun getGameId(): UUID = game.getGameId()
 
+    fun getGame(): Game = game
+
     fun getRoundNumber(): Int = roundNumber
 
     fun getRoundStatus(): RoundStatus = roundStatus
