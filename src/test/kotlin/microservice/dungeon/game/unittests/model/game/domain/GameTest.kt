@@ -33,4 +33,25 @@ class GameTest {
         assertThat(currentRound.getRoundStatus())
             .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
     }
+
+    @Test
+    fun shouldOnlyBeStartAbleWhenStatusIsCreated() {
+
+    }
+
+    // same for round
+
+    @Test
+    fun shouldAllowToEndTheGame() {
+        // given
+        val game: Game = Game(10, 100)
+        game.startGame()
+
+        // when
+        game.endGame()
+
+        // then
+        assertThat(game.getGameStatus())
+            .isEqualTo(GameStatus.GAME_FINISHED)
+    }
 }
