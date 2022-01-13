@@ -71,7 +71,19 @@ class Game constructor (
     }
 
     fun startNewRound() {
+        if (gameStatus != GameStatus.GAME_RUNNING) {
+            logger.warn("Failed to start a new round, because the Game-Status is other than RUNNING. {}", gameStatus)
+            throw GameStateException("Game could not start a new round, because its status is other than RUNNING. Status is $gameStatus")
+        }
+        val currentRound: Round = getCurrentRound()!!
+        currentRound.endRound()
+        logger.debug("Ended previous Round.")
+        logger.trace(currentRound.toString())
 
+        val nextRound = Round(game = this, roundNumber = currentRound.getRoundNumber() + 1)
+        rounds.add(nextRound)
+        logger.debug("Added next Round.")
+        logger.trace(nextRound.toString())
     }
 
     fun endGame() {
@@ -79,12 +91,15 @@ class Game constructor (
         logger.debug("GameStatus set to $gameStatus")
     }
 
-
     fun getGameId(): UUID = gameId
 
     fun getGameStatus(): GameStatus = gameStatus
 
     fun getCurrentRound(): Round? = rounds.fold(null) { acc: Round?, e: Round ->
      if (acc != null && acc.getRoundNumber() > e.getRoundNumber()) acc else e
+    }
+
+    fun getRound(roundNumber: Int): Round = rounds.first { round ->
+        round.getRoundNumber() == roundNumber
     }
 }
