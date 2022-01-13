@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.eventpublisher
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
@@ -30,12 +31,14 @@ class EventPublisherLiveIntegrationTest @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val eventStoreService: EventStoreService
 ) {
+    private var game: Game? = null
     private var round: Round? = null
     private var roundStarted: Event? = null
 
     @BeforeEach
     fun setUp() {
-        round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+        game = Game(10, 100)
+        round = Round(game = game!!, roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         roundStarted = RoundStarted(round!!)
     }
 

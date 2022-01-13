@@ -1,5 +1,6 @@
 package microservice.dungeon.game.unittests.model.round.domain
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
@@ -12,12 +13,13 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class AbstractRoundEventTest {
+    private var game = Game(10, 100)
     private var validRound: Round? = null
     private var validRoundStarted: AbstractRoundEvent? = null
 
     @BeforeEach
     fun setUp() {
-        validRound = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+        validRound = Round(game = game, roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         validRoundStarted = RoundStarted(validRound!!)
     }
 

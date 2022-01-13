@@ -1,5 +1,6 @@
 package microservice.dungeon.game.integrationtests.messaging.producer
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
@@ -41,7 +42,7 @@ class KafkaProducerMessagingConsumeIntegrationTest @Autowired constructor(
 
     @Test
     fun kafkaConsumerShouldConsumeMessage() {
-        val round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+        val round = Round(game = Game(10, 100), roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         val roundStarted = RoundStarted(round)
         val message: String = roundStarted.toDTO().serialize()
 

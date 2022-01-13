@@ -1,5 +1,6 @@
 package microservice.dungeon.game.integrationtests.messaging.producer
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
@@ -30,12 +31,14 @@ class KafkaProducerMessagingCallbackIntegrationTest @Autowired constructor(
     private val kafkaProducer: KafkaProducer,
     private val kafkaProducerListener: KafkaProducerListener<String, String>
 ) {
+    private var game: Game? = null
     private var round: Round? = null
     private var roundStarted: RoundStarted? = null
 
     @BeforeEach
     fun initialize() {
-        round = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+        game = Game(10, 100)
+        round = Round(game = game!!, roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         roundStarted = RoundStarted(round!!)
         reset(kafkaProducerListener)
     }

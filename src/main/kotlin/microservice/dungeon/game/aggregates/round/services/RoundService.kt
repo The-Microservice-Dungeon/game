@@ -33,23 +33,23 @@ class RoundService @Autowired constructor (
     private val robotCommandDispatcherClient: RobotCommandDispatcherClient,
     private val tradingCommandDispatcherClient: TradingCommandDispatcherClient
 ) {
-    @Transactional
-    fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
-        if (!roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).isEmpty) {
-            throw EntityAlreadyExistsException("A round with number $roundNumber for game $gameId already exists.")
-        }
-        val round = Round(gameId, roundNumber)
-        
-        //val game: Game = gameRepository.findByGameId(gameId).get()
-        //game.setLastRoundStartedAt(LocalTime.now())
-        //game.setCurrentRoundCount(roundNumber)
-
-        roundRepository.save(round)
-        val roundStarted = RoundStarted(round)
-        eventStoreService.storeEvent(roundStarted)
-        eventPublisherService.publishEvents(listOf(roundStarted))
-        return round.getRoundId()
-    }
+//    @Transactional
+//    fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
+//        if (!roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).isEmpty) {
+//            throw EntityAlreadyExistsException("A round with number $roundNumber for game $gameId already exists.")
+//        }
+//        val round = Round(gameId, roundNumber)
+//
+//        //val game: Game = gameRepository.findByGameId(gameId).get()
+//        //game.setLastRoundStartedAt(LocalTime.now())
+//        //game.setCurrentRoundCount(roundNumber)
+//
+//        roundRepository.save(round)
+//        val roundStarted = RoundStarted(round)
+//        eventStoreService.storeEvent(roundStarted)
+//        eventPublisherService.publishEvents(listOf(roundStarted))
+//        return round.getRoundId()
+//    }
 
     @Transactional
     fun endCommandInputs(roundId: UUID) {

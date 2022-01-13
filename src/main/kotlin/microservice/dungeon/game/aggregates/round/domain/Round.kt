@@ -1,25 +1,27 @@
 package microservice.dungeon.game.aggregates.round.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
+import microservice.dungeon.game.aggregates.game.domain.Game
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Index
-import javax.persistence.Table
+import javax.persistence.*
 
-//TODO ("JPA MAPPING")
 @Entity
-@Table(name = "rounds", indexes = [
-    Index(name = "roundIndexWithGameIdAndRoundNumber", columnList = "gameId, roundNumber", unique = true)
-])
+@Table(name = "ROUNDS")
 class Round(
-    @Type(type="uuid-char")
-    private val gameId: UUID,
-    private val roundNumber: Int,
     @Id
     @Type(type="uuid-char")
-    private val roundId: UUID = UUID.randomUUID(),
+    @Column(name = "ROUND_ID")
+    private var roundId: UUID = UUID.randomUUID(),
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "GAME_ID")
+    private var game: Game,
+
+    @Column(name = "ROUND_NUMBER")
+    private val roundNumber: Int,
+
+    @Column(name = "ROUND_STATUS")
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
 ) {
 
@@ -111,7 +113,7 @@ class Round(
 
     fun getRoundId(): UUID = roundId
 
-    fun getGameId(): UUID = gameId
+    fun getGameId(): UUID = game.getGameId()
 
     fun getRoundNumber(): Int = roundNumber
 

@@ -9,6 +9,7 @@ import microservice.dungeon.game.aggregates.command.repositories.CommandReposito
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
@@ -36,8 +37,9 @@ class RoundServiceTest {
     private var mockCommandRepository: CommandRepository? = null
     private var roundService: RoundService? = null
 
+    private val GAME = Game(10, 100)
     private val ANY_ROUND_ID = UUID.randomUUID()
-    private val ANY_GAMEID = UUID.randomUUID()
+    private val ANY_GAMEID = GAME.getGameId()
     private val ANY_PLAYERID = UUID.randomUUID()
     private val ANY_ROBOTID = UUID.randomUUID()
     private val ANY_ROUND_NUMBER = 3
@@ -70,7 +72,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowEndCommandInput() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -88,7 +90,7 @@ class RoundServiceTest {
         var commandInputEnded: Event? = null
 
         // given
-        val roundCommandInputStarted = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED)
+        val roundCommandInputStarted = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(roundCommandInputStarted))
 
@@ -118,7 +120,7 @@ class RoundServiceTest {
         var commandInputEnded: Event? = null
 
         // given
-        val roundCommandInputStarted = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_STARTED)
+        val roundCommandInputStarted = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(roundCommandInputStarted))
 
@@ -158,7 +160,7 @@ class RoundServiceTest {
     @Test
     fun shouldNotPublishOrStoreEventWhenCommandInputAlreadyEnded() {
         // given
-        val commandInputAlreadyEndedRound = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED)
+        val commandInputAlreadyEndedRound = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(commandInputAlreadyEndedRound))
 
@@ -179,7 +181,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchBlockingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -207,7 +209,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendBlockingCommandsToRobotWhenDispatchingBlockingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.COMMAND_INPUT_ENDED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING))
@@ -232,7 +234,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchTradingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -261,7 +263,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendSellingCommandsToRobotWhenDispatchingTradingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.SELLING))
@@ -280,7 +282,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommandsAfterSendingSellingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BUYING))
@@ -306,7 +308,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchMovementCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -335,7 +337,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendMovementItemUseCommandsToRobotWhenDispatchingMovementCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEITEMUSE))
@@ -354,7 +356,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendMovementCommandsToRobotWhenDispatchingMovementCommandsAfterSendingMovementItemUseCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BUYING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT))
@@ -380,7 +382,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchBattleCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber =ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -409,7 +411,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendBattleItemUseCommandsToRobotWhenDispatchingBattleCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLEITEMUSE))
@@ -428,7 +430,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendBattleCommandsToRobotWhenDispatchingBattleCommandsAfterSendingBattleItemUseCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLE))
@@ -454,7 +456,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowDispatchMiningCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BATTLE_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -482,7 +484,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendMiningCommandsToRobotWhenDispatchingMiningCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.BATTLE_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MINING))
@@ -507,7 +509,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchRegeneratingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -536,7 +538,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendRepairItemUseCommandsToRobotWhenDispatchingRegeneratingCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REPAIRITEMUSE))
@@ -555,7 +557,7 @@ class RoundServiceTest {
     @Test
     fun shouldSendRegeneratingCommandsToRobotWhenDispatchingRegeneratingCommandsAfterSendingRepairItemUseCommands() {
         // given
-        val spyRound = spy(Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.MINING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REGENERATE))

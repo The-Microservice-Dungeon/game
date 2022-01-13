@@ -1,5 +1,6 @@
 package microservice.dungeon.game.unittests.model.round.domain
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStarted
@@ -10,7 +11,8 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class RoundStartedTest {
-    private var TEST_ROUND = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_STARTED)
+    private var game = Game(10, 100)
+    private var TEST_ROUND = Round(game = game, roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
 
 
     @Test
@@ -23,7 +25,7 @@ class RoundStartedTest {
 
     @Test
     fun newRoundStartedShouldThrowWhenInvalidRoundStatus() {
-        val invalidRound = Round(UUID.randomUUID(), 3, UUID.randomUUID(), RoundStatus.COMMAND_INPUT_ENDED)
+        val invalidRound = Round(game = game, roundNumber = 3, roundStatus = RoundStatus.COMMAND_INPUT_ENDED)
 
         assertThatThrownBy {
             RoundStarted(invalidRound)

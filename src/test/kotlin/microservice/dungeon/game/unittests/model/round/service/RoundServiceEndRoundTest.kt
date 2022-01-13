@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.command.repositories.CommandReposito
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
@@ -32,8 +33,9 @@ class RoundServiceEndRoundTest {
     private var mockCommandRepository: CommandRepository? = null
     private var roundService: RoundService? = null
 
+    private val GAME = Game(10, 100)
     private val ANY_ROUND_ID = UUID.randomUUID()
-    private val ANY_GAMEID = UUID.randomUUID()
+    private val ANY_GAMEID = GAME.getGameId()
     private val ANY_ROUND_NUMBER = 3
 
 
@@ -68,7 +70,7 @@ class RoundServiceEndRoundTest {
         val capturedRound: Round?
 
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        val round = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = roundStatus)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(round))
 
@@ -96,7 +98,7 @@ class RoundServiceEndRoundTest {
         var roundEnded: Event?
 
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        val round = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = roundStatus)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(round))
 
@@ -126,7 +128,7 @@ class RoundServiceEndRoundTest {
         var roundEnded: Event?
 
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, roundStatus)
+        val round = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = roundStatus)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(round))
 
@@ -162,7 +164,7 @@ class RoundServiceEndRoundTest {
     @Test
     fun shouldNotPublishOrStoreEventWhenRoundAlreadyEnded() {
         // given
-        val round = Round(ANY_GAMEID, ANY_ROUND_NUMBER, ANY_ROUND_ID, RoundStatus.ROUND_ENDED)
+        val round = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.ROUND_ENDED)
         whenever(mockRoundRepository!!.findById(any()))
             .thenReturn(Optional.of(round))
 

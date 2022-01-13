@@ -1,6 +1,8 @@
 package microservice.dungeon.game.integrationtests.model.round
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -29,9 +31,9 @@ class RoundRepositoryIntegrationTest @Autowired constructor(
 
     @Test
     fun saveRoundShouldPersistRound() {
-        val gameId = UUID.randomUUID()
+        val game = Game(10, 100)
         val roundNumber = 3
-        val round = Round(gameId, roundNumber)
+        val round = Round(game = game, roundNumber = roundNumber, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
 
         val roundId = transactionTemplate.execute {
             roundRepository.save(round)
@@ -47,9 +49,10 @@ class RoundRepositoryIntegrationTest @Autowired constructor(
 
     @Test
     fun findByGameIdAndRoundNumberShouldFindRound() {
-        val gameId = UUID.randomUUID()
+        val game = Game(10, 100)
+        val gameId = game.getGameId()
         val roundNumber = 3
-        val round = Round(gameId, roundNumber)
+        val round = Round(game = game, roundNumber = roundNumber, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
 
         val roundId = transactionTemplate.execute {
             roundRepository.save(round)
