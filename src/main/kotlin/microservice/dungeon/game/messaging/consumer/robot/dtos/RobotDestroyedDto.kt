@@ -19,8 +19,14 @@ class RobotDestroyedDto(
         return objectMapper.writeValueAsString(this)
     }
 
+
+
     override fun equals(other: Any?): Boolean =
         (other is RobotDestroyedDto)
                 && robotId == other.robotId
                 && playerId == other.playerId
+
+    override fun toString(): String {
+        return "RobotDestroyedDto(robotId=$robotId, playerId=$playerId)"
+    }
 }
