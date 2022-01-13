@@ -4,7 +4,7 @@ import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.robot.services.RobotService
 import microservice.dungeon.game.messaging.consumer.robot.KafkaRobotConsumer
 import microservice.dungeon.game.messaging.consumer.robot.dtos.RobotDestroyedDto
-import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.header.internals.RecordHeader
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,7 +29,7 @@ class KafkaRobotConsumerTest {
     @Test
     fun shouldCreateNewRobotWhenReceivingValidRobotSpawnedMessage() {
         // given
-        val validRecord = makeValidProducerRecord(ROBOT_ID, PLAYER_ID)
+        val validRecord = generateConsumerRecord(ROBOT_ID, PLAYER_ID)
 
         // when
         kafkaRobotConsumer!!.makeNewRobot(validRecord)
@@ -41,7 +41,7 @@ class KafkaRobotConsumerTest {
     @Test
     fun shouldDestroyRobotWhenReceivingValidRobotDestroyedMessage() {
         // given
-        val validRecord = makeValidProducerRecord(ROBOT_ID, PLAYER_ID)
+        val validRecord = generateConsumerRecord(ROBOT_ID, PLAYER_ID)
 
         // when
         kafkaRobotConsumer!!.destroyRobot(validRecord)
@@ -52,9 +52,9 @@ class KafkaRobotConsumerTest {
 
 
 
-    private fun makeValidProducerRecord(robotId: UUID, playerId: UUID): ProducerRecord<String, String> {
+    private fun generateConsumerRecord(robotId: UUID, playerId: UUID): ConsumerRecord<String, String> {
         val dto = RobotDestroyedDto(robotId, playerId)
-        val record = ProducerRecord<String, String>("ANY-TOPIC", dto.serialize())
+        val record = ConsumerRecord<String, String>("ANY-TOPIC", 0, 0L, null, dto.serialize())
 
         record.headers().add(
             RecordHeader("eventId", UUID.randomUUID().toString().toByteArray())
