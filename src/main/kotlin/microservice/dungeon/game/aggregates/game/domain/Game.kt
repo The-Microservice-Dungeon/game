@@ -1,122 +1,69 @@
 package microservice.dungeon.game.aggregates.game.domain
 
-import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.round.domain.Round
 import org.hibernate.annotations.Type
-
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
 import javax.persistence.*
-import javax.validation.constraints.NotBlank
-
 
 @Entity
-@Table(name = "games", indexes = [
-    Index(name = "GameIndex", columnList = "gameId", unique = true)
-])
-
-class Game(
+@Table(name = "GAMES")
+class Game constructor (
     @Id
     @Type(type="uuid-char")
-    private val gameId: UUID = UUID.randomUUID(),
-    private var gameStatus: GameStatus = GameStatus.CREATED,
-    @get: NotBlank
-    private var maxPlayers: Int = 0,
-    @get: NotBlank
-    private var maxRounds: Int = 0,
+    @Column(name = "GAME_ID")
+    private var gameId: UUID,
 
-    private var roundDuration: Long = 60000, // in ms
-    private var commandCollectDuration: Double = 45000.00, // in ms
+    @Column(name = "GAME_STATUS")
+    private var gameStatus: GameStatus,
 
-    private var createdGameDateTime: LocalDateTime = LocalDateTime.now(), //can be deleted
-    private var startTime: LocalTime? = null,
+    @Column(name = "MAX_PLAYERS")
+    private var maxPlayers: Int,
 
-    private var gameTime: LocalTime? = null,
-    private var lastRoundStartedAt: LocalTime? = null,
-    private var currentRoundCount: Int = 0,
+    @Column(name = "MAX_ROUNDS")
+    private var maxRounds: Int,
 
-    @OneToMany(cascade = [CascadeType.ALL],
-        mappedBy = "playerId",
-        orphanRemoval = true)
-//    @JoinColumn(name = "game_gameId")
-    val playerList: MutableList<PlayersInGame> = mutableListOf(),
+    @Column(name = "TOTAL_ROUND_TIMESPAN")
+    private var totalRoundTimespanInMS: Double,
 
-    )   {
+    @Column(name = "RELATIVE_COMMAND_INPUT_TIMESPAN")
+    private var relativeCommandInputTimespanInPercent: Int,
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @JoinTable(
+        name = "GAME_PARTICIPATIONS",
+        joinColumns = [JoinColumn(name = "GAME_ID")],
+        inverseJoinColumns = [JoinColumn(name = "ROUND_ID")])
+    private var participatingPlayers: Set<Player>,
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    private var rounds: Set<Round>
+    ) {
+
+    constructor(maximumPlayers: Int, maximumRounds: Int): this(
+        gameId = UUID.randomUUID(),
+        gameStatus = GameStatus.CREATED,
+        maxPlayers = maximumPlayers,
+        maxRounds = maximumRounds,
+        totalRoundTimespanInMS = 60000.00,
+        relativeCommandInputTimespanInPercent = 75,
+        participatingPlayers = emptySet(),
+        rounds = emptySet()
+    )
 
     fun startGame() {
-        if (gameStatus != GameStatus.CREATED) {
-            throw MethodNotAllowedForStatusException("Game Status is $gameStatus but requires ${GameStatus.CREATED}")
-        }
-        gameStatus = GameStatus.GAME_RUNNING
-        this.startTime = LocalTime.now()
+
     }
 
+    fun startNewRound() {
+
+    }
+
+    fun endCommandInputPhase() {
+
+    }
 
     fun endGame() {
-        if (gameStatus != GameStatus.GAME_RUNNING) {
-            throw MethodNotAllowedForStatusException("Game Status is $gameStatus but requires ${GameStatus.GAME_RUNNING}")
-        }
-        gameStatus = GameStatus.GAME_FINISHED
+
     }
-
-
-    fun getGameId(): UUID = gameId
-    fun getMaxPlayers(): Int = maxPlayers
-    fun getMaxRounds(): Int = maxRounds
-    fun getRoundDuration(): Long = roundDuration
-    fun getCommandCollectDuration(): Double = commandCollectDuration
-    fun getGameStatus(): GameStatus = gameStatus
-    fun setCurrentRoundCount(updateCurrentRound : Int) {
-        this.currentRoundCount = updateCurrentRound
-    }
-    fun getCurrentRoundCount() = currentRoundCount
-    fun getGameStartTime() = startTime
-    fun getCreatedGameDateTime() = createdGameDateTime
-
-    fun setLastRoundStartedAt(lastRoundStartedAt: LocalTime) {
-        this.lastRoundStartedAt = lastRoundStartedAt
-    }
-    fun getLastRoundStartedAt(): LocalTime? = lastRoundStartedAt
-
-    fun getPlayersInGame(): MutableList<PlayersInGame> = playerList
-
-    fun setMaxRounds(newMaxRounds: Int?) {
-        if (newMaxRounds != null) {
-            this.maxRounds = newMaxRounds
-        }
-    }
-    fun setRoundDuration(newRoundDuration: Long?) {
-        if (newRoundDuration != null) {
-            this.roundDuration = newRoundDuration
-        }
-    }
-
-    fun setMaxPlayers(maxPlayers: Int) {
-        this.maxPlayers = maxPlayers
-    }
-
-    fun setCommandCollectDuration(l: Double) {
-        this.commandCollectDuration = l
-    }
-
-    fun addPlayersToGame(newPlayer: PlayersInGame) {
-        playerList += newPlayer
-    }
-
-}
-
-@Entity
-data class PlayersInGame(
-    @Id
-    @Type(type="uuid-char")
-    private val playerId: UUID,
-
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "gameId", nullable = false)
-    @Type(type="uuid-char")
-    var gameId: UUID
-){
-
 }
