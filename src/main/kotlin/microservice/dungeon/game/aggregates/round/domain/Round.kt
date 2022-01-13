@@ -120,4 +120,10 @@ class Round(
     fun getRoundNumber(): Int = roundNumber
 
     fun getRoundStatus(): RoundStatus = roundStatus
+
+    override fun toString(): String {
+        return "Round(roundId=$roundId, game=$game, roundNumber=$roundNumber, roundStatus=$roundStatus)"
+    }
+
+
 }
