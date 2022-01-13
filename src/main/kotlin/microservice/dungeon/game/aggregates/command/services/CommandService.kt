@@ -20,7 +20,7 @@ class CommandService @Autowired constructor(
 ) {
 
     fun getAllRoundCommands(gameId: UUID, roundNumber: Int): List<Command>? {
-        val currentRoundNumber = gameRepository.findById(gameId).get().getCurrentRoundCount()
+        val currentRoundNumber = 0 //TODO("REPLACE!!") gameRepository.findById(gameId).get().getCurrentRoundCount()
         val roundCommands = commandRepository.findAll()
 
         if (currentRoundNumber >= roundNumber) {
@@ -36,7 +36,7 @@ class CommandService @Autowired constructor(
     }
 
     fun save(dto: CommandDTO): UUID {
-        val currentRoundNumber = gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
+        val currentRoundNumber = 0 //TODO("REPLACE") gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
 
         val player = playerRepository.findByPlayerToken(dto.playerToken)
 

@@ -8,6 +8,7 @@ import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.Table
 
+//TODO ("JPA MAPPING")
 @Entity
 @Table(name = "rounds", indexes = [
     Index(name = "roundIndexWithGameIdAndRoundNumber", columnList = "gameId, roundNumber", unique = true)

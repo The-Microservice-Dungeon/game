@@ -7,14 +7,14 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import java.time.LocalDateTime
 import java.util.*
 
-class GameStarted(
-    id: UUID,
-    occurredAt: EventTime,
-    gameId: UUID,
-    gameStatus: GameStatus
-) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameStarted", "status", 1) {
-
-    constructor(game: Game):
-            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), game.getGameStatus())
-
-}
+//class GameStarted(
+//    id: UUID,
+//    occurredAt: EventTime,
+//    gameId: UUID,
+//    gameStatus: GameStatus
+//) : AbstractGameEvent(id, occurredAt,  gameId,  gameStatus, "gameStarted", "status", 1) {
+//
+//    constructor(game: Game):
+//            this(UUID.randomUUID(), EventTime.makeFromLocalDateTime(LocalDateTime.now()),  game.getGameId(), game.getGameStatus())
+//
+//}

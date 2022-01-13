@@ -9,23 +9,23 @@ import org.assertj.core.api.Assertions.assertThat
 class GameAssertion(actual: Game):
     AbstractObjectAssert<GameAssertion, Game>(actual, GameAssertion::class.java){
 
-    fun isCreatedFrom(maxPlayers: Int, maxRounds: Int): GameAssertion {
-        assertThat(actual.getMaxRounds())
-            .isEqualTo(maxRounds)
-        assertThat(actual.getMaxPlayers())
-            .isEqualTo(maxPlayers)
-        return this
-    }
-
-    fun isSameAs(other: Game): GameAssertion {
-        assertThat(actual.getGameId())
-            .isEqualTo(other.getGameId())
-        assertThat(actual.getGameStatus())
-            .isEqualTo(other.getGameStatus())
-        assertThat(actual.getMaxRounds())
-            .isEqualTo(other.getMaxRounds())
-        assertThat(actual.getMaxPlayers())
-            .isEqualTo(other.getMaxPlayers())
-        return this
-    }
+//    fun isCreatedFrom(maxPlayers: Int, maxRounds: Int): GameAssertion {
+//        assertThat(actual.getMaxRounds())
+//            .isEqualTo(maxRounds)
+//        assertThat(actual.getMaxPlayers())
+//            .isEqualTo(maxPlayers)
+//        return this
+//    }
+//
+//    fun isSameAs(other: Game): GameAssertion {
+//        assertThat(actual.getGameId())
+//            .isEqualTo(other.getGameId())
+//        assertThat(actual.getGameStatus())
+//            .isEqualTo(other.getGameStatus())
+//        assertThat(actual.getMaxRounds())
+//            .isEqualTo(other.getMaxRounds())
+//        assertThat(actual.getMaxPlayers())
+//            .isEqualTo(other.getMaxPlayers())
+//        return this
+//    }
 }
