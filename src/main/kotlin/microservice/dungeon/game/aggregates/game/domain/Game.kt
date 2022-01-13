@@ -66,7 +66,7 @@ class Game constructor (
     }
 
     fun endGame() {
-
+        gameStatus = GameStatus.GAME_FINISHED
     }
 
 
