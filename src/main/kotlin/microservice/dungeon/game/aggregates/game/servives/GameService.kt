@@ -3,11 +3,13 @@ package microservice.dungeon.game.aggregates.game.servives
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
@@ -35,8 +37,8 @@ class GameService @Autowired constructor(
             throw GameStateException("A new Game could not be started, because an active Game already exists.")
         }
 
-        val newGame: Game = Game(maxPlayers, maxRounds)
         val transactionId = UUID.randomUUID()
+        val newGame: Game = Game(maxPlayers, maxRounds)
 
         gameRepository.save(newGame)
         logger.info("New Game created. [transactionId=$transactionId]")
@@ -45,9 +47,32 @@ class GameService @Autowired constructor(
         return Pair(transactionId, newGame)
     }
 
-//    fun joinGame(playerId: UUID, gameId: UUID): UUID{
-//
-//    }
+    @Transactional
+    fun joinGame(playerToken: UUID, gameId: UUID): UUID {
+        val transactionId = UUID.randomUUID()
+        val player: Player
+        val game: Game
+
+        try {
+            player = playerRepository.findByPlayerToken(playerToken).get()
+        } catch (e: Exception) {
+            logger.warn("Failed to join Game. Player does not exist.")
+            throw PlayerNotFoundException("Failed to join game. No player found for token.")
+        }
+
+        try {
+            game = gameRepository.findById(gameId).get()
+        } catch (e: Exception) {
+            logger.warn("Failed to join game. No game was found. [gameId=$gameId]")
+            throw GameNotFoundException("Failed to join game. No game was found.")
+        }
+
+        game.joinGame(player)
+        gameRepository.save(game)
+
+        logger.info("Player has joined the game. [playerName=${player.getUserName()}, numberOfPlayers=${game.getParticipatingPlayers().size}/${game.getMaxPlayers()}]")
+        return transactionId
+    }
 
 //    fun startGame() {
 //
