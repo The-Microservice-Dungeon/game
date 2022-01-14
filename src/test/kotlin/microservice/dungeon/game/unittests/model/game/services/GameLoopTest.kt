@@ -32,21 +32,34 @@ class GameLoopTest {
     }
 
     @Test
-    fun shouldAllowToStartGameLoopAndRunOnce() {
+    fun shouldAllowToStartGameLoopAndRunTwice() {
         // given (only one iteration)
-        val game = Game(1, 1)
-        game.startGame()
+        val spyGame = spy(Game(1, 2))
+        spyGame.setTotalRoundTimespanInMS(1000)     // increase testing speed
+        spyGame.startGame()
 
-        whenever(mockGameRepository!!.findById(game.getGameId()))
-            .thenReturn(Optional.of(game))
+        whenever(mockGameRepository!!.findById(spyGame.getGameId()))
+            .thenReturn(Optional.of(spyGame))
 
         // when
-        gameLoop!!.runGameLoop(game.getGameId())
+        gameLoop!!.runGameLoop(spyGame.getGameId())
 
         // then
-        verify(mockGameRepository!!).save(argThat {
-            this.getGameStatus() == GameStatus.GAME_FINISHED
-        })
+        // 1st iteration
+        val inOrder: InOrder = inOrder(spyGame, mockGameRepository!!, mockRoundService!!)
+        inOrder.verify(mockRoundService!!).deliverBlockingCommands(any()) // other commands as well
+        inOrder.verify(mockRoundService!!).endRound(any())
+        inOrder.verify(spyGame).startNewRound()
+        inOrder.verify(mockGameRepository!!).save(spyGame)
+
+        // 2nd iteration
+        inOrder.verify(mockRoundService!!).deliverBlockingCommands(any())
+        inOrder.verify(mockRoundService!!).endRound(any())
+        inOrder.verify(spyGame).startNewRound()
+
+        // finally
+        inOrder.verify(spyGame).endGame()
+        inOrder.verify(mockGameRepository!!).save(spyGame)
     }
 
     @Test
