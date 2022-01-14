@@ -35,9 +35,11 @@ class GameLoop(
         while (true) {
             currentTimeFrame = TimeFrame(currentGame)
             startRound()
+                logger.debug("Waiting for ${currentTimeFrame.getCommandInputTimeFrameInMS().toDouble() / 1000}s ...")
                 Thread.sleep(currentTimeFrame.getCommandInputTimeFrameInMS())
 
             executeCommandsInOrder(currentRoundId)
+                logger.debug("Waiting for ${currentTimeFrame.getExecutionTimeFrameInMS().toDouble() / 1000}s ...")
                 Thread.sleep(currentTimeFrame.getExecutionTimeFrameInMS())
 
             endRound(currentRoundId)
@@ -57,12 +59,12 @@ class GameLoop(
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
     private fun startRound() {
         // TODO Publish RoundStartedEvent
-        logger.info("Round started. Accepting commands...")
+        logger.info("Round started. Accepting commands ...")
     }
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
     fun executeCommandsInOrder(roundId: UUID) {
-        logger.info("Dispatching commands...")
+        logger.info("Dispatching commands ...")
         roundService.endCommandInputs(roundId)
         roundService.deliverBlockingCommands(roundId)
         roundService.deliverTradingCommands(roundId)
