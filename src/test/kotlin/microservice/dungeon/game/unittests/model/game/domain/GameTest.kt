@@ -1,16 +1,25 @@
 package microservice.dungeon.game.unittests.model.game.domain
 
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameParticipationException
+import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class GameTest {
 
+    private var player: Player? = null
+
+    @BeforeEach
+    fun setUp() {
+        player = Player("dadepu", "dadepu@smail.th-koeln.de")
+    }
 
     @Test
     fun shouldAllowToStartTheGame() {
@@ -43,7 +52,7 @@ class GameTest {
         game.startGame()
 
         // when
-        assertThatThrownBy {
+        assertThrows(GameStateException::class.java) {
             game.startGame()
         }
     }
@@ -76,7 +85,7 @@ class GameTest {
         val game: Game = Game(10, 100)
 
         // when
-        assertThatThrownBy {
+        assertThrows(GameStateException::class.java) {
             game.startNewRound()
         }
     }
@@ -93,5 +102,57 @@ class GameTest {
         // then
         assertThat(game.getGameStatus())
             .isEqualTo(GameStatus.GAME_FINISHED)
+    }
+
+    @Test
+    fun shouldAllowPlayersToJoinTheGame() {
+        // given
+        val game: Game = Game(10, 100)
+
+        // when
+        game.joinGame(player!!)
+
+        // then
+        assertThat(game.getParticipatingPlayers())
+            .contains(player!!)
+    }
+
+    @Test
+    fun shouldNotAllowPlayersToJoinARunningOrFinishedGame() {
+        // given
+        val game: Game = Game(10, 100)
+        game.startGame()
+
+        // when
+        assertThrows(GameStateException::class.java) {
+            game.joinGame(player!!)
+        }
+    }
+
+    @Test
+    fun shouldNotAllowSamePlayerJoinMoreThanOnce() {
+        // given
+        val game: Game = Game(10, 100)
+        val playerClone: Player = Player(player!!.getUserName(), player!!.getMailAddress(), player!!.getPlayerId(), player!!.getPlayerToken())
+        game.joinGame(player!!)
+
+        // when
+        assertThrows(GameParticipationException::class.java) {
+            game.joinGame(playerClone)
+        }
+    }
+
+    @Test
+    fun shouldNotAllowMorePlayersToJoinThanMaximumNumberOfPlayersPermits() {
+        // given
+        val numberOfMaxPlayer = 1
+        val game: Game = Game(numberOfMaxPlayer, 100)
+        val otherPlayer: Player = Player("mel", "some mail")
+        game.joinGame(player!!)
+
+        // when
+        assertThrows(GameParticipationException::class.java) {
+            game.joinGame(otherPlayer)
+        }
     }
 }
