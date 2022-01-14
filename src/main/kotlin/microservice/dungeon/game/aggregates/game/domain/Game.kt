@@ -141,6 +141,10 @@ class Game constructor (
 
     fun getTotalRoundTimespanInMS(): Long = totalRoundTimespanInMS
 
+    fun setTotalRoundTimespanInMS(totalTime: Long) {
+        totalRoundTimespanInMS = totalTime
+    }
+
     fun getRelativeCommandInputTimespanInPercent(): Int = relativeCommandInputTimespanInPercent
 
     override fun toString(): String {
