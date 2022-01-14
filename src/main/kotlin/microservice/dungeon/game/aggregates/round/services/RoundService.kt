@@ -16,6 +16,7 @@ import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,23 +34,7 @@ class RoundService @Autowired constructor (
     private val robotCommandDispatcherClient: RobotCommandDispatcherClient,
     private val tradingCommandDispatcherClient: TradingCommandDispatcherClient
 ) {
-//    @Transactional
-//    fun startNewRound(gameId: UUID, roundNumber: Int): UUID {
-//        if (!roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).isEmpty) {
-//            throw EntityAlreadyExistsException("A round with number $roundNumber for game $gameId already exists.")
-//        }
-//        val round = Round(gameId, roundNumber)
-//
-//        //val game: Game = gameRepository.findByGameId(gameId).get()
-//        //game.setLastRoundStartedAt(LocalTime.now())
-//        //game.setCurrentRoundCount(roundNumber)
-//
-//        roundRepository.save(round)
-//        val roundStarted = RoundStarted(round)
-//        eventStoreService.storeEvent(roundStarted)
-//        eventPublisherService.publishEvents(listOf(roundStarted))
-//        return round.getRoundId()
-//    }
+    private val logger = KotlinLogging.logger {}
 
     @Transactional
     fun endCommandInputs(roundId: UUID) {
@@ -73,6 +58,7 @@ class RoundService @Autowired constructor (
         )
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
+        logger.info("Blocking-Commands dispatched.")
     }
 
     @Transactional
@@ -93,6 +79,7 @@ class RoundService @Autowired constructor (
                 .map { command -> BuyCommandDTO.fromCommand (command) }
         )
         roundRepository.save(round)
+        logger.info("Trading-Commands dispatched.")
     }
 
     @Transactional
@@ -113,6 +100,7 @@ class RoundService @Autowired constructor (
             .map { command -> MovementCommandDTO.fromCommand(command) }
         )
         roundRepository.save(round)
+        logger.info("Movement-Commands dispatched.")
     }
 
     @Transactional
@@ -133,6 +121,7 @@ class RoundService @Autowired constructor (
                 .map { command -> FightCommandDTO.fromCommand(command) }
         )
         roundRepository.save(round)
+        logger.info("Battle-Commands dispatched.")
     }
 
     @Transactional
@@ -146,6 +135,7 @@ class RoundService @Autowired constructor (
                 .map { command -> MineCommandDTO.fromCommand(command) }
         )
         roundRepository.save(round)
+        logger.info("Mining-Commands dispatched.")
     }
 
     @Transactional
@@ -166,6 +156,7 @@ class RoundService @Autowired constructor (
                 .map { command -> RegenerateCommandDTO.fromCommand(command) }
         )
         roundRepository.save(round)
+        logger.info("Regeneration-Commands dispatched.")
     }
 
     @Transactional
