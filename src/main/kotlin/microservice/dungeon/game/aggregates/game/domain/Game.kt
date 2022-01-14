@@ -2,6 +2,7 @@ package microservice.dungeon.game.aggregates.game.domain
 
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import mu.KotlinLogging
 import org.hibernate.annotations.Type
 import java.util.*
@@ -75,10 +76,17 @@ class Game constructor (
             logger.warn("Failed to start a new round, because the Game-Status is other than RUNNING. {}", gameStatus)
             throw GameStateException("Game could not start a new round, because its status is other than RUNNING. Status is $gameStatus")
         }
+        if (getCurrentRound() != null && getCurrentRound()!!.getRoundNumber() >= maxRounds) {
+            logger.debug("Start new round aborted. Maximum number of rounds reached. [${getCurrentRound()!!.getRoundNumber()}/${maxRounds}]")
+            throw GameStateException("Start new round aborted. Maximum number of rounds reached. [${getCurrentRound()!!.getRoundNumber()}/${maxRounds}]")
+        }
+
         val currentRound: Round = getCurrentRound()!!
-        currentRound.endRound()
-        logger.debug("Ended previous Round.")
-        logger.trace(currentRound.toString())
+        if (currentRound.getRoundStatus() != RoundStatus.ROUND_ENDED) {
+            currentRound.endRound()
+            logger.debug("Ended previous Round.")
+            logger.trace(currentRound.toString())
+        }
 
         val nextRound = Round(game = this, roundNumber = currentRound.getRoundNumber() + 1)
         rounds.add(nextRound)
