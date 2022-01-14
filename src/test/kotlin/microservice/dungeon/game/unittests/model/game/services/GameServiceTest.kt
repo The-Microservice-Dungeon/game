@@ -3,11 +3,14 @@ package microservice.dungeon.game.unittests.model.game.services
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.assertj.core.api.Assertions.assertThat
@@ -15,10 +18,9 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.util.*
+import javax.persistence.EntityNotFoundException
 
 class GameServiceTest {
     private var mockGameRepository: GameRepository? = null
@@ -85,6 +87,62 @@ class GameServiceTest {
 
     @Test
     fun shouldPublishWhenGameCreated() {
+        assertTrue(false)
+    }
+
+    @Test
+    fun shouldAllowPlayerToJoinAGame() {
+        // given
+        val spyGame: Game = spy(Game(2, 100))
+        val player: Player = Player("dadepu", "some mail")
+
+        whenever(mockGameRepository!!.findById(spyGame.getGameId()))
+            .thenReturn(Optional.of(spyGame))
+        whenever(mockPlayerRepository!!.findByPlayerToken(player.getPlayerToken()))
+            .thenReturn(Optional.of(player))
+
+        // when
+        val transactionId: UUID = gameService!!.joinGame(player.getPlayerToken(), spyGame.getGameId())
+
+        // then
+        verify(spyGame).joinGame(player)
+
+        // and then
+        verify(mockGameRepository!!).save(spyGame)
+    }
+
+    @Test
+    fun shouldThrowPlayerNotFoundExceptionWhenPlayerNotFoundWhileJoiningAGame() {
+        // given
+        val game: Game = Game(10, 100)
+        val anyPlayerToken = UUID.randomUUID()
+
+        whenever(mockGameRepository!!.findById(any()))
+            .thenReturn(Optional.of(game))
+
+        // when
+        assertThrows(PlayerNotFoundException::class.java) {
+            gameService!!.joinGame(anyPlayerToken, game.getGameId())
+        }
+    }
+
+    @Test
+    fun shouldThrowGameNotFoundExceptionWhenGameNotFoundWhileJoiningAGame() {
+        // given
+        val anyGameId = UUID.randomUUID()
+        val player = Player("dadepu", "any mail")
+
+        whenever(mockPlayerRepository!!.findByPlayerToken(any()))
+            .thenReturn(Optional.of(player))
+
+        // when
+        assertThrows(GameNotFoundException::class.java) {
+            gameService!!.joinGame(player.getPlayerToken(), anyGameId)
+        }
+    }
+
+    @Test
+    fun shouldPublishPlayerJoinedGameOnSuccess() {
         assertTrue(false)
     }
 }
