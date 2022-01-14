@@ -145,4 +145,37 @@ class GameServiceTest {
     fun shouldPublishPlayerJoinedGameOnSuccess() {
         assertTrue(false)
     }
+
+    @Test
+    fun shouldAllowToStartTheGame() {
+        // given
+        val spyGame = spy(Game(10, 100))
+
+        whenever(mockGameRepository!!.findById(spyGame.getGameId()))
+            .thenReturn(Optional.of(spyGame))
+
+        // when
+        val transactionId: UUID = gameService!!.startGame(spyGame.getGameId())
+
+        // then
+        verify(spyGame).startGame()
+        verify(mockGameRepository!!).save(spyGame)
+        //TODO Should start game loop
+    }
+
+    @Test
+    fun shouldThrowGameNotFoundExceptionWhenGameNotFoundWhileStarting() {
+        // given
+        val anyGameId = UUID.randomUUID()
+
+        // when
+        assertThrows(GameNotFoundException::class.java) {
+            gameService!!.startGame(anyGameId)
+        }
+    }
+
+    @Test
+    fun shouldPublishGameStartedOnSuccess() {
+        assertTrue(false)
+    }
 }

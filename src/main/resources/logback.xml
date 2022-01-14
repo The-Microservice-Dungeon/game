@@ -4,14 +4,14 @@
         <append>true</append>
         <filter class="microservice.dungeon.game.LogFilter" />
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="TRACE" class="ch.qos.logback.core.FileAppender">
         <file>logs/trace.log</file>
         <append>true</append>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="INFO" class="ch.qos.logback.core.FileAppender">
@@ -21,7 +21,7 @@
             <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="GAME-INFO" class="ch.qos.logback.core.FileAppender">
@@ -32,7 +32,7 @@
         </filter>
         <filter class="microservice.dungeon.game.LogFilter" />
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
@@ -42,12 +42,12 @@
             <level>ERROR</level>
         </filter>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %15c - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
 
