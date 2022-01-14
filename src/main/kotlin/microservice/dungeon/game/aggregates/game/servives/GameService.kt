@@ -74,9 +74,27 @@ class GameService @Autowired constructor(
         return transactionId
     }
 
-//    fun startGame() {
-//
-//    }
+    @Transactional
+    fun startGame(gameId: UUID): UUID {
+        val transactionId: UUID = UUID.randomUUID()
+        val game: Game
+
+        logger.info("Starting Game...")
+
+        try {
+            game = gameRepository.findById(gameId).get()
+        } catch (e: Exception) {
+            logger.warn("Failed to start the game. No game was found. [gameId=$gameId]")
+            throw GameNotFoundException("Failed to start game. No game was found.")
+        }
+
+        game.startGame()
+        gameRepository.save(game)
+        logger.info("Game started. [gameId=$gameId]")
+
+        return transactionId;
+    }
+
 
 //    fun endGame() {
 //
