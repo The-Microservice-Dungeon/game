@@ -119,6 +119,8 @@ class Game constructor (
 
     fun getParticipatingPlayers(): List<Player> = participatingPlayers.toList()
 
+    fun getNumberJoinedPlayers(): Int = participatingPlayers.size
+
     fun getMaxRounds(): Int = maxRounds
 
     fun getCurrentRound(): Round? = rounds.fold(null) { acc: Round?, e: Round ->

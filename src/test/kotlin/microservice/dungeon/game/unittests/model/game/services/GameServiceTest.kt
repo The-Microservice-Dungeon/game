@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import java.util.*
-import javax.persistence.EntityNotFoundException
 
 class GameServiceTest {
     private var mockGameRepository: GameRepository? = null
@@ -160,7 +159,9 @@ class GameServiceTest {
         // then
         verify(spyGame).startGame()
         verify(mockGameRepository!!).save(spyGame)
-        //TODO Should start game loop
+
+        // and then
+        verify(mockMapGameWorldsClient!!).createNewGameWorld(spyGame.getNumberJoinedPlayers())
     }
 
     @Test
@@ -175,7 +176,30 @@ class GameServiceTest {
     }
 
     @Test
-    fun shouldPublishGameStartedOnSuccess() {
-        assertTrue(false)
+    fun shouldAllowToEndGame() {
+        // given
+        val spyGame = spy(Game(10, 100))
+        spyGame.startGame()
+
+        whenever(mockGameRepository!!.findById(spyGame.getGameId()))
+            .thenReturn(Optional.of(spyGame))
+
+        // when
+        val transactionId = gameService!!.endGame(spyGame.getGameId())
+
+        // then
+        verify(spyGame).endGame()
+        verify(mockGameRepository!!).save(spyGame)
+    }
+
+    @Test
+    fun shouldThrowGameNotFoundExceptionWhenGameNotFoundWhileEnding() {
+        // given
+        val anyGameId = UUID.randomUUID()
+
+        // when
+        assertThrows(GameNotFoundException::class.java) {
+            gameService!!.endGame(anyGameId)
+        }
     }
 }
