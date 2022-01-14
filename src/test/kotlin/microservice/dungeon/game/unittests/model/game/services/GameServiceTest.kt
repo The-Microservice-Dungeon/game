@@ -165,6 +165,11 @@ class GameServiceTest {
     }
 
     @Test
+    fun shouldPublishGameStartedOnSuccess() {
+        assertTrue(false)
+    }
+
+    @Test
     fun shouldThrowGameNotFoundExceptionWhenGameNotFoundWhileStarting() {
         // given
         val anyGameId = UUID.randomUUID()

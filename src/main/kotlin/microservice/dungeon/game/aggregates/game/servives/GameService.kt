@@ -90,6 +90,8 @@ class GameService @Autowired constructor(
         gameRepository.save(game)
         logger.info("Game started. [gameId=$gameId]")
 
+        // TODO START GAME-LOOP
+
         return transactionId;
     }
 
