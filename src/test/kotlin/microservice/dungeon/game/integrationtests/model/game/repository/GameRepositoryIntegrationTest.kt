@@ -3,6 +3,8 @@ package microservice.dungeon.game.integrationtests.model.game.repository
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.round.domain.Round
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -36,6 +38,32 @@ class GameRepositoryIntegrationTest @Autowired constructor(
 
         // then
         val fetchedGame: Game = gameRepository.findById(newGame.getGameId()).get()
+        assertThat(fetchedGame
+            .isEqualByVal(newGame)).isTrue
+    }
+
+    @Test
+    fun shouldCascadeAllOnRoundsWhenSaving() {
+        // given
+        val newGame: Game = Game(10, 100)
+        newGame.startGame()
+
+        // when
+        gameRepository.save(newGame)
+
+        // then
+        val fetchedGame: Game = gameRepository.findById(newGame.getGameId()).get()
+        val fetchedActiveRound: Round = fetchedGame.getCurrentRound()!!
+
+        assertThat(fetchedGame
+            .isEqualByVal(newGame)).isTrue
+        assertThat(fetchedActiveRound
+            .isEqualByVal(newGame.getCurrentRound()!!)).isTrue
+    }
+
+    @Test
+    fun shouldCascadeAllOnParticipatingPlayersWhenSaving() {
+        assertTrue(false)
     }
 
     @Test

@@ -122,8 +122,20 @@ class Round(
     fun getRoundStatus(): RoundStatus = roundStatus
 
     override fun toString(): String {
-        return "Round(roundId=$roundId, game=$game, roundNumber=$roundNumber, roundStatus=$roundStatus)"
+        return "Round(roundId=$roundId, gameId=${game.getGameId()}, roundNumber=$roundNumber, roundStatus=$roundStatus)"
     }
 
+    fun isEqualByVal(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
+        other as Round
+
+        if (roundId != other.roundId) return false
+        if (game.getGameId() != other.game.getGameId()) return false
+        if (roundNumber != other.roundNumber) return false
+        if (roundStatus != other.roundStatus) return false
+
+        return true
+    }
 }

@@ -30,4 +30,18 @@ class Player constructor(
     fun getUserName(): String = userName
 
     fun getMailAddress(): String = mailAddress
+
+    fun isEqualByVal(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Player
+
+        if (userName != other.userName) return false
+        if (mailAddress != other.mailAddress) return false
+        if (playerId != other.playerId) return false
+        if (playerToken != other.playerToken) return false
+
+        return true
+    }
 }

@@ -110,4 +110,21 @@ class Game constructor (
     override fun toString(): String {
         return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
     }
+
+    fun isEqualByVal(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Game
+
+        if (gameId != other.gameId) return false
+        if (gameStatus != other.gameStatus) return false
+        if (maxPlayers != other.maxPlayers) return false
+        if (maxRounds != other.maxRounds) return false
+        if (totalRoundTimespanInMS != other.totalRoundTimespanInMS) return false
+        if (relativeCommandInputTimespanInPercent != other.relativeCommandInputTimespanInPercent) return false
+        if (!participatingPlayers.zip(other.participatingPlayers).fold(true) { acc, pair -> acc && pair.first.getPlayerId() == pair.second.getPlayerId() }) return false
+        if (!rounds.zip(other.rounds).fold(true) { acc, pair -> acc && pair.first.getRoundId() == pair.second.getRoundId() }) return false
+            return true
+    }
 }
