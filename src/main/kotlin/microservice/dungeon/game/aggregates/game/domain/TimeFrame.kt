@@ -11,6 +11,9 @@ class TimeFrame (
     constructor(totalRoundDurationInMS: Long, commandInputLengthInPercent: Int):
             this(totalRoundDurationInMS, commandInputLengthInPercent, LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
 
+    constructor(game: Game):
+            this(game.getTotalRoundTimespanInMS(), game.getRelativeCommandInputTimespanInPercent(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
+
     fun getCommandInputTimeFrameInMS(): Long {
         return (totalRoundDurationInMS * commandInputLengthInPercent) / 100
     }

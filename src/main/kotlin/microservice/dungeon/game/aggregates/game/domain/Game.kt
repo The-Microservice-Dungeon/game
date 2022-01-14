@@ -27,7 +27,7 @@ class Game constructor (
     private var maxRounds: Int,
 
     @Column(name = "TOTAL_ROUND_TIMESPAN")
-    private var totalRoundTimespanInMS: Double,
+    private var totalRoundTimespanInMS: Long,
 
     @Column(name = "RELATIVE_COMMAND_INPUT_TIMESPAN")
     private var relativeCommandInputTimespanInPercent: Int,
@@ -48,7 +48,7 @@ class Game constructor (
         gameStatus = GameStatus.CREATED,
         maxPlayers = maximumPlayers,
         maxRounds = maximumRounds,
-        totalRoundTimespanInMS = 60000.00,
+        totalRoundTimespanInMS = 60000,
         relativeCommandInputTimespanInPercent = 75,
         participatingPlayers = mutableListOf(),
         rounds = mutableListOf()
@@ -138,6 +138,10 @@ class Game constructor (
     fun getRound(roundNumber: Int): Round = rounds.first { round ->
         round.getRoundNumber() == roundNumber
     }
+
+    fun getTotalRoundTimespanInMS(): Long = totalRoundTimespanInMS
+
+    fun getRelativeCommandInputTimespanInPercent(): Int = relativeCommandInputTimespanInPercent
 
     override fun toString(): String {
         return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
