@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.game.servives
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameLoopException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.domain.TimeFrame
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.services.RoundService
@@ -18,11 +19,12 @@ class GameLoop(
 
     fun runGameLoop(gameId: UUID) {
         var currentRoundId: UUID
+        var currentGame: Game
+        var currentTimeFrame: TimeFrame
 
         try {
-            currentRoundId = gameRepository.findById(gameId).get()
-                .getCurrentRound()!!
-                .getRoundId()
+            currentGame = gameRepository.findById(gameId).get()
+            currentRoundId = currentGame.getCurrentRound()!!.getRoundId()
 
         } catch (e: Exception) {
             logger.error("Failed to obtain currentRoundId. Either the game has not started or does not exist.")
@@ -31,16 +33,19 @@ class GameLoop(
         }
 
         while (true) {
+            currentTimeFrame = TimeFrame(currentGame)
             startRound()
-                Thread.sleep(5000)
+                Thread.sleep(currentTimeFrame.getCommandInputTimeFrameInMS())
 
             executeCommandsInOrder(currentRoundId)
-                Thread.sleep(5000)
+                Thread.sleep(currentTimeFrame.getExecutionTimeFrameInMS())
 
             endRound(currentRoundId)
 
             try {
-                currentRoundId = makeNextRound(gameId)
+                val (g, r) = makeNextRound(gameId)
+                currentGame = g
+                currentRoundId = r
             } catch (e: Exception) {
                 break
             }
@@ -75,14 +80,14 @@ class GameLoop(
     }
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
-    fun makeNextRound(gameId: UUID): UUID {
+    fun makeNextRound(gameId: UUID): Pair<Game, UUID> {
         val game: Game = fetchGame(gameId)
         game.startNewRound()
         val roundId = game.getCurrentRound()!!.getRoundId()
 
         gameRepository.save(game)
         logger.debug("Saved game with next round.")
-        return roundId
+        return Pair(game, roundId)
     }
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
