@@ -51,7 +51,7 @@
         </encoder>
     </appender>
 
-    <root level="trace">
+    <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO" />
         <appender-ref ref="TRACE" />
