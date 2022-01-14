@@ -3,14 +3,18 @@ package microservice.dungeon.game.aggregates.game.servives
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
+import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.transaction.Transactional
 
 
 @Service
@@ -24,7 +28,13 @@ class GameService @Autowired constructor(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    @Transactional
     fun createNewGame(maxPlayers: Int, maxRounds: Int): Pair<UUID, Game> {
+        if (gameRepository.existsByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING))) {
+            logger.warn("Failed to create a new Game. An active Game already exists.")
+            throw GameStateException("A new Game could not be started, because an active Game already exists.")
+        }
+
         val newGame: Game = Game(maxPlayers, maxRounds)
         val transactionId = UUID.randomUUID()
 
@@ -35,30 +45,18 @@ class GameService @Autowired constructor(
         return Pair(transactionId, newGame)
     }
 
-
-//    fun createNewGame(): Game {
+//    fun joinGame(playerId: UUID, gameId: UUID): UUID{
 //
 //    }
-//
+
 //    fun startGame() {
 //
 //    }
-//
+
 //    fun endGame() {
 //
 //    }
-//
-//    fun joinGame() {
-//
-//    }
-//
-//    fun changeNumberOfRounds() {
-//
-//    }
-//
-//    fun changeDurationOfRounds() {
-//
-//    }
+
 }
 
 
