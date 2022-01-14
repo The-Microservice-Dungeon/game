@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,20 +50,22 @@ class RoundRepositoryIntegrationTest @Autowired constructor(
 
     @Test
     fun findByGameIdAndRoundNumberShouldFindRound() {
-        val game = Game(10, 100)
-        val gameId = game.getGameId()
-        val roundNumber = 3
-        val round = Round(game = game, roundNumber = roundNumber, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
-
-        val roundId = transactionTemplate.execute {
-            roundRepository.save(round)
-            round.getRoundId()
-        }!!
-        val loadedRound = transactionTemplate.execute {
-            roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).get()
-        }!!
-
-        assertThat(loadedRound.getRoundId())
-            .isEqualTo(roundId)
+        assertTrue(false)
     }
+//        val game = Game(10, 100)
+//        val gameId = game.getGameId()
+//        val roundNumber = 3
+//        val round = Round(game = game, roundNumber = roundNumber, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
+//
+//        val roundId = transactionTemplate.execute {
+//            roundRepository.save(round)
+//            round.getRoundId()
+//        }!!
+//        val loadedRound = transactionTemplate.execute {
+//            roundRepository.findByGameIdAndRoundNumber(gameId, roundNumber).get()
+//        }!!
+//
+//        assertThat(loadedRound.getRoundId())
+//            .isEqualTo(roundId)
+//    }
 }
