@@ -36,10 +36,10 @@ class Game constructor (
         name = "GAME_PARTICIPATIONS",
         joinColumns = [JoinColumn(name = "GAME_ID")],
         inverseJoinColumns = [JoinColumn(name = "ROUND_ID")])
-    private var participatingPlayers: MutableSet<Player>,
+    private var participatingPlayers: MutableList<Player>,
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    private var rounds: MutableSet<Round>
+    private var rounds: MutableList<Round>
 
 ) {
     constructor(maximumPlayers: Int, maximumRounds: Int): this(
@@ -49,8 +49,8 @@ class Game constructor (
         maxRounds = maximumRounds,
         totalRoundTimespanInMS = 60000.00,
         relativeCommandInputTimespanInPercent = 75,
-        participatingPlayers = mutableSetOf(),
-        rounds = mutableSetOf()
+        participatingPlayers = mutableListOf(),
+        rounds = mutableListOf()
     )
 
     @Transient
@@ -91,11 +91,33 @@ class Game constructor (
         logger.debug("GameStatus set to $gameStatus")
     }
 
+    fun joinGame(player: Player) {
+        if (gameStatus != GameStatus.CREATED) {
+            logger.warn("Player failed to join the Game, because its status is other than CREATED. [gameStatus=$gameStatus, playerName=${player.getUserName()}]")
+            throw GameStateException("Failed to join Game. Games may only be joined when status is CREATED. Current status is $gameStatus")
+        }
+
+        if (participatingPlayers.map { it.getPlayerId() }.contains(player.getPlayerId())) {
+            logger.warn("Player failed to join the Game, because he is already participating. [playerName=${player.getUserName()}]")
+            throw GameParticipationException("Failed to join Game. Player is already participating.")
+        }
+
+        if (participatingPlayers.size >= maxPlayers) {
+            logger.warn("Player failed to join the Game, because its already full. [playerName=${player.getUserName()}, currentPlayers=${participatingPlayers.size}, maxPlayers=$maxPlayers]")
+            throw GameParticipationException("Failed to join Game. Game is already full. [currentPlayers=${participatingPlayers.size}, maxPlayers=$maxPlayers]")
+        }
+
+        participatingPlayers.add(player)
+        logger.debug("Added Player to list-of participating Players. [playerName=${player.getUserName()}]")
+    }
+
     fun getGameId(): UUID = gameId
 
     fun getGameStatus(): GameStatus = gameStatus
 
     fun getMaxPlayers(): Int = maxPlayers
+
+    fun getParticipatingPlayers(): List<Player> = participatingPlayers.toList()
 
     fun getMaxRounds(): Int = maxRounds
 
