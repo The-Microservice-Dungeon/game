@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
 import microservice.dungeon.game.aggregates.command.dtos.CommandResponseDTO
 import microservice.dungeon.game.aggregates.command.services.CommandService
+import microservice.dungeon.game.aggregates.core.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,13 +22,11 @@ class CommandController @Autowired constructor(private val commandService: Comma
     ): ResponseEntity<List<Command>> {
         try {
             val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
-            if (roundCommands != null) {
-                return ResponseEntity(roundCommands, HttpStatus.OK)
-            } else {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "roundNumber not found")
-            }
+            return ResponseEntity(roundCommands, HttpStatus.OK)
         } catch (e: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString())
+        } catch (e: IllegalAccessException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.toString())
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString())
         }
@@ -40,6 +39,8 @@ class CommandController @Autowired constructor(private val commandService: Comma
             return ResponseEntity(CommandResponseDTO(commandId), HttpStatus.CREATED)
         } catch (e: IllegalAccessException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: EntityNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
