@@ -80,9 +80,21 @@ class GameTest {
     }
 
     @Test
-    fun shouldOnlyBeAbleToStartANewRoundWhenGameIsRunning() {
+    fun shouldNotBeAbleToStartNewRoundWhenStatusIsOtherThanRunning() {
         // given
         val game: Game = Game(10, 100)
+
+        // when
+        assertThrows(GameStateException::class.java) {
+            game.startNewRound()
+        }
+    }
+
+    @Test
+    fun shouldNotBeAbleToStartNewRoundWhenMaximumNumberOfRoundsIsReached() {
+        // given
+        val game: Game = Game(1,1)
+        game.startGame()
 
         // when
         assertThrows(GameStateException::class.java) {
