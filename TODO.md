@@ -2,28 +2,27 @@
 
 ## TODO
 
-**JPA**
-- FetchTypes
-
 **Game**
 - GameService Integration Test
 - GameLoopService Integration Test
 - Controller
-  - ALL
 - Eventing
 
 **Round**
 - RoundService Integration Test
 
 **Player**
+- JPA
 - PlayerService Integration Test
 - Controller
   - Fetch Token
 
 **Robot**
+- JPA
 - RobotService Integration Test
 
 **Command**
+- JPA
 - Check ALL
 
 **EventPublisher**
