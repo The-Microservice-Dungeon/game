@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.GameTimeResponseDto
 import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
@@ -141,7 +142,25 @@ class GameController @Autowired constructor(
         }
     }
 
+    @GetMapping("/games/{gameId}/time")
+    fun getGameTime(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<GameTimeResponseDto> {
+        logger.debug("Received request to fetch game-time. [gameId=$gameId]")
 
+        return try {
+            val game: Game = gameRepository.findById(gameId).get()
+            val responseBody = GameTimeResponseDto(game)
+
+            logger.debug("Request to fetch game-time successful.")
+            logger.trace("Responding with 200. Serialized ResponseBody is:")
+            logger.trace(responseBody.serialize())
+            ResponseEntity(responseBody, HttpStatus.OK)
+
+        } catch (e: Exception) {
+            logger.warn("Request to fetch game-time failed. Game not found.")
+            logger.trace("Responding with 404")
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
 
 //    @GetMapping("/games")
 //    fun getAllGames(): MutableIterable<Game> = gameService.getAllGames()
