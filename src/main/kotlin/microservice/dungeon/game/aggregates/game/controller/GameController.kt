@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
@@ -13,6 +14,7 @@ import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -86,7 +88,7 @@ class GameController @Autowired constructor(
         logger.debug("Request to end game received ... [gameId=$gameId]")
 
         return try {
-            val transactionId: UUID = gameService.endGame(gameId)
+            gameService.endGame(gameId)
 
             logger.debug("Request to end game was successful. [gameId=$gameId]")
             logger.trace("Responding with 201.")
@@ -105,6 +107,41 @@ class GameController @Autowired constructor(
             ResponseEntity(HttpStatus.FORBIDDEN)
         }
     }
+
+    @PutMapping("/games/{gameId}/players/{playerToken}", consumes = ["application/json"], produces = ["application/json"])
+    fun joinGame(@PathVariable(name = "gameId") gameId: UUID, @PathVariable(name = "playerToken") playerToken: UUID): ResponseEntity<JoinGameResponseDto> {
+        logger.debug("Request to join game received ... [gameId=${gameId}]")
+
+        return try {
+            val transactionId: UUID = gameService.joinGame(playerToken, gameId)
+            val responseDto = JoinGameResponseDto(transactionId)
+
+            logger.debug("Request to join game was successful. [gameId=${gameId}]")
+            logger.trace("Responding with 200")
+            ResponseEntity(responseDto, HttpStatus.OK)
+
+        } catch (e: GameNotFoundException) {
+            logger.warn("Request to join game failed. Game not found. [gameId=${gameId}]")
+            logger.warn(e.message)
+            logger.trace("Responding with 404")
+            ResponseEntity(HttpStatus.NOT_FOUND)
+
+        } catch (e: PlayerNotFoundException) {
+
+            logger.warn("Request to join game failed. Player not found. [gameId=${gameId}]")
+            logger.warn(e.message)
+            logger.trace("Responding with 404")
+            ResponseEntity(HttpStatus.NOT_FOUND)
+
+        } catch (e: Exception) {
+            logger.warn("Request to join game failed. Action not allowed. [gameId=${gameId}]")
+            logger.warn(e.message)
+            logger.trace("Responding with 403")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
+
 
 //    @GetMapping("/games")
 //    fun getAllGames(): MutableIterable<Game> = gameService.getAllGames()
