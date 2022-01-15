@@ -5,13 +5,12 @@ import microservice.dungeon.game.aggregates.game.domain.GameLoopException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.TimeFrame
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
-import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
 import java.util.*
 
 
-class GameLoop(
+class GameLoopService(
     private val gameRepository: GameRepository,
     private val roundService: RoundService
 ) {

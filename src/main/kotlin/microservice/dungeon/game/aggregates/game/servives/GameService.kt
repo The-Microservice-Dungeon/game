@@ -29,7 +29,7 @@ class GameService @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val mapGameWorldsClient: MapGameWorldsClient
 ) {
-    private val gameLoop: GameLoop = GameLoop(gameRepository, roundService)
+    private val gameLoopService: GameLoopService = GameLoopService(gameRepository, roundService)
     private val logger = KotlinLogging.logger {}
 
     @Transactional
@@ -94,7 +94,7 @@ class GameService @Autowired constructor(
 
         thread(start = true, isDaemon = false) {
             Thread.sleep(1000)
-            gameLoop.runGameLoop(game.getGameId())
+            gameLoopService.runGameLoop(game.getGameId())
         }
 
         return transactionId;

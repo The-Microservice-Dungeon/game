@@ -3,8 +3,6 @@
 ## TODO
 
 **Game**
-- GameService Integration Test
-- GameLoopService Integration Test
 - Controller
 - Eventing
 

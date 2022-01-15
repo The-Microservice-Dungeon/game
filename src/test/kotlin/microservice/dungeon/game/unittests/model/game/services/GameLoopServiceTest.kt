@@ -4,7 +4,7 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
-import microservice.dungeon.game.aggregates.game.servives.GameLoop
+import microservice.dungeon.game.aggregates.game.servives.GameLoopService
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -15,16 +15,16 @@ import org.mockito.InOrder
 import org.mockito.kotlin.*
 import java.util.*
 
-class GameLoopTest {
+class GameLoopServiceTest {
     private var mockGameRepository: GameRepository? = null
     private var mockRoundService: RoundService? = null
-    private var gameLoop: GameLoop? = null
+    private var gameLoopService: GameLoopService? = null
 
     @BeforeEach
     fun setUp() {
         mockGameRepository = mock()
         mockRoundService = mock()
-        gameLoop = GameLoop(
+        gameLoopService = GameLoopService(
             mockGameRepository!!,
             mockRoundService!!
         )
@@ -42,7 +42,7 @@ class GameLoopTest {
             .thenReturn(Optional.of(spyGame))
 
         // when
-        gameLoop!!.runGameLoop(spyGame.getGameId())
+        gameLoopService!!.runGameLoop(spyGame.getGameId())
 
         // then
         // 1st iteration
@@ -69,7 +69,7 @@ class GameLoopTest {
 
         // when
         assertThrows(GameStateException::class.java) {
-            gameLoop!!.runGameLoop(game.getGameId())
+            gameLoopService!!.runGameLoop(game.getGameId())
         }
     }
 
@@ -86,7 +86,7 @@ class GameLoopTest {
         val activeRound: Round = game.getCurrentRound()!!
 
         // when
-        gameLoop!!.executeCommandsInOrder(activeRound.getRoundId())
+        gameLoopService!!.executeCommandsInOrder(activeRound.getRoundId())
 
         // then
         val inOrder: InOrder = inOrder(mockRoundService!!)
@@ -109,7 +109,7 @@ class GameLoopTest {
                 .thenReturn(Optional.of(spyGame))
 
         // when
-        gameLoop!!.makeNextRound(spyGame.getGameId())
+        gameLoopService!!.makeNextRound(spyGame.getGameId())
 
         // then
         verify(spyGame).startNewRound()
@@ -122,7 +122,7 @@ class GameLoopTest {
         val roundId = UUID.randomUUID()
 
         // when
-        gameLoop!!.endRound(roundId)
+        gameLoopService!!.endRound(roundId)
 
         // then
         verify(mockRoundService!!).endRound(roundId)
@@ -143,7 +143,7 @@ class GameLoopTest {
             .thenReturn(Optional.of(game))
 
         // when
-        gameLoop!!.endGame(game.getGameId())
+        gameLoopService!!.endGame(game.getGameId())
 
         // then
         verify(mockGameRepository!!).save(argThat {

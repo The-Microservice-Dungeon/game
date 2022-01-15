@@ -112,34 +112,6 @@ class GameServiceIntegrationTest @Autowired constructor(
             .isEqualTo(player.getPlayerId())
     }
 
-    /**
-     *      IF Game is set to FINISHED and if the maximum number of rounds exists, it is safe to assume,
-     *      that the GameLoop is running in parallel while main-thread is sleeping.
-     */
-    @Test
-    fun shouldRunGameLoopInParallelWhenGameIsStarted() {
-        // given
-        val game: Game = Game(2,2)
-        game.setTotalRoundTimespanInMS(200)
-        gameRepository.save(game)
-
-        // when
-        gameService!!.startGame(game.getGameId())
-        Thread.sleep(2000)
-
-        // then
-        val capturedGame: Game = gameRepository.findById(game.getGameId()).get()
-        assertThat(capturedGame.getGameStatus())
-            .isEqualTo(GameStatus.GAME_FINISHED)
-
-        // and then
-        val currentRound: Round = capturedGame.getCurrentRound()!!
-        assertThat(currentRound.getRoundNumber())
-            .isEqualTo(2)
-
-
-    }
-
     @Test
     fun shouldPersistFinishedGameWhenGameEnded() {
         // given
