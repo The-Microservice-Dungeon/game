@@ -49,3 +49,7 @@
   - 406 removed
   - 404 when player or game not found
   - 403 when action not allowed
+- **GET /games/{gameId}/time**
+  - 404 when game not found
+- **GET /games**
+  - whole responseBody

@@ -1,13 +1,11 @@
 package microservice.dungeon.game.integrationtests.model.game.controller
 
 import microservice.dungeon.game.aggregates.game.controller.GameController
-import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
-import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
-import microservice.dungeon.game.aggregates.game.controller.dto.GameTimeResponseDto
-import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.*
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
@@ -331,8 +329,23 @@ class GameControllerIntegrationTest {
     @Test
     fun shouldAllowToRetrieveAllActiveGames() {
         // given
+        val game = Game(10, 10)
+        whenever(mockGameRepository!!.findAllByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING)))
+            .thenReturn(listOf(game))
 
         // when
+        val result = webTestClient!!.get().uri("/games")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<GameResponseDto>>()
+            .returnResult()
+        val responseBodies: List<GameResponseDto> = result.responseBody!!
 
+        // then
+        assertThat(responseBodies)
+            .hasSize(1)
+        assertThat(responseBodies[0])
+            .isEqualTo(GameResponseDto(game))
     }
 }
