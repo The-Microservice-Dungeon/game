@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.model.game.controller
 import microservice.dungeon.game.aggregates.game.controller.GameController
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.GameTimeResponseDto
 import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
@@ -283,5 +284,55 @@ class GameControllerIntegrationTest {
 
         // then
         verify(mockGameService!!).joinGame(playerToken, gameId)
+    }
+
+    @Test
+    fun shouldAllowToFetchCurrentGameTime() {
+        // given
+        val game = Game(10, 10)
+        game.startGame()
+        whenever(mockGameRepository!!.findById(game.getGameId()))
+            .thenReturn(Optional.of(game))
+
+        // when
+        val result = webTestClient!!.get().uri("/games/${game.getGameId()}/time")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<GameTimeResponseDto>()
+            .returnResult()
+        val responseBody: GameTimeResponseDto = result.responseBody!!
+
+        // then
+        verify(mockGameRepository!!).findById(game.getGameId())
+        assertThat(responseBody.gameTime)
+            .isNotNull
+        assertThat(responseBody.roundCount)
+            .isEqualTo(1)
+        assertThat(responseBody.roundTime)
+            .isNotNull
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenGameNotExistsWhileFetchingGameTime() {
+        // given
+        val anyGameId = UUID.randomUUID()
+
+        // when
+        webTestClient!!.get().uri("/games/${anyGameId}/time")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // then
+        verify(mockGameRepository!!).findById(anyGameId)
+    }
+
+    @Test
+    fun shouldAllowToRetrieveAllActiveGames() {
+        // given
+
+        // when
+
     }
 }
