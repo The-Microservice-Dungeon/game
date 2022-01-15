@@ -33,6 +33,7 @@ class GameService @Autowired constructor(
     private val logger = KotlinLogging.logger {}
 
     @Transactional
+    @Throws(GameStateException::class)
     fun createNewGame(maxPlayers: Int, maxRounds: Int): Pair<UUID, Game> {
         if (gameRepository.existsByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING))) {
             logger.warn("Failed to create a new Game. An active Game already exists.")
