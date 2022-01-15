@@ -10,10 +10,7 @@ import microservice.dungeon.game.aggregates.game.servives.GameService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
@@ -69,11 +66,49 @@ class GameControllerIntegrationTest {
             .createNewGame(any(), any())
 
         // when
-        val result = webTestClient!!.post().uri("/games")
+        webTestClient!!.post().uri("/games")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(requestBody)
             .exchange()
             .expectStatus().isForbidden
+    }
+
+    @Test
+    fun shouldAllowToStartGame() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        val transactionId: UUID = UUID.randomUUID()
+        whenever(mockGameService!!.startGame(gameId))
+            .thenReturn(transactionId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/start")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isCreated
+
+        // and then
+        verify(mockGameService!!).startGame(gameId)
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenGameStartingFailed() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        doThrow(GameStateException("any Message"))
+            .whenever(mockGameService!!)
+            .startGame(gameId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/start")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isForbidden
+
+        // and then
+        verify(mockGameService!!).startGame(gameId)
     }
 }
