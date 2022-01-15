@@ -37,10 +37,10 @@ class Game constructor (
         name = "GAME_PARTICIPATIONS",
         joinColumns = [JoinColumn(name = "GAME_ID")],
         inverseJoinColumns = [JoinColumn(name = "ROUND_ID")])
-    private var participatingPlayers: MutableList<Player>,
+    private var participatingPlayers: MutableSet<Player>,
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    private var rounds: MutableList<Round>
+    private var rounds: MutableSet<Round>
 
 ) {
     constructor(maximumPlayers: Int, maximumRounds: Int): this(
@@ -50,12 +50,14 @@ class Game constructor (
         maxRounds = maximumRounds,
         totalRoundTimespanInMS = 60000,
         relativeCommandInputTimespanInPercent = 75,
-        participatingPlayers = mutableListOf(),
-        rounds = mutableListOf()
+        participatingPlayers = mutableSetOf(),
+        rounds = mutableSetOf()
     )
 
-    @Transient
-    private val logger = KotlinLogging.logger {}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
 
     fun startGame() {
         if (gameStatus != GameStatus.CREATED) {

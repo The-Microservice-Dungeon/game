@@ -3,7 +3,6 @@
 ## TODO
 
 **JPA**
-- Multiple Bag Exception
 - FetchTypes
 
 **Game**
