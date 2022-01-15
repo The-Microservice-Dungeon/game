@@ -1,15 +1,31 @@
 
 
 ## TODO
-- Should send RoundStarted Event
 
-- Game
+**JPA**
+- Multiple Bag Exception
+- FetchTypes
 
-**GameLoop**
-- should send gameStartedEvent
-- should send roundStartedEvent
-- should send gameEnded
-- transaction-management
+**Game**
+- GameService Integration Test
+- GameLoopService Integration Test
+- Controller
+  - ALL
+- Eventing
 
-- bag bullshit
-- fetch types
+**Round**
+- RoundService Integration Test
+
+**Player**
+- PlayerService Integration Test
+- Controller
+  - Fetch Token
+
+**Robot**
+- RobotService Integration Test
+
+**Command**
+- Check ALL
+
+**EventPublisher**
+- CronJob 
