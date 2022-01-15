@@ -36,7 +36,7 @@ class RoundService @Autowired constructor (
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @Transactional
+
     fun endCommandInputs(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.endCommandInputPhase()
@@ -47,7 +47,7 @@ class RoundService @Autowired constructor (
     }
 
 
-    @Transactional
+
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         robotCommandDispatcherClient.sendBlockingCommands(
@@ -61,7 +61,7 @@ class RoundService @Autowired constructor (
         logger.info("Blocking-Commands dispatched.")
     }
 
-    @Transactional
+
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverSellingCommandsToRobot()
@@ -82,7 +82,7 @@ class RoundService @Autowired constructor (
         logger.info("Trading-Commands dispatched.")
     }
 
-    @Transactional
+
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMovementItemUseCommandsToRobot()
@@ -103,7 +103,7 @@ class RoundService @Autowired constructor (
         logger.info("Movement-Commands dispatched.")
     }
 
-    @Transactional
+
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverBattleItemUseCommandsToRobot()
@@ -124,7 +124,7 @@ class RoundService @Autowired constructor (
         logger.info("Battle-Commands dispatched.")
     }
 
-    @Transactional
+
     fun deliverMiningCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverMiningCommandsToRobot()
@@ -138,7 +138,7 @@ class RoundService @Autowired constructor (
         logger.info("Mining-Commands dispatched.")
     }
 
-    @Transactional
+
     fun deliverRegeneratingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         round.deliverRepairItemUseCommandsToRobot()
@@ -159,7 +159,7 @@ class RoundService @Autowired constructor (
         logger.info("Regeneration-Commands dispatched.")
     }
 
-    @Transactional
+
     fun endRound(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
         val response = round.endRound()

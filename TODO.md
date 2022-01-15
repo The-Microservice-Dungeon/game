@@ -9,3 +9,4 @@
 - should send gameStartedEvent
 - should send roundStartedEvent
 - should send gameEnded
+- transaction-management
