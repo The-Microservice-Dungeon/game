@@ -3,11 +3,14 @@ package microservice.dungeon.game.integrationtests.model.game.controller
 import microservice.dungeon.game.aggregates.game.controller.GameController
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -193,5 +196,92 @@ class GameControllerIntegrationTest {
 
         // and then
         verify(mockGameService!!).endGame(gameId)
+    }
+
+    @Test
+    fun shouldAllowPlayerToJoinTheGame() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        val playerToken: UUID = UUID.randomUUID()
+        val transactionId: UUID = UUID.randomUUID()
+        whenever(mockGameService!!.joinGame(playerToken, gameId))
+            .thenReturn(transactionId)
+
+        // when then
+        val result = webTestClient!!.put().uri("/games/${gameId}/players/${playerToken}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<JoinGameResponseDto>()
+            .returnResult()
+        val responseBody: JoinGameResponseDto = result.responseBody!!
+
+        // and then
+        assertThat(responseBody.transactionId)
+            .isEqualTo(transactionId)
+
+        // and then
+        verify(mockGameService!!).joinGame(playerToken, gameId)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenGameNotExistsWhileJoiningAGame() {
+        // given
+        val gameId = UUID.randomUUID()
+        val playerToken = UUID.randomUUID()
+        doThrow(GameNotFoundException("any message"))
+            .whenever(mockGameService!!)
+            .joinGame(playerToken, gameId)
+
+        // when
+        webTestClient!!.put().uri("/games/${gameId}/players/${playerToken}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // then
+        verify(mockGameService!!).joinGame(playerToken, gameId)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenPlayerNotExistsWhileJoiningAGame() {
+        // given
+        val gameId = UUID.randomUUID()
+        val playerToken = UUID.randomUUID()
+        doThrow(PlayerNotFoundException("any message"))
+            .whenever(mockGameService!!)
+            .joinGame(playerToken, gameId)
+
+        // when
+        webTestClient!!.put().uri("/games/${gameId}/players/${playerToken}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // then
+        verify(mockGameService!!).joinGame(playerToken, gameId)
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenActionIsNotAllowedWhileJoiningAGame() {
+        // given
+        val gameId = UUID.randomUUID()
+        val playerToken = UUID.randomUUID()
+        doThrow(GameStateException("any message"))
+            .whenever(mockGameService!!)
+            .joinGame(playerToken, gameId)
+
+        // when
+        webTestClient!!.put().uri("/games/${gameId}/players/${playerToken}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isForbidden
+
+        // then
+        verify(mockGameService!!).joinGame(playerToken, gameId)
     }
 }
