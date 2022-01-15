@@ -35,3 +35,4 @@
 
 **Game**
 - **POST /games** _406 to 403_
+- **POST /games/{gameId}/gameCommands/start** _406 to 403_

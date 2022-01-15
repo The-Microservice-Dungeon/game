@@ -55,6 +55,25 @@ class GameController @Autowired constructor(
         }
     }
 
+    @PostMapping("/games/{gameId}/gameCommands/start")
+    fun startGame(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
+        logger.debug("Request to start game received ... [gameId=$gameId]")
+
+        return try {
+            val transactionId: UUID = gameService.startGame(gameId)
+
+            logger.debug("Request to start game was successful. [gameId=$gameId]")
+            logger.trace("Responding with 201.")
+            ResponseEntity(HttpStatus.CREATED)
+
+        } catch (e: Exception) {
+            logger.warn("Request to start game failed. [gameId=$gameId]")
+            logger.warn(e.message)
+            logger.trace("Responding with 403")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
 //    @GetMapping("/games")
 //    fun getAllGames(): MutableIterable<Game> = gameService.getAllGames()
 //
