@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
+import kotlin.concurrent.thread
 
 
 @Service
@@ -28,6 +29,7 @@ class GameService @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val mapGameWorldsClient: MapGameWorldsClient
 ) {
+    private val gameLoop: GameLoop = GameLoop(gameRepository, roundService)
     private val logger = KotlinLogging.logger {}
 
     @Transactional
@@ -90,11 +92,15 @@ class GameService @Autowired constructor(
         gameRepository.save(game)
         logger.info("Game started. [gameId=$gameId]")
 
-        // TODO START GAME-LOOP
+        thread(start = true, isDaemon = false) {
+            Thread.sleep(1000)
+            gameLoop.runGameLoop(game.getGameId())
+        }
 
         return transactionId;
     }
 
+    @Transactional
     fun endGame(gameId: UUID): UUID {
         val transactionId: UUID = UUID.randomUUID()
         val game: Game
