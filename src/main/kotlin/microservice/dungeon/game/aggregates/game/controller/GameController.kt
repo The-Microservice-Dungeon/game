@@ -7,6 +7,7 @@ import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusExcept
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
 import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
 import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
@@ -66,8 +67,33 @@ class GameController @Autowired constructor(
             logger.trace("Responding with 201.")
             ResponseEntity(HttpStatus.CREATED)
 
+        } catch (e: GameNotFoundException) {
+            logger.warn("Request to start game failed. Game not found. [gameId=$gameId]")
+            logger.warn(e.message)
+            logger.trace("Responding with 404")
+            ResponseEntity(HttpStatus.NOT_FOUND)
+
         } catch (e: Exception) {
             logger.warn("Request to start game failed. [gameId=$gameId]")
+            logger.warn(e.message)
+            logger.trace("Responding with 403")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
+    @PostMapping("/games/{gameId}/gameCommands/end")
+    fun endGame(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
+        logger.debug("Request to end game received ... [gameId=$gameId]")
+
+        return try {
+            val transactionId: UUID = gameService.endGame(gameId)
+
+            logger.debug("Request to end game was successful. [gameId=$gameId]")
+            logger.trace("Responding with 201.")
+            ResponseEntity(HttpStatus.CREATED)
+
+        } catch (e: Exception) {
+            logger.warn("Request to end game failed. [gameId=$gameId]")
             logger.warn(e.message)
             logger.trace("Responding with 403")
             ResponseEntity(HttpStatus.FORBIDDEN)
