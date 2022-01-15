@@ -1,18 +1,9 @@
 package microservice.dungeon.game.aggregates.game.controller
 
-import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
-import microservice.dungeon.game.aggregates.core.EntityNotFoundException
-import microservice.dungeon.game.aggregates.core.GameAlreadyFullException
-import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
-import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
-import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
-import microservice.dungeon.game.aggregates.game.controller.dto.GameTimeResponseDto
-import microservice.dungeon.game.aggregates.game.controller.dto.JoinGameResponseDto
+import microservice.dungeon.game.aggregates.game.controller.dto.*
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
-import microservice.dungeon.game.aggregates.game.dtos.GameResponseDto
-import microservice.dungeon.game.aggregates.game.dtos.GameTimeDto
-import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
+import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
@@ -21,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
-import javax.validation.Valid
 
 
 @RestController
@@ -142,7 +131,7 @@ class GameController @Autowired constructor(
         }
     }
 
-    @GetMapping("/games/{gameId}/time")
+    @GetMapping("/games/{gameId}/time", produces = ["application/json"])
     fun getGameTime(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<GameTimeResponseDto> {
         logger.debug("Received request to fetch game-time. [gameId=$gameId]")
 
@@ -160,6 +149,20 @@ class GameController @Autowired constructor(
             logger.trace("Responding with 404")
             ResponseEntity(HttpStatus.NOT_FOUND)
         }
+    }
+
+    @GetMapping("/games", produces = ["application/json"])
+    fun getGames(): List<GameResponseDto> {
+        logger.debug("Received request to fetch active Games.")
+
+        val response: List<GameResponseDto> = gameRepository.findAllByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING))
+            .map { game -> GameResponseDto(game) }
+
+        logger.debug("Request successful. Responding with:")
+        response.forEach { responseDto ->
+            logger.trace(responseDto.serialize())
+        }
+        return response
     }
 
 //    @GetMapping("/games")
@@ -282,11 +285,3 @@ class GameController @Autowired constructor(
 //    }
 
 }
-
-
-
-
-
-
-
-
