@@ -92,6 +92,12 @@ class GameController @Autowired constructor(
             logger.trace("Responding with 201.")
             ResponseEntity(HttpStatus.CREATED)
 
+        } catch (e: GameNotFoundException) {
+            logger.warn("Request to end game failed. Game not found. [gameId=$gameId]")
+            logger.warn(e.message)
+            logger.trace("Responding with 404")
+            ResponseEntity(HttpStatus.NOT_FOUND)
+
         } catch (e: Exception) {
             logger.warn("Request to end game failed. [gameId=$gameId]")
             logger.warn(e.message)
