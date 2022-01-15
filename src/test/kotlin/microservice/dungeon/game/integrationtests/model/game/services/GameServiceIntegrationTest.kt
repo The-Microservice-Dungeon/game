@@ -8,6 +8,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
+import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
@@ -90,6 +91,25 @@ class GameServiceIntegrationTest @Autowired constructor(
         assertThrows(GameStateException::class.java) {
             gameService!!.createNewGame(4, 4)
         }
+    }
+
+    @Test
+    fun shouldPersistPlayerInGameWhenPlayerJoinsGame() {
+        // given
+        val player: Player = Player("dadepu", "any_mail")
+        val game: Game = Game(1,1)
+
+        playerRepository.save(player)
+        gameRepository.save(game)
+
+        // when
+        gameService!!.joinGame(player.getPlayerToken(), game.getGameId())
+
+        // then
+        val capturedGame: Game = gameRepository.findById(game.getGameId()).get()
+        val participatingPlayers: List<Player> = capturedGame.getParticipatingPlayers().toList()
+        assertThat(participatingPlayers[0].getPlayerId())
+            .isEqualTo(player.getPlayerId())
     }
 
     /**
