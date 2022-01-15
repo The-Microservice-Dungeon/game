@@ -5,6 +5,8 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import mu.KotlinLogging
 import org.hibernate.annotations.Type
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.persistence.*
 import kotlin.jvm.Transient
@@ -148,6 +150,22 @@ class Game constructor (
     }
 
     fun getRelativeCommandInputTimespanInPercent(): Int = relativeCommandInputTimespanInPercent
+
+    fun getTimeGameStartedTruncatedToSeconds(): LocalDateTime? {
+        return if (gameStatus == GameStatus.CREATED) {
+            null
+        } else {
+            getRound(1).getRoundStarted()
+        }
+    }
+
+    fun getTimeSinceGameStartInSeconds(): Long? {
+        return if (gameStatus == GameStatus.CREATED) {
+            null
+        } else {
+            ChronoUnit.SECONDS.between(getTimeGameStartedTruncatedToSeconds()!!, LocalDateTime.now())
+        }
+    }
 
     override fun toString(): String {
         return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
