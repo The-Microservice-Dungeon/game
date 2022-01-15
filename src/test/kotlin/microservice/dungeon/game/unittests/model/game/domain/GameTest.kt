@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class GameTest {
 
@@ -166,5 +167,38 @@ class GameTest {
         assertThrows(GameParticipationException::class.java) {
             game.joinGame(otherPlayer)
         }
+    }
+
+    @Test
+    fun shouldAllowToRetrieveTimeWhenGameStarted() {
+        // given
+        val game = Game(10, 10)
+
+        // when
+        val timeStartedBeforeStarting: LocalDateTime? = game.getTimeGameStartedTruncatedToSeconds()
+
+        // then
+        assertThat(timeStartedBeforeStarting)
+            .isNull()
+
+        // when
+        game.startGame()
+        val timeStartedAfterStarting: LocalDateTime? = game.getTimeGameStartedTruncatedToSeconds()
+
+        // then
+        assertThat(timeStartedAfterStarting)
+            .isBeforeOrEqualTo(LocalDateTime.now())
+
+        // when
+        game.startNewRound()
+        val timeStartedAfterNextRound: LocalDateTime? = game.getTimeGameStartedTruncatedToSeconds()
+
+        // then
+        assertThat(timeStartedAfterNextRound)
+            .isEqualTo(timeStartedAfterStarting)
+        assertThat(game.getCurrentRound()!!.getRoundNumber())
+            .isEqualTo(2)
+        assertThat(timeStartedAfterNextRound)
+            .isEqualTo(game.getRound(1).getRoundStarted())
     }
 }

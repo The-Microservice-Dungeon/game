@@ -45,3 +45,7 @@
   - 406 removed
   - 404 when game not found
   - 403 when action not allowed
+- **PUT /games/{gameId}/players/{playerToken}**
+  - 406 removed
+  - 404 when player or game not found
+  - 403 when action not allowed
