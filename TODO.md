@@ -41,3 +41,7 @@
   - 406 removed
   - 404 when game not found
   - 403 when action not allowed
+- **POST /games/{gameId}/gameCommands/end**
+  - 406 removed
+  - 404 when game not found
+  - 403 when action not allowed

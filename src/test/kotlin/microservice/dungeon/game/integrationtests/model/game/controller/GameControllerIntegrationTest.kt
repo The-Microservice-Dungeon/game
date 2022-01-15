@@ -101,7 +101,7 @@ class GameControllerIntegrationTest {
     }
 
     @Test
-    fun shouldRespondNotFoundWhenGameNotExists() {
+    fun shouldRespondNotFoundWhenGameNotExistsWhileGameStarting() {
         // given
         val gameId: UUID = UUID.randomUUID()
         doThrow(GameNotFoundException("any Message"))
@@ -120,7 +120,7 @@ class GameControllerIntegrationTest {
     }
 
     @Test
-    fun shouldRespondForbiddenWhenActionIsNotAllowed() {
+    fun shouldRespondForbiddenWhenActionIsNotAllowedWhileGameStarting() {
         // given
         val gameId: UUID = UUID.randomUUID()
         doThrow(GameStateException("any Message"))
@@ -136,5 +136,62 @@ class GameControllerIntegrationTest {
 
         // and then
         verify(mockGameService!!).startGame(gameId)
+    }
+
+    @Test
+    fun shouldAllowToEndGame() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        val transactionId: UUID = UUID.randomUUID()
+        whenever(mockGameService!!.endGame(gameId))
+            .thenReturn(transactionId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/end")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isCreated
+
+        // and then
+        verify(mockGameService!!).endGame(gameId)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenGameNotExistsWhileGameEnding() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        doThrow(GameNotFoundException("any message"))
+            .whenever(mockGameService!!)
+            .endGame(gameId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/end")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // and then
+        verify(mockGameService!!).endGame(gameId)
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenActionIsNotAllowedWhileGameEnding() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        doThrow(GameStateException("any message"))
+            .whenever(mockGameService!!)
+            .endGame(gameId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/end")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isForbidden
+
+        // and then
+        verify(mockGameService!!).endGame(gameId)
     }
 }

@@ -103,6 +103,7 @@ class GameService @Autowired constructor(
     }
 
     @Transactional
+    @Throws(GameStateException::class, GameNotFoundException::class)
     fun endGame(gameId: UUID): UUID {
         val transactionId: UUID = UUID.randomUUID()
         val game: Game
