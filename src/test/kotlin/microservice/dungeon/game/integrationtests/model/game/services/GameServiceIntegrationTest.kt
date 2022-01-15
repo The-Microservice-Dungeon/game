@@ -139,4 +139,20 @@ class GameServiceIntegrationTest @Autowired constructor(
 
 
     }
+
+    @Test
+    fun shouldPersistFinishedGameWhenGameEnded() {
+        // given
+        val runningGame: Game = Game(1,1)
+        runningGame.startGame()
+        gameRepository.save(runningGame)
+
+        // when
+        gameService!!.endGame(runningGame.getGameId())
+
+        // then
+        val capturedGame: Game = gameRepository.findById(runningGame.getGameId()).get()
+        assertThat(capturedGame.getGameStatus())
+            .isEqualTo(GameStatus.GAME_FINISHED)
+    }
 }
