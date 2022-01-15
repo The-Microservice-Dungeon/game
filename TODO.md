@@ -10,3 +10,6 @@
 - should send roundStartedEvent
 - should send gameEnded
 - transaction-management
+
+- bag bullshit
+- fetch types

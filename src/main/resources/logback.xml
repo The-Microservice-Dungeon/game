@@ -2,7 +2,16 @@
     <appender name="GAME-TRACE" class="ch.qos.logback.core.FileAppender">
         <file>logs/game-trace.log</file>
         <append>true</append>
-        <filter class="microservice.dungeon.game.LogFilter" />
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="GAME-INFO" class="ch.qos.logback.core.FileAppender">
+        <file>logs/game-info.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
@@ -24,17 +33,6 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="GAME-INFO" class="ch.qos.logback.core.FileAppender">
-        <file>logs/game-info.log</file>
-        <append>true</append>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <filter class="microservice.dungeon.game.LogFilter" />
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
-        </encoder>
-    </appender>
     <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
         <file>logs/error.log</file>
         <append>true</append>
@@ -51,12 +49,15 @@
         </encoder>
     </appender>
 
-    <root level="trace">
+    <logger name="microservice.dungeon.game" level="TRACE">
+        <appender-ref ref="GAME-TRACE" />
+        <appender-ref ref="GAME-INFO" />
+    </logger>
+
+    <root level="WARN">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO" />
         <appender-ref ref="TRACE" />
         <appender-ref ref="ERROR" />
-        <appender-ref ref="GAME-TRACE" />
-        <appender-ref ref="GAME-INFO" />
     </root>
 </configuration>
