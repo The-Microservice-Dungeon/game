@@ -2,6 +2,7 @@ package microservice.dungeon.game.aggregates.round.domain
 
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -127,6 +128,10 @@ class Round(
     fun getRoundStatus(): RoundStatus = roundStatus
 
     fun getRoundStarted(): LocalDateTime = roundStarted
+
+    fun getTimeSinceRoundStartInSeconds(): Long {
+        return ChronoUnit.SECONDS.between(roundStarted, LocalDateTime.now())
+    }
 
     override fun toString(): String {
         return "Round(roundId=$roundId, gameId=${game.getGameId()}, roundNumber=$roundNumber, roundStatus=$roundStatus)"
