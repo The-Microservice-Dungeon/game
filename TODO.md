@@ -3,7 +3,6 @@
 ## TODO
 
 **Game**
-- Controller
 - Eventing
 
 **Round**
@@ -23,7 +22,7 @@
 - JPA
 - Check ALL
 
-**EventPublisher**
+**EventStore**
 - CronJob 
 
 **Log**
@@ -53,3 +52,6 @@
   - 404 when game not found
 - **GET /games**
   - whole responseBody
+
+add request string to controller logging \
+add game.controller patches

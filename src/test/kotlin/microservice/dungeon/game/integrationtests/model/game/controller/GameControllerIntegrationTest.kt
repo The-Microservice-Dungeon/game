@@ -6,7 +6,6 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
-import microservice.dungeon.game.aggregates.game.dtos.PlayerJoinGameDto
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
