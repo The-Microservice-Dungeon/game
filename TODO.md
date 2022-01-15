@@ -34,5 +34,10 @@
 ## API Changes
 
 **Game**
-- **POST /games** _406 to 403_
-- **POST /games/{gameId}/gameCommands/start** _406 to 403_
+- **POST /games**
+  - 406 removed
+  - 403 when action not allowed
+- **POST /games/{gameId}/gameCommands/start**
+  - 406 removed
+  - 404 when game not found
+  - 403 when action not allowed

@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.game.controller.GameController
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameRequestDto
 import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
@@ -41,7 +42,7 @@ class GameControllerIntegrationTest {
         whenever(mockGameService!!.createNewGame(maxPlayers, maxRounds))
             .thenReturn(Pair(anyTransactionId, game))
 
-        // when
+        // when then
         val result = webTestClient!!.post().uri("/games")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -52,9 +53,12 @@ class GameControllerIntegrationTest {
             .returnResult()
         val responseBody = result.responseBody!!
 
-        // then
+        // and then
         assertThat(responseBody.gameId)
             .isEqualTo(game.getGameId())
+
+        // and then
+        verify(mockGameService!!).createNewGame(maxPlayers, maxRounds)
     }
 
     @Test
@@ -65,13 +69,16 @@ class GameControllerIntegrationTest {
             .whenever(mockGameService!!)
             .createNewGame(any(), any())
 
-        // when
+        // when then
         webTestClient!!.post().uri("/games")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(requestBody)
             .exchange()
             .expectStatus().isForbidden
+
+        // and then
+        verify(mockGameService!!).createNewGame(requestBody.maxPlayers, requestBody.maxRounds)
     }
 
     @Test
@@ -94,7 +101,26 @@ class GameControllerIntegrationTest {
     }
 
     @Test
-    fun shouldRespondForbiddenWhenGameStartingFailed() {
+    fun shouldRespondNotFoundWhenGameNotExists() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        doThrow(GameNotFoundException("any Message"))
+            .whenever(mockGameService!!)
+            .startGame(gameId)
+
+        // when then
+        webTestClient!!.post().uri("/games/${gameId}/gameCommands/start")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // and then
+        verify(mockGameService!!).startGame(gameId)
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenActionIsNotAllowed() {
         // given
         val gameId: UUID = UUID.randomUUID()
         doThrow(GameStateException("any Message"))
