@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import java.time.LocalDateTime
 import java.util.*
 
 class RoundTest {
@@ -18,11 +19,13 @@ class RoundTest {
 
 
     @Test
-    fun newRoundShouldHaveStatusCommandInputStartedWhenInitialized() {
+    fun shouldConstructValidStateFromDefaults() {
         val round = Round(game = game, roundNumber = someRoundNumber)
 
         assertThat(round.getRoundStatus())
             .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
+        assertThat(round.getRoundStarted())
+            .isBeforeOrEqualTo(LocalDateTime.now())
     }
 
 

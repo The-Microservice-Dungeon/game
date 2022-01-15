@@ -1,6 +1,7 @@
 package microservice.dungeon.game.integrationtests.model.round
 
 import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
@@ -22,6 +23,7 @@ import java.util.*
 ])
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29098", "port=29098"])
 class RoundRepositoryIntegrationTest @Autowired constructor(
+    private val gameRepository: GameRepository,
     private val roundRepository: RoundRepository,
     private val transactionTemplate: TransactionTemplate
 ) {
@@ -33,6 +35,7 @@ class RoundRepositoryIntegrationTest @Autowired constructor(
     @Test
     fun saveRoundShouldPersistRound() {
         val game = Game(10, 100)
+        gameRepository.save(game)
         val roundNumber = 3
         val round = Round(game = game, roundNumber = roundNumber, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
 
@@ -46,6 +49,8 @@ class RoundRepositoryIntegrationTest @Autowired constructor(
 
         assertThat(loadedRound.getRoundId())
             .isEqualTo(roundId)
+        assertThat(loadedRound.getRoundStarted())
+            .isEqualTo(round.getRoundStarted())
     }
 
     @Test
