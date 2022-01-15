@@ -25,3 +25,13 @@
 
 **EventPublisher**
 - CronJob 
+
+**Log**
+- Separate Log for Controllers
+- Separate Log for Events
+
+
+## API Changes
+
+**Game**
+- **POST /games** _406 to 403_
