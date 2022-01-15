@@ -8,4 +8,6 @@ import java.util.*
 interface GameRepository : CrudRepository<Game, UUID> {
 
     fun existsByGameStatusIn(gameStatus: List<GameStatus>): Boolean
+
+    fun findAllByGameStatusIn(gameStatus: List<GameStatus>): List<Game>
 }

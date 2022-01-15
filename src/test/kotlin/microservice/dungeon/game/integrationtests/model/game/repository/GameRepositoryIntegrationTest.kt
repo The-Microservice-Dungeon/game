@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
+import java.util.*
 
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29095"
@@ -91,5 +92,30 @@ class GameRepositoryIntegrationTest @Autowired constructor(
 
         // then
         assertFalse(response)
+    }
+
+    @Test
+    fun shouldFindGamesByStatusIn() {
+        // given
+        val createdGame = Game(UUID.randomUUID(), GameStatus.CREATED, 1, 1, 1, 1, mutableSetOf(), mutableSetOf())
+        val startedGame = Game(UUID.randomUUID(), GameStatus.CREATED, 1, 1, 1, 1, mutableSetOf(), mutableSetOf())
+        startedGame.startGame()
+        val finishedGame = Game(UUID.randomUUID(), GameStatus.CREATED, 1, 1, 1, 1, mutableSetOf(), mutableSetOf())
+        finishedGame.startGame()
+        finishedGame.endGame()
+        gameRepository.saveAll(listOf(createdGame, startedGame, finishedGame))
+
+        // when
+        val fetchedGames: List<UUID> = gameRepository.findAllByGameStatusIn(
+            listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING)
+        ).map { game -> game.getGameId()}
+
+        // then
+        assertThat(fetchedGames)
+            .contains(createdGame.getGameId())
+        assertThat(fetchedGames)
+            .contains(startedGame.getGameId())
+        assertThat(fetchedGames)
+            .doesNotContain(finishedGame.getGameId())
     }
 }
