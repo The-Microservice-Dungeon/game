@@ -3,6 +3,8 @@ package microservice.dungeon.game.aggregates.round.domain
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.domain.Game
 import org.hibernate.annotations.Type
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import javax.persistence.*
 
@@ -22,7 +24,10 @@ class Round(
     private val roundNumber: Int,
 
     @Column(name = "ROUND_STATUS")
-    private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED
+    private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED,
+
+    @Column(name = "ROUND_STARTED")
+    private var roundStarted: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
 ) {
 
     fun endCommandInputPhase() {
@@ -120,6 +125,8 @@ class Round(
     fun getRoundNumber(): Int = roundNumber
 
     fun getRoundStatus(): RoundStatus = roundStatus
+
+    fun getRoundStarted(): LocalDateTime = roundStarted
 
     override fun toString(): String {
         return "Round(roundId=$roundId, gameId=${game.getGameId()}, roundNumber=$roundNumber, roundStatus=$roundStatus)"
