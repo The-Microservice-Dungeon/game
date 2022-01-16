@@ -1,9 +1,10 @@
 package microservice.dungeon.game.aggregates.game.servives
 
-import microservice.dungeon.game.aggregates.game.domain.Game
-import microservice.dungeon.game.aggregates.game.domain.GameLoopException
-import microservice.dungeon.game.aggregates.game.domain.GameStateException
-import microservice.dungeon.game.aggregates.game.domain.TimeFrame
+import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
+import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
+import microservice.dungeon.game.aggregates.game.domain.*
+import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
@@ -12,7 +13,10 @@ import java.util.*
 
 class GameLoopService(
     private val gameRepository: GameRepository,
-    private val roundService: RoundService
+    private val roundService: RoundService,
+    private val gameStatusEventBuilder: GameStatusEventBuilder,
+    private val eventStoreService: EventStoreService,
+    private val eventPublisherService: EventPublisherService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -93,11 +97,16 @@ class GameLoopService(
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
     fun endGame(gameId: UUID) {
-        // TODO EVENT
+        val transactionId = UUID.randomUUID()
         val game: Game = fetchGame(gameId)
 
         game.endGame()
         gameRepository.save(game)
+
+        val gameEndedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, game.getGameId(), GameStatus.GAME_FINISHED)
+        eventStoreService.storeEvent(gameEndedEvent)
+        eventPublisherService.publishEvent(gameEndedEvent)
+        logger.debug("GameStatusEvent handed to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_FINISHED}]")
 
         logger.debug("Saved finished game.")
         logger.trace(game.toString())

@@ -1,12 +1,17 @@
 package microservice.dungeon.game.unittests.model.game.services
 
+import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
+import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameLoopService
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.services.RoundService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -18,17 +23,25 @@ import java.util.*
 class GameLoopServiceTest {
     private var mockGameRepository: GameRepository? = null
     private var mockRoundService: RoundService? = null
+    private var mockEventStoreService: EventStoreService? = null
+    private var mockEventPublisherService: EventPublisherService? = null
     private var gameLoopService: GameLoopService? = null
+
+    private val gameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
 
     @BeforeEach
     fun setUp() {
         mockGameRepository = mock()
         mockRoundService = mock()
+        mockEventStoreService = mock()
+        mockEventPublisherService = mock()
         gameLoopService = GameLoopService(
             mockGameRepository!!,
-            mockRoundService!!
+            mockRoundService!!,
+            gameStatusEventBuilder,
+            mockEventStoreService!!,
+            mockEventPublisherService!!
         )
-
     }
 
     @Test
@@ -129,11 +142,6 @@ class GameLoopServiceTest {
     }
 
     @Test
-    fun shouldPublishWhenRoundEnds() {
-        assertTrue(false)
-    }
-
-    @Test
     fun shouldAllowToEndGame() {
         // given
         val game: Game = Game(1,1)
@@ -153,7 +161,28 @@ class GameLoopServiceTest {
 
     @Test
     fun shouldPublishWhenGameEnds() {
-        assertTrue(false)
+        // given
+        val game = Game(1,1)
+        game.startGame()
+        whenever(mockGameRepository!!.findById(game.getGameId()))
+            .thenReturn(Optional.of(game))
+
+        // when
+        gameLoopService!!.endGame(game.getGameId())
+
+        // then
+        verify(mockEventStoreService!!).storeEvent(check { event: GameStatusEvent ->
+            assertThat(event.gameId)
+                .isEqualTo(game.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(GameStatus.GAME_FINISHED)
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: GameStatusEvent ->
+            assertThat(event.gameId)
+                .isEqualTo(game.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(GameStatus.GAME_FINISHED)
+        })
     }
 }
 

@@ -32,7 +32,8 @@ class GameService @Autowired constructor(
     private val mapGameWorldsClient: MapGameWorldsClient,
     private val gameStatusEventBuilder: GameStatusEventBuilder
 ) {
-    private val gameLoopService: GameLoopService = GameLoopService(gameRepository, roundService)
+    private val gameLoopService: GameLoopService = GameLoopService(
+        gameRepository, roundService, gameStatusEventBuilder, eventStoreService, eventPublisherService)
     private val logger = KotlinLogging.logger {}
 
     @Transactional
