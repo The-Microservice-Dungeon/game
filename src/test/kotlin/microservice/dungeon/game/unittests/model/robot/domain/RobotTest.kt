@@ -4,23 +4,26 @@ import microservice.dungeon.game.aggregates.robot.domain.Robot
 import microservice.dungeon.game.aggregates.robot.domain.RobotStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 import java.util.*
 
 class RobotTest {
-    private var ANY_ROBOT = Robot(UUID.randomUUID(), UUID.randomUUID())
+    private var activeRobot = Robot(UUID.randomUUID(), mock(), mock())
 
 
     @Test
     fun shouldInitializeAsActiveRobot() {
-        assertThat(ANY_ROBOT.getRobotStatus())
+        assertThat(activeRobot.getRobotStatus())
             .isEqualTo(RobotStatus.ACTIVE)
     }
 
     @Test
     fun shouldAllowToMakeRobotInactive() {
-        ANY_ROBOT.destroyRobot()
+        // when
+        activeRobot.destroyRobot()
 
-        assertThat(ANY_ROBOT.getRobotStatus())
+        // then
+        assertThat(activeRobot.getRobotStatus())
             .isEqualTo(RobotStatus.INACTIVE)
     }
 }

@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import microservice.dungeon.game.aggregates.robot.services.RobotService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,22 +30,7 @@ class RobotRepositoryIntegrationTest @Autowired constructor(
     }
 
     @Test
-    @Transactional
     fun saveRobotShouldPersistRobot() {
-        val robotId = UUID.randomUUID()
-        val playerId = UUID.randomUUID()
-        val robot = Robot(robotId, playerId)
-
-        transactionTemplate.execute {
-            robotRepository.save(robot)
-        }
-        val loadedRobot = transactionTemplate.execute {
-            robotRepository.findById(robotId).get()
-        }!!
-
-        assertThat(loadedRobot.getRobotId())
-            .isEqualTo(robot.getRobotId())
-        assertThat(loadedRobot.getRobotStatus())
-            .isEqualTo(robot.getRobotStatus())
+        assertTrue(false)
     }
 }

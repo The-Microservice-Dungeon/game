@@ -3,8 +3,8 @@
 ## TODO
 
 **Robot**
-- JPA
 - RobotService Integration Test
+- RobotConsumer
 
 **Command**
 - JPA
@@ -12,12 +12,15 @@
 
 
 ## Bonus
-**Game**
-- Patch RoundTime
-- Patch MaxRounds
+**Kafka**
+- Integration Test
 
 **EventStore**
 - Integration Test
+
+**Game**
+- Patch RoundTime
+- Patch MaxRounds
 
 **Command**
 - Check ALL
@@ -25,9 +28,6 @@
 **Log**
 - Separate Log for Controllers
 - Separate Log for Events
-
-**Kafka**
-- Integration Test
 
 **JPA**
 - Indexes
