@@ -15,6 +15,7 @@ import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,10 +34,12 @@ class GameService @Autowired constructor(
     private val eventPublisherService: EventPublisherService,
     private val mapGameWorldsClient: MapGameWorldsClient,
     private val gameStatusEventBuilder: GameStatusEventBuilder,
-    private val playerStatusEventBuilder: PlayerStatusEventBuilder
+    private val playerStatusEventBuilder: PlayerStatusEventBuilder,
+    private val roundStatusEventBuilder: RoundStatusEventBuilder
 ) {
     private val gameLoopService: GameLoopService = GameLoopService(
-        gameRepository, roundService, gameStatusEventBuilder, eventStoreService, eventPublisherService)
+        gameRepository, roundService, gameStatusEventBuilder, roundStatusEventBuilder, eventStoreService, eventPublisherService
+    )
     private val logger = KotlinLogging.logger {}
 
     @Transactional

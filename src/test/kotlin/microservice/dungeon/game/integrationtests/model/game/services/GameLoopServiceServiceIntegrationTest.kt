@@ -11,6 +11,7 @@ import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -31,6 +32,7 @@ class GameLoopServiceServiceIntegrationTest @Autowired constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
     private val gameStatusEventBuilder: GameStatusEventBuilder,
+    private val roundStatusEventBuilder: RoundStatusEventBuilder,
     private val playerStatusEventBuilder: PlayerStatusEventBuilder
 ) {
     private var mockRoundService: RoundService? = null
@@ -57,7 +59,8 @@ class GameLoopServiceServiceIntegrationTest @Autowired constructor(
             mockEventPublisherService!!,
             mockGameWorldsClient!!,
             gameStatusEventBuilder,
-            playerStatusEventBuilder
+            playerStatusEventBuilder,
+            roundStatusEventBuilder
         )
     }
 

@@ -16,6 +16,7 @@ import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -35,6 +36,7 @@ class GameServiceTest {
 
     private val gameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
     private val playerStatusEventBuilder = PlayerStatusEventBuilder("anyTopic", "anyType", 1)
+    private val roundStatusEventBuilder = RoundStatusEventBuilder("anyTopic", "anyType", 1)
 
     private var gameService: GameService? = null
 
@@ -55,7 +57,8 @@ class GameServiceTest {
             mockEventPublisherService!!,
             mockMapGameWorldsClient!!,
             gameStatusEventBuilder,
-            playerStatusEventBuilder
+            playerStatusEventBuilder,
+            roundStatusEventBuilder
         )
     }
 

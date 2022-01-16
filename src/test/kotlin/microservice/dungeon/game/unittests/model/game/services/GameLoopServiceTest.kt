@@ -10,6 +10,9 @@ import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameLoopService
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -28,6 +31,7 @@ class GameLoopServiceTest {
     private var gameLoopService: GameLoopService? = null
 
     private val gameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
+    private val roundStatusEventBuilder = RoundStatusEventBuilder("anyTopic", "anyType", 1)
 
     @BeforeEach
     fun setUp() {
@@ -39,6 +43,7 @@ class GameLoopServiceTest {
             mockGameRepository!!,
             mockRoundService!!,
             gameStatusEventBuilder,
+            roundStatusEventBuilder,
             mockEventStoreService!!,
             mockEventPublisherService!!
         )
@@ -88,7 +93,29 @@ class GameLoopServiceTest {
 
     @Test
     fun shouldPublishWhenRoundStarts() {
-        assertTrue(false)
+        // given
+        val round = Round(UUID.randomUUID(), Game(1, 1), 3)
+
+        // when
+        gameLoopService!!.startRound(round)
+
+        // then
+        verify(mockEventStoreService!!).storeEvent(check { event: RoundStatusEvent ->
+            assertThat(event.roundId)
+                .isEqualTo(round.getRoundId())
+            assertThat(event.roundNumber)
+                .isEqualTo(round.getRoundNumber())
+            assertThat(event.roundStatus)
+                .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: RoundStatusEvent ->
+            assertThat(event.roundId)
+                .isEqualTo(round.getRoundId())
+            assertThat(event.roundNumber)
+                .isEqualTo(round.getRoundNumber())
+            assertThat(event.roundStatus)
+                .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
+        })
     }
 
     @Test
