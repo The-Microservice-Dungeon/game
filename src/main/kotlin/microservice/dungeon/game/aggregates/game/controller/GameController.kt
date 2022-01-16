@@ -27,7 +27,7 @@ class GameController @Autowired constructor(
     @PostMapping("/games", consumes = ["application/json"], produces = ["application/json"])
     fun createNewGame(@RequestBody requestGame: CreateGameRequestDto): ResponseEntity<CreateGameResponseDto> {
         logger.debug("Request to create new game received ...")
-        logger.trace("Serialized RequestBody is:")
+        logger.trace("POST: /games")
         logger.trace(requestGame.serialize())
 
         return try {
@@ -51,6 +51,7 @@ class GameController @Autowired constructor(
     @PostMapping("/games/{gameId}/gameCommands/start")
     fun startGame(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
         logger.debug("Request to start game received ... [gameId=$gameId]")
+        logger.trace("POST /games/$gameId/gameCommands/start")
 
         return try {
             val transactionId: UUID = gameService.startGame(gameId)
@@ -76,6 +77,7 @@ class GameController @Autowired constructor(
     @PostMapping("/games/{gameId}/gameCommands/end")
     fun endGame(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
         logger.debug("Request to end game received ... [gameId=$gameId]")
+        logger.trace("POST /games/$gameId/gameCommands/end")
 
         return try {
             gameService.endGame(gameId)
@@ -101,6 +103,7 @@ class GameController @Autowired constructor(
     @PutMapping("/games/{gameId}/players/{playerToken}", consumes = ["application/json"], produces = ["application/json"])
     fun joinGame(@PathVariable(name = "gameId") gameId: UUID, @PathVariable(name = "playerToken") playerToken: UUID): ResponseEntity<JoinGameResponseDto> {
         logger.debug("Request to join game received ... [gameId=${gameId}]")
+        logger.trace("PUT /games/$gameId/players/xxx")
 
         return try {
             val transactionId: UUID = gameService.joinGame(playerToken, gameId)
@@ -134,6 +137,7 @@ class GameController @Autowired constructor(
     @GetMapping("/games/{gameId}/time", produces = ["application/json"])
     fun getGameTime(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<GameTimeResponseDto> {
         logger.debug("Received request to fetch game-time. [gameId=$gameId]")
+        logger.trace("GET /games/$gameId/time")
 
         return try {
             val game: Game = gameRepository.findById(gameId).get()
@@ -154,6 +158,7 @@ class GameController @Autowired constructor(
     @GetMapping("/games", produces = ["application/json"])
     fun getGames(): List<GameResponseDto> {
         logger.debug("Received request to fetch active Games.")
+        logger.trace("GET /games")
 
         val response: List<GameResponseDto> = gameRepository.findAllByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING))
             .map { game -> GameResponseDto(game) }
