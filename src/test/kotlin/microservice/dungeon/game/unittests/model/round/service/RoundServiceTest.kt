@@ -3,8 +3,6 @@ package microservice.dungeon.game.unittests.model.round.service
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
 import microservice.dungeon.game.aggregates.command.domain.CommandType
-import microservice.dungeon.game.aggregates.command.dtos.BlockCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.UseItemMovementCommandDTO
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.core.Event
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
@@ -13,8 +11,6 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
-import microservice.dungeon.game.aggregates.round.events.AbstractRoundEvent
-import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
@@ -22,6 +18,7 @@ import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherCl
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
@@ -106,12 +103,13 @@ class RoundServiceTest {
             verify(mockEventStoreService!!).storeEvent(capture())
             commandInputEnded = firstValue
         }
-        assertThat(commandInputEnded!!)
-            .isInstanceOf(CommandInputEnded::class.java)
-        assertThat(commandInputEnded!!.getTransactionId())
-            .isEqualTo(roundCommandInputStarted.getRoundId())
-        assertThat(commandInputEnded!! as AbstractRoundEvent)
-            .matches(roundCommandInputEnded!!)
+//        assertThat(commandInputEnded!!)
+//            .isInstanceOf(CommandInputEnded::class.java)
+//        assertThat(commandInputEnded!!.getTransactionId())
+//            .isEqualTo(roundCommandInputStarted.getRoundId())
+//        assertThat(commandInputEnded!! as AbstractRoundEvent)
+//            .matches(roundCommandInputEnded!!)
+        assertTrue(false)
     }
 
     @Test
@@ -136,12 +134,14 @@ class RoundServiceTest {
             verify(mockEventPublisherService!!).publishEvents(capture())
             commandInputEnded = firstValue.first()
         }
-        assertThat(commandInputEnded!!)
-            .isInstanceOf(CommandInputEnded::class.java)
-        assertThat(commandInputEnded!!.getTransactionId())
-            .isEqualTo(roundCommandInputStarted.getRoundId())
-        assertThat(commandInputEnded!! as AbstractRoundEvent)
-            .matches(roundCommandInputEnded!!)
+//        assertThat(commandInputEnded!!)
+//            .isInstanceOf(CommandInputEnded::class.java)
+//        assertThat(commandInputEnded!!.getTransactionId())
+//            .isEqualTo(roundCommandInputStarted.getRoundId())
+//        assertThat(commandInputEnded!! as AbstractRoundEvent)
+//            .matches(roundCommandInputEnded!!)
+
+        assertTrue(false)
     }
 
     @Test

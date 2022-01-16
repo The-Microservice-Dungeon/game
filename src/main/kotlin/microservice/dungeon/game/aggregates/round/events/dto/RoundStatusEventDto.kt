@@ -1,26 +1,20 @@
-package microservice.dungeon.game.aggregates.round.dtos
+package microservice.dungeon.game.aggregates.round.events.dto
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.core.EventDto
-import microservice.dungeon.game.aggregates.domainprimitives.EventTime
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import java.lang.RuntimeException
-import java.time.LocalDateTime
 import java.util.*
 
-class RoundEventDto constructor(
+class RoundStatusEventDto (
     val roundId: UUID,
     val roundNumber: Int,
     val roundStatus: String
+
 ): EventDto {
 
     constructor(roundId: UUID, roundNumber: Int, roundStatus: RoundStatus):
             this(roundId, roundNumber, mapStatusToOutputStatus(roundStatus))
-
-    override fun serialize(): String {
-        val objectMapper = ObjectMapper().findAndRegisterModules()
-        return objectMapper.writeValueAsString(this)
-    }
 
     companion object {
         private fun mapStatusToOutputStatus(status: RoundStatus): String {
@@ -33,5 +27,11 @@ class RoundEventDto constructor(
                 }
             }
         }
+
+        private val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
+    }
+
+    override fun serialize(): String {
+        return objectMapper.writeValueAsString(this)
     }
 }

@@ -3,25 +3,16 @@ package microservice.dungeon.game.aggregates.round.services
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
-import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
-import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
-import microservice.dungeon.game.aggregates.round.domain.RoundStatus
-import microservice.dungeon.game.aggregates.round.events.CommandInputEnded
-import microservice.dungeon.game.aggregates.round.events.RoundEnded
-import microservice.dungeon.game.aggregates.round.events.RoundStarted
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
 
 @Service
@@ -41,9 +32,9 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
         round.endCommandInputPhase()
         roundRepository.save(round)
-        val commandInputEnded = CommandInputEnded(round)
-        eventStoreService.storeEvent(commandInputEnded)
-        eventPublisherService.publishEvents(listOf(commandInputEnded))
+//        val commandInputEnded = CommandInputEnded(round)
+//        eventStoreService.storeEvent(commandInputEnded)
+//        eventPublisherService.publishEvents(listOf(commandInputEnded))
     }
 
 
@@ -165,9 +156,9 @@ class RoundService @Autowired constructor (
         val response = round.endRound()
         roundRepository.save(round)
         if (response) {
-            val roundEnded = RoundEnded(round)
-            eventStoreService.storeEvent(roundEnded)
-            eventPublisherService.publishEvents(listOf(roundEnded))
+//            val roundEnded = RoundEnded(round)
+//            eventStoreService.storeEvent(roundEnded)
+//            eventPublisherService.publishEvents(listOf(roundEnded))
         }
     }
 }

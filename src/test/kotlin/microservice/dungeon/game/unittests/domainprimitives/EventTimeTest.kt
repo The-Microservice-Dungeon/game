@@ -2,7 +2,6 @@ package microservice.dungeon.game.unittests.domainprimitives
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.domainprimitives.EventTime
-import microservice.dungeon.game.aggregates.round.events.RoundEnded
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
