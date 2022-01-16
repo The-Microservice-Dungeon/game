@@ -2,23 +2,19 @@
 
 ## TODO
 
-**Game**
-- Logging
-
-**EventStore**
-- CronJob
-- Integration Test
-
-**Round**
-- Refactor Events
-- RoundService Integration Test
-
 **Player**
 - JPA
 - PlayerService Integration Test
 - Refactor Events
 - Controller
   - Fetch Token
+
+**Round**
+- Refactor Events
+- RoundService Integration Test
+  
+**EventStore**
+- Integration Test
 
 **Robot**
 - JPA
@@ -27,6 +23,8 @@
 **Command**
 - JPA
 - Check ALL
+
+## Bonus
 
 **Log**
 - Separate Log for Controllers
