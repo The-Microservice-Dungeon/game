@@ -8,7 +8,7 @@ import org.mockito.kotlin.mock
 import java.util.*
 
 class RobotTest {
-    private var activeRobot = Robot(UUID.randomUUID(), mock(), mock())
+    private var activeRobot = Robot(UUID.randomUUID(), mock())
 
 
     @Test

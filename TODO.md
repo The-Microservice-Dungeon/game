@@ -2,28 +2,26 @@
 
 ## TODO
 
-**Robot**
-- RobotService Integration Test
-- RobotConsumer
-
-**Command**
-- JPA
-
-
-
-## Bonus
-**Kafka**
+**Message-Producer**
+- Unit Test
 - Integration Test
 
 **EventStore**
 - Integration Test
 
+**Message-Consumer**
+- Unit Test
+- Integration Test
+
+**Command**
+- JPA
+- Fix
+
+## Bonus
+
 **Game**
 - Patch RoundTime
 - Patch MaxRounds
-
-**Command**
-- Check ALL
 
 **Log**
 - Separate Log for Controllers
