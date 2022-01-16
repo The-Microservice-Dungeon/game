@@ -2,10 +2,6 @@
 
 ## TODO
 
-**Round**
-- Logging
-- RoundService Integration Test
-
 **Player**
 - JPA
 - PlayerService Integration Test

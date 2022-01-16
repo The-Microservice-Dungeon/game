@@ -6,6 +6,10 @@ import microservice.dungeon.game.aggregates.game.domain.*
 import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
 import java.util.*
@@ -15,6 +19,7 @@ class GameLoopService(
     private val gameRepository: GameRepository,
     private val roundService: RoundService,
     private val gameStatusEventBuilder: GameStatusEventBuilder,
+    private val roundStatusEventBuilder: RoundStatusEventBuilder,
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService
 ) {
@@ -37,7 +42,7 @@ class GameLoopService(
 
         while (true) {
             currentTimeFrame = TimeFrame(currentGame)
-            startRound()
+            startRound(currentGame.getCurrentRound()!!)
                 logger.debug("Waiting for ${currentTimeFrame.getCommandInputTimeFrameInMS().toDouble() / 1000}s ...")
                 Thread.sleep(currentTimeFrame.getCommandInputTimeFrameInMS())
 
@@ -60,8 +65,15 @@ class GameLoopService(
     }
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
-    private fun startRound() {
-        // TODO Publish RoundStartedEvent
+    fun startRound(round: Round) {
+        val transactionId = UUID.randomUUID()
+        val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
+            transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_STARTED
+        )
+        eventStoreService.storeEvent(roundEvent)
+        eventPublisherService.publishEvent(roundEvent)
+        logger.debug("RoundStatusEvent handed off to publisher & store. [transactionId=$transactionId, roundNumber=${roundEvent.roundId}, roundStatus=${roundEvent.roundStatus}]")
+
         logger.info("Round started. Accepting commands ...")
     }
 
@@ -106,7 +118,7 @@ class GameLoopService(
         val gameEndedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, game.getGameId(), GameStatus.GAME_FINISHED)
         eventStoreService.storeEvent(gameEndedEvent)
         eventPublisherService.publishEvent(gameEndedEvent)
-        logger.debug("GameStatusEvent handed to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_FINISHED}]")
+        logger.debug("GameStatusEvent handed off to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_FINISHED}]")
 
         logger.debug("Saved finished game.")
         logger.trace(game.toString())
