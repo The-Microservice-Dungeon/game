@@ -53,7 +53,7 @@ class GameService @Autowired constructor(
         val gameCreatedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, newGame.getGameId(), GameStatus.CREATED)
         eventStoreService.storeEvent(gameCreatedEvent)
         eventPublisherService.publishEvent(gameCreatedEvent)
-        logger.debug("GameStatusEvent handed to publisher. [transactionId=$transactionId, gameId=${newGame.getGameId()}, gameStatus=${newGame.getGameStatus()}]")
+        logger.debug("GameStatusEvent handed to publisher & store. [transactionId=$transactionId, gameId=${newGame.getGameId()}, gameStatus=${newGame.getGameStatus()}]")
 
         return Pair(transactionId, newGame)
     }
@@ -102,6 +102,11 @@ class GameService @Autowired constructor(
         mapGameWorldsClient.createNewGameWorld(game.getNumberJoinedPlayers())
         gameRepository.save(game)
         logger.info("Game started. [gameId=$gameId]")
+
+        val gameStartedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, gameId, GameStatus.GAME_RUNNING)
+        eventStoreService.storeEvent(gameStartedEvent)
+        eventPublisherService.publishEvent(gameStartedEvent)
+        logger.debug("GameStatusEvent handed to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_RUNNING}]")
 
         thread(start = true, isDaemon = false) {
             Thread.sleep(1000)

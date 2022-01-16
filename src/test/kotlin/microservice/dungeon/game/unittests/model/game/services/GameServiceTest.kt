@@ -102,7 +102,7 @@ class GameServiceTest {
             assertThat(event.gameId)
                 .isEqualTo(response.second.getGameId())
             assertThat(event.gameStatus)
-                .isEqualTo(response.second.getGameStatus())
+                .isEqualTo(GameStatus.CREATED)
         })
         verify(mockEventPublisherService!!).publishEvent(check { event: GameStatusEvent ->
             assertThat(event.getTransactionId())
@@ -110,7 +110,7 @@ class GameServiceTest {
             assertThat(event.gameId)
                 .isEqualTo(response.second.getGameId())
             assertThat(event.gameStatus)
-                .isEqualTo(response.second.getGameStatus())
+                .isEqualTo(GameStatus.CREATED)
         })
     }
 
@@ -191,7 +191,31 @@ class GameServiceTest {
 
     @Test
     fun shouldPublishGameStartedOnSuccess() {
-        assertTrue(false)
+        // given
+        val game = Game(1,1)
+        whenever(mockGameRepository!!.findById(game.getGameId()))
+            .thenReturn(Optional.of(game))
+
+        // when
+        val transactionId: UUID = gameService!!.startGame(game.getGameId())
+
+        // then
+        verify(mockEventStoreService!!).storeEvent(check { event: GameStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(transactionId)
+            assertThat(event.gameId)
+                .isEqualTo(game.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(GameStatus.GAME_RUNNING)
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: GameStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(transactionId)
+            assertThat(event.gameId)
+                .isEqualTo(game.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(GameStatus.GAME_RUNNING)
+        })
     }
 
     @Test
