@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.round
+package microservice.dungeon.game.integrationtests.model.round.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule

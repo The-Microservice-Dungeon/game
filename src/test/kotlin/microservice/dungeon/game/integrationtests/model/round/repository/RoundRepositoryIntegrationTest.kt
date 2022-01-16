@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.round
+package microservice.dungeon.game.integrationtests.model.round.repository
 
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository

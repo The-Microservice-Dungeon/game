@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.round
+package microservice.dungeon.game.integrationtests.model.round.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.*

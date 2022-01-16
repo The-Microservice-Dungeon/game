@@ -2,6 +2,10 @@
 
 ## TODO
 
+**Round**
+- Refactor Events
+- RoundService Integration Test
+
 **Player**
 - JPA
 - PlayerService Integration Test
@@ -9,26 +13,28 @@
 - Controller
   - Fetch Token
 
-**Round**
-- Refactor Events
-- RoundService Integration Test
+**Command**
+- JPA
   
-**EventStore**
-- Integration Test
-
 **Robot**
 - JPA
 - RobotService Integration Test
 
-**Command**
-- JPA
-- Check ALL
+
 
 ## Bonus
+**EventStore**
+- Integration Test
+
+**Command**
+- Check ALL
 
 **Log**
 - Separate Log for Controllers
 - Separate Log for Events
+
+**Kafka**
+- Integration Test
 
 
 ## API Changes

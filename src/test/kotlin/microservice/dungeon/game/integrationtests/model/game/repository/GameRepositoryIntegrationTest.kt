@@ -63,11 +63,6 @@ class GameRepositoryIntegrationTest @Autowired constructor(
     }
 
     @Test
-    fun shouldCascadeAllOnParticipatingPlayersWhenSaving() {
-        assertTrue(false)
-    }
-
-    @Test
     fun shouldFindExistingGameWhenCreatedGameExists() {
         // given
         val newGame: Game = Game(10, 100)

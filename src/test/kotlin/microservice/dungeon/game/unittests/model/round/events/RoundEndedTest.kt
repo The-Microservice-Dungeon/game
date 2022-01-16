@@ -1,4 +1,4 @@
-package microservice.dungeon.game.unittests.model.round.domain
+package microservice.dungeon.game.unittests.model.round.events
 
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
