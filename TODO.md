@@ -64,6 +64,6 @@ PlayerStatusEvent
 - **POST /players**
   - 409 removed
   - 403 when player already exists
-
-add request string to controller logging \
-add game.controller patches
+- **GET /players?name=&mail=
+  - 200
+  - 404
