@@ -9,4 +9,6 @@ interface PlayerRepository: CrudRepository<Player, UUID> {
     fun findByPlayerToken(playerToken: UUID): Optional<Player>
 
     fun findByUserNameOrMailAddress(userName: String, mailAddress: String): Optional<Player>
+
+    fun findByUserNameAndMailAddress(userName: String, mailAddress: String): Optional<Player>
 }

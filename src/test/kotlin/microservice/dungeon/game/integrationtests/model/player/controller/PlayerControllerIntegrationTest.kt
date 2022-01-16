@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.player.controller.PlayerController
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
+import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -13,16 +14,19 @@ import org.mockito.kotlin.*
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import java.util.*
 
 class PlayerControllerIntegrationTest {
     private var mockPlayerService: PlayerService? = null
+    private var mockPlayerRepository: PlayerRepository? = null
     private var playerController: PlayerController? = null
     private var webTestClient: WebTestClient? = null
 
     @BeforeEach
     fun setUp() {
         mockPlayerService = mock()
-        playerController = PlayerController(mockPlayerService!!)
+        mockPlayerRepository = mock()
+        playerController = PlayerController(mockPlayerService!!, mockPlayerRepository!!)
         webTestClient = WebTestClient.bindToController(playerController!!).build()
     }
 
@@ -71,5 +75,54 @@ class PlayerControllerIntegrationTest {
 
         // then
         verify(mockPlayerService!!).createNewPlayer(requestEntity.name, requestEntity.email)
+    }
+
+    @Test
+    fun shouldAllowToFetchPlayerDetails() {
+        // given
+        val userName = "dadepu"
+        val userMail = "dadepu@smail.th-koeln.de"
+        val responsePlayer = Player(userName, userMail)
+        whenever(mockPlayerRepository!!.findByUserNameAndMailAddress(userName, userMail))
+            .thenReturn(Optional.of(responsePlayer))
+
+        // when
+        val result = webTestClient!!.get().uri("/players?name=${userName}&mail=${userMail}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<PlayerResponseDto>()
+            .returnResult()
+        val responseBody = result.responseBody!!
+
+        // then
+        assertThat(responseBody.bearerToken)
+            .isEqualTo(responsePlayer.getPlayerToken())
+        assertThat(responseBody.name)
+            .isEqualTo(responsePlayer.getUserName())
+        assertThat(responseBody.email)
+            .isEqualTo(responsePlayer.getMailAddress())
+
+        // and then
+        verify(mockPlayerRepository!!).findByUserNameAndMailAddress(userName, userMail)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenPlayerNotFoundWhileTryingToFetchDetails() {
+        // given
+        val userName = "dadepu"
+        val userMail = "dadepu@smail.th-koeln.de"
+        doThrow(NoSuchElementException())
+            .whenever(mockPlayerRepository!!)
+            .findByUserNameAndMailAddress(userName, userMail)
+
+        // when
+        webTestClient!!.get().uri("/players?name=${userName}&mail=${userMail}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+
+        // then
+        verify(mockPlayerRepository!!).findByUserNameAndMailAddress(userName, userMail)
     }
 }
