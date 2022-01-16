@@ -2,6 +2,7 @@ package microservice.dungeon.game.integrationtests.model.robot.services
 
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
+import microservice.dungeon.game.aggregates.robot.domain.Robot
 import microservice.dungeon.game.aggregates.robot.domain.RobotStatus
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import microservice.dungeon.game.aggregates.robot.services.RobotService
@@ -47,5 +48,22 @@ class RobotServiceIntegrationTest @Autowired constructor(
             .isEqualTo(playerId)
         assertThat(capturedRobot.getRobotStatus())
             .isEqualTo(RobotStatus.ACTIVE)
+    }
+
+    @Test
+    fun shouldPersistDestroyedRobotWhenDestroying() {
+        // given
+        val robotId = UUID.randomUUID()
+        val robot = Robot(robotId, player!!)
+        playerRepository.save(player!!)
+        robotRepository.save(robot)
+
+        // when
+        robotService.destroyRobot(robotId)
+
+        // then
+        val capturedRobot = robotRepository.findById(robotId).get()
+        assertThat(capturedRobot.getRobotStatus())
+            .isEqualTo(RobotStatus.INACTIVE)
     }
 }
