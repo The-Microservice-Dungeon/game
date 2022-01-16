@@ -14,7 +14,7 @@ class Robot constructor(
     @Type(type="uuid-char")
     private val robotId: UUID,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PLAYER_ID")
     private val player: Player,
 
