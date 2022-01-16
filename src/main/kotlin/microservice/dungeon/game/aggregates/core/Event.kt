@@ -9,7 +9,6 @@ import java.util.*
 interface Event {
     fun getId(): UUID
 
-    @JsonIgnore
     fun getTransactionId(): UUID
 
     fun getEventName(): String

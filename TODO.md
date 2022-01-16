@@ -6,6 +6,7 @@
 - Eventing
 
 **Round**
+- Events
 - RoundService Integration Test
 
 **Player**
@@ -24,6 +25,7 @@
 
 **EventStore**
 - CronJob 
+- Integration Test
 
 **Log**
 - Separate Log for Controllers
@@ -52,6 +54,10 @@
   - 404 when game not found
 - **GET /games**
   - whole responseBody
+
+PlayerStatusEvent
+  - _userId to playerId_
+  - _lobbyaction removed_
 
 add request string to controller logging \
 add game.controller patches
