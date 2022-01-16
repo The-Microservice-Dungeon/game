@@ -11,11 +11,11 @@ import java.util.*
 
 @Component
 class PlayerStatusEventBuilder @Autowired constructor(
-    @Value("todo")
+    @Value("\${kafka.event.prod.playerStatus.topic}")
     private val topic: String,
-    @Value("todo")
+    @Value("\${kafka.event.prod.playerStatus.type}")
     private val eventType: String,
-    @Value("version")
+    @Value("\${kafka.event.prod.playerStatus.version}")
     private val version: Int
 
 ) : EventBuilder {
