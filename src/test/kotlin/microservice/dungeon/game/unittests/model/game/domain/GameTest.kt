@@ -146,7 +146,7 @@ class GameTest {
     fun shouldNotAllowSamePlayerJoinMoreThanOnce() {
         // given
         val game: Game = Game(10, 100)
-        val playerClone: Player = Player(player!!.getUserName(), player!!.getMailAddress(), player!!.getPlayerId(), player!!.getPlayerToken())
+        val playerClone: Player = Player(player!!.getPlayerId(), player!!.getPlayerToken(), player!!.getUserName(), player!!.getMailAddress())
         game.joinGame(player!!)
 
         // when

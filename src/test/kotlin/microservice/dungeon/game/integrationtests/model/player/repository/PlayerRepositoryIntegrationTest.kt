@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.player
+package microservice.dungeon.game.integrationtests.model.player.repository
 
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
@@ -108,7 +108,7 @@ class PlayerRepositoryIntegrationTest @Autowired constructor(
     @Test
     fun shouldHaveUniqueToken() {
         // given
-        val playerWithSameToken = Player("SOME_OTHER_USERNAME", "SOME_OTHER_MAILADDRESS", playerToken = ANY_PLAYER.getPlayerToken())
+        val playerWithSameToken = Player(UUID.randomUUID(), ANY_PLAYER.getPlayerToken(), "SOME_OTHER_USERNAME", "SOME_OTHER_MAILADDRESS")
         playerRepository.save(ANY_PLAYER)
 
         // when then

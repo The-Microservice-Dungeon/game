@@ -2,27 +2,35 @@ package microservice.dungeon.game.aggregates.player.domain
 
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Index
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name = "players", indexes = [
-    Index(name = "playerUniqueIndexFromPlayerToken", columnList = "playerToken", unique = true),
-    Index(name = "playerUniqueIndexFromUsername", columnList = "userName", unique = true),
-    Index(name = "playerUniqueIndexFromMailAddress", columnList = "mailAddress", unique = true)
+@Table(name = "PLAYERS", indexes = [
+    Index(name = "playerUniqueIndexFromPlayerToken", columnList = "PLAYER_TOKEN", unique = true),
+    Index(name = "playerUniqueIndexFromUsername", columnList = "USER_NAME", unique = true),
+    Index(name = "playerUniqueIndexFromMailAddress", columnList = "MAIL_ADDRESS", unique = true)
 ])
 class Player constructor(
-    private var userName: String,
-    private var mailAddress: String,
     @Id
+    @Column(name="PLAYER_ID")
     @Type(type="uuid-char")
-    var playerId: UUID = UUID.randomUUID(),
+    private var playerId: UUID,
+
+    @Column(name="PLAYER_TOKEN")
     @Type(type="uuid-char")
-    private var playerToken: UUID = UUID.randomUUID()
+    private var playerToken: UUID,
+
+    @Column(name="USER_NAME")
+    private var userName: String,
+
+    @Column(name="MAIL_ADDRESS")
+    private var mailAddress: String,
 ) {
-    @JvmName("getPlayerId1")
+
+    constructor(userName: String, mailAddress: String): this(
+        UUID.randomUUID(), UUID.randomUUID(), userName, mailAddress
+    )
+
     fun getPlayerId(): UUID = playerId
 
     fun getPlayerToken(): UUID = playerToken
@@ -30,18 +38,4 @@ class Player constructor(
     fun getUserName(): String = userName
 
     fun getMailAddress(): String = mailAddress
-
-    fun isEqualByVal(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Player
-
-        if (userName != other.userName) return false
-        if (mailAddress != other.mailAddress) return false
-        if (playerId != other.playerId) return false
-        if (playerToken != other.playerToken) return false
-
-        return true
-    }
 }

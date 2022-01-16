@@ -42,7 +42,7 @@ class CommandService @Autowired constructor(
 
         if (player.isEmpty) throw IllegalAccessException("Player could not be found.")
 
-        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().playerId)
+        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().getPlayerId())
 
         //TODO Test ;)
         if (!robotRepository.findAll()

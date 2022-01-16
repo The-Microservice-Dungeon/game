@@ -1,4 +1,4 @@
-package microservice.dungeon.game.aggregates.player.dtos
+package microservice.dungeon.game.aggregates.player.controller.dtos
 
 import microservice.dungeon.game.aggregates.player.domain.Player
 import java.util.*

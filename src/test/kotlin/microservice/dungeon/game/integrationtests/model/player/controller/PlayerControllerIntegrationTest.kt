@@ -1,8 +1,8 @@
-package microservice.dungeon.game.integrationtests.model.player
+package microservice.dungeon.game.integrationtests.model.player.controller
 
 import microservice.dungeon.game.aggregates.player.controller.PlayerController
 import microservice.dungeon.game.aggregates.player.domain.Player
-import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
+import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

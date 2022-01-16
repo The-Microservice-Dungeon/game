@@ -1,7 +1,7 @@
 package microservice.dungeon.game.aggregates.player.controller
 
 import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
-import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
+import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired

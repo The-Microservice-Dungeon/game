@@ -4,7 +4,7 @@ import microservice.dungeon.game.aggregates.core.EntityAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.controller.PlayerController
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
-import microservice.dungeon.game.aggregates.player.dtos.PlayerResponseDto
+import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat

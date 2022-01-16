@@ -3,22 +3,22 @@
 ## TODO
 
 **Player**
-- JPA
-- PlayerService Integration Test
-- Refactor Events
-- Controller
-  - Fetch Token
+- Fetch Token
 
-**Command**
-- JPA
-  
 **Robot**
 - JPA
 - RobotService Integration Test
 
+**Command**
+- JPA
+
 
 
 ## Bonus
+**Game**
+- Patch RoundTime
+- Patch MaxRounds
+
 **EventStore**
 - Integration Test
 
@@ -31,6 +31,9 @@
 
 **Kafka**
 - Integration Test
+
+**JPA**
+- Indexes
 
 
 ## API Changes
