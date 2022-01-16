@@ -118,4 +118,27 @@ class PlayerRepositoryIntegrationTest @Autowired constructor(
             playerRepository.save(playerWithSameToken)
         }
     }
+
+    @Test
+    fun shouldAllowToFindPlayerByUserNameAndMailAddress() {
+        // given
+        val player1 = Player("dadepu1", "dadepu1")
+        val player2 = Player("dadepu2", "dadepu2")
+        playerRepository.saveAll(listOf(player1, player2))
+
+        // when
+        val capturedPlayer1: Player = playerRepository.findByUserNameAndMailAddress(
+            player1.getUserName(), player1.getMailAddress()).get()
+
+        // then
+        assertThat(capturedPlayer1.getPlayerId())
+            .isEqualTo(player1.getPlayerId())
+
+        // and when
+        val capturedPlayer2: Optional<Player> = playerRepository.findByUserNameAndMailAddress(player2.getUserName(), "some other mail")
+
+        // then
+        assertThat(capturedPlayer2)
+            .isEmpty
+    }
 }
