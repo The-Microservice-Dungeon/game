@@ -12,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional
 class PlayerService @Autowired constructor(
     private val playerRepository: PlayerRepository
 ) {
-    private val logger = KotlinLogging.logger {}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     @Transactional
+    @Throws(PlayerAlreadyExistsException::class)
     fun createNewPlayer(userName: String, mailAddress: String): Player {
         if(!playerRepository.findByUserNameOrMailAddress(userName, mailAddress).isEmpty) {
             logger.warn("Failed to create new Player. Player already exists. [name=${userName}")

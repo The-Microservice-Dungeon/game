@@ -2,9 +2,6 @@
 
 ## TODO
 
-**Player**
-- Fetch Token
-
 **Robot**
 - JPA
 - RobotService Integration Test
@@ -62,6 +59,11 @@
 PlayerStatusEvent
   - _userId to playerId_
   - _lobbyaction removed_
+
+**Player**
+- **POST /players**
+  - 409 removed
+  - 403 when player already exists
 
 add request string to controller logging \
 add game.controller patches

@@ -3,36 +3,17 @@ package microservice.dungeon.game.integrationtests.model.player.controller
 import microservice.dungeon.game.aggregates.player.controller.PlayerController
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
+import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestTemplate
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
+import org.mockito.kotlin.*
 import org.springframework.http.MediaType
-import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.body
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.test.web.servlet.MockMvc
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = [
-        "kafka.bootstrapAddress=localhost:29100"
-])
-@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
-@EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29100", "port=29100"])
 class PlayerControllerIntegrationTest {
     private var mockPlayerService: PlayerService? = null
     private var playerController: PlayerController? = null
@@ -46,11 +27,7 @@ class PlayerControllerIntegrationTest {
     }
 
     @Test
-    fun contextLoads() {
-    }
-
-    @Test
-    fun shouldAllowNewPlayerCreation() {
+    fun shouldAllowToCreateNewPlayer() {
         // given
         val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
         whenever(mockPlayerService!!.createNewPlayer(anyString(), anyString()))
@@ -77,6 +54,22 @@ class PlayerControllerIntegrationTest {
         verify(mockPlayerService!!).createNewPlayer(requestEntity.name, requestEntity.email)
     }
 
-    // valid interaction
-    // incorrect data
+    @Test
+    fun shouldRespondForbiddenWhenPlayerAlreadyExistsWhileCreatingNew() {
+        // given
+        val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
+        doThrow(PlayerAlreadyExistsException::class)
+            .whenever(mockPlayerService!!)
+            .createNewPlayer(any(), any())
+
+        // when
+        webTestClient!!.post().uri("/players")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(requestEntity)
+            .exchange()
+            .expectStatus().isForbidden
+
+        // then
+        verify(mockPlayerService!!).createNewPlayer(requestEntity.name, requestEntity.email)
+    }
 }
