@@ -4,6 +4,7 @@ import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
@@ -27,7 +28,8 @@ import org.springframework.test.annotation.DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29097", "port=29097"])
 class GameLoopServiceServiceIntegrationTest @Autowired constructor(
     private val gameRepository: GameRepository,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val gameStatusEventBuilder: GameStatusEventBuilder
 ) {
     private var mockRoundService: RoundService? = null
     private var mockGameWorldsClient: MapGameWorldsClient? = null
@@ -51,7 +53,8 @@ class GameLoopServiceServiceIntegrationTest @Autowired constructor(
             playerRepository,
             mockEventStoreService!!,
             mockEventPublisherService!!,
-            mockGameWorldsClient!!
+            mockGameWorldsClient!!,
+            gameStatusEventBuilder
         )
     }
 

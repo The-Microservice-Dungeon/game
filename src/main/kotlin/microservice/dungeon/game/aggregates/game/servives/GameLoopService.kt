@@ -93,6 +93,7 @@ class GameLoopService(
 
     // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
     fun endGame(gameId: UUID) {
+        // TODO EVENT
         val game: Game = fetchGame(gameId)
 
         game.endGame()

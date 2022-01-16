@@ -18,6 +18,10 @@ class EventPublisherService @Autowired constructor(
         }
     }
 
+    fun publishEvent(event: Event) {
+        kafkaProducing.send(event)
+    }
+
     fun onSuccessfulPublish(eventId: UUID) {
         eventStoreService.markAsPublished(listOf(eventId))
     }

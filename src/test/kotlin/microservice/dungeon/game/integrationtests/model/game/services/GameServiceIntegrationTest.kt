@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.eventstore.services.EventStoreServic
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
@@ -35,7 +36,8 @@ import java.util.*
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29096", "port=29096"])
 class GameServiceIntegrationTest @Autowired constructor(
     private val gameRepository: GameRepository,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val gameStatusEventBuilder: GameStatusEventBuilder
 ) {
     private var mockRoundService: RoundService? = null
     private var mockGameWorldsClient: MapGameWorldsClient? = null
@@ -59,7 +61,8 @@ class GameServiceIntegrationTest @Autowired constructor(
             playerRepository,
             mockEventStoreService!!,
             mockEventPublisherService!!,
-            mockGameWorldsClient!!
+            mockGameWorldsClient!!,
+            gameStatusEventBuilder
         )
     }
 

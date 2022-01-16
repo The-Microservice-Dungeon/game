@@ -6,6 +6,8 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
@@ -29,6 +31,8 @@ class GameServiceTest {
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockMapGameWorldsClient: MapGameWorldsClient? = null
 
+    private val gameStatusEventBuilder: GameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
+
     private var gameService: GameService? = null
 
     @BeforeEach
@@ -46,7 +50,8 @@ class GameServiceTest {
             mockPlayerRepository!!,
             mockEventStoreService!!,
             mockEventPublisherService!!,
-            mockMapGameWorldsClient!!
+            mockMapGameWorldsClient!!,
+            gameStatusEventBuilder
         )
     }
 
@@ -78,7 +83,7 @@ class GameServiceTest {
         whenever(mockGameRepository!!.existsByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING)))
             .thenReturn(true)
 
-        // when
+        // when then
         assertThrows(GameStateException::class.java) {
             gameService!!.createNewGame(10, 100)
         }
@@ -86,7 +91,27 @@ class GameServiceTest {
 
     @Test
     fun shouldPublishWhenGameCreated() {
-        assertTrue(false)
+        // given
+        // when
+        val response: Pair<UUID, Game> = gameService!!.createNewGame(1,1)
+
+        // then
+        verify(mockEventStoreService!!).storeEvent(check { event: GameStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(response.first)
+            assertThat(event.gameId)
+                .isEqualTo(response.second.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(response.second.getGameStatus())
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: GameStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(response.first)
+            assertThat(event.gameId)
+                .isEqualTo(response.second.getGameId())
+            assertThat(event.gameStatus)
+                .isEqualTo(response.second.getGameStatus())
+        })
     }
 
     @Test

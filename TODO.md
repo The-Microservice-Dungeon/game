@@ -4,9 +4,10 @@
 
 **Game**
 - Eventing
+- Logging
 
 **Round**
-- Events
+- Refactor Events
 - RoundService Integration Test
 
 **Player**

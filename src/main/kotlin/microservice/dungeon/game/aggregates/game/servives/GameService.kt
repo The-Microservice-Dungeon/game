@@ -6,6 +6,8 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
+import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
@@ -27,7 +29,8 @@ class GameService @Autowired constructor(
     private val playerRepository: PlayerRepository,
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService,
-    private val mapGameWorldsClient: MapGameWorldsClient
+    private val mapGameWorldsClient: MapGameWorldsClient,
+    private val gameStatusEventBuilder: GameStatusEventBuilder
 ) {
     private val gameLoopService: GameLoopService = GameLoopService(gameRepository, roundService)
     private val logger = KotlinLogging.logger {}
@@ -46,6 +49,11 @@ class GameService @Autowired constructor(
         gameRepository.save(newGame)
         logger.info("New Game created. [transactionId=$transactionId]")
         logger.trace(newGame.toString())
+
+        val gameCreatedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, newGame.getGameId(), GameStatus.CREATED)
+        eventStoreService.storeEvent(gameCreatedEvent)
+        eventPublisherService.publishEvent(gameCreatedEvent)
+        logger.debug("GameStatusEvent handed to publisher. [transactionId=$transactionId, gameId=${newGame.getGameId()}, gameStatus=${newGame.getGameStatus()}]")
 
         return Pair(transactionId, newGame)
     }
