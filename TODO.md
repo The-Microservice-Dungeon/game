@@ -4,6 +4,7 @@
 
 **Round**
 - Refactor Events
+- Logging
 - RoundService Integration Test
 
 **Player**

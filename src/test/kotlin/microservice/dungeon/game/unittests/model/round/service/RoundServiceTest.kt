@@ -11,11 +11,12 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
-import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -33,6 +34,8 @@ class RoundServiceTest {
     private var mockRoundRepository: RoundRepository? = null
     private var mockCommandRepository: CommandRepository? = null
     private var roundService: RoundService? = null
+
+    private val roundStatusEventBuilder = RoundStatusEventBuilder("anyTopic", "anyType", 1)
 
     private val GAME = Game(10, 100)
     private val ANY_ROUND_ID = UUID.randomUUID()
@@ -58,7 +61,8 @@ class RoundServiceTest {
             mockGameRepository!!,
             mockEventPublisherService!!,
             mockRobotCommandDispatcherClient!!,
-            mockTradingCommandDispatcherCLient!!
+            mockTradingCommandDispatcherCLient!!,
+            roundStatusEventBuilder
         )
     }
 
@@ -83,65 +87,31 @@ class RoundServiceTest {
 
     @Test
     fun shouldStoreCommandInputEndedEventWhenCommandInputEnded() {
-        var roundCommandInputEnded: Round? = null
-        var commandInputEnded: Event? = null
-
         // given
-        val roundCommandInputStarted = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
-            .thenReturn(Optional.of(roundCommandInputStarted))
+            .thenReturn(Optional.of(spyRound))
 
         // when
         roundService!!.endCommandInputs(ANY_GAMEID)
 
         // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-            roundCommandInputEnded = firstValue
-        }
-        argumentCaptor<Event>().apply {
-            verify(mockEventStoreService!!).storeEvent(capture())
-            commandInputEnded = firstValue
-        }
-//        assertThat(commandInputEnded!!)
-//            .isInstanceOf(CommandInputEnded::class.java)
-//        assertThat(commandInputEnded!!.getTransactionId())
-//            .isEqualTo(roundCommandInputStarted.getRoundId())
-//        assertThat(commandInputEnded!! as AbstractRoundEvent)
-//            .matches(roundCommandInputEnded!!)
-        assertTrue(false)
-    }
-
-    @Test
-    fun shouldPublishCommandInputEndedEventWhenCommandInputEnded() {
-        var roundCommandInputEnded: Round? = null
-        var commandInputEnded: Event? = null
-
-        // given
-        val roundCommandInputStarted = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_STARTED)
-        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
-            .thenReturn(Optional.of(roundCommandInputStarted))
-
-        // when
-        roundService!!.endCommandInputs(ANY_GAMEID)
-
-        // then
-        argumentCaptor<Round>().apply {
-            verify(mockRoundRepository!!).save(capture())
-            roundCommandInputEnded = firstValue
-        }
-        argumentCaptor<List<Event>>().apply {
-            verify(mockEventPublisherService!!).publishEvents(capture())
-            commandInputEnded = firstValue.first()
-        }
-//        assertThat(commandInputEnded!!)
-//            .isInstanceOf(CommandInputEnded::class.java)
-//        assertThat(commandInputEnded!!.getTransactionId())
-//            .isEqualTo(roundCommandInputStarted.getRoundId())
-//        assertThat(commandInputEnded!! as AbstractRoundEvent)
-//            .matches(roundCommandInputEnded!!)
-
-        assertTrue(false)
+        verify(mockEventStoreService!!).storeEvent(check { event: RoundStatusEvent ->
+            assertThat(event.roundId)
+                .isEqualTo(spyRound.getRoundId())
+            assertThat(event.roundNumber)
+                .isEqualTo(spyRound.getRoundNumber())
+            assertThat(event.roundStatus)
+                .isEqualTo(RoundStatus.COMMAND_INPUT_ENDED)
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: RoundStatusEvent ->
+            assertThat(event.roundId)
+                .isEqualTo(spyRound.getRoundId())
+            assertThat(event.roundNumber)
+                .isEqualTo(spyRound.getRoundNumber())
+            assertThat(event.roundStatus)
+                .isEqualTo(RoundStatus.COMMAND_INPUT_ENDED)
+        })
     }
 
     @Test

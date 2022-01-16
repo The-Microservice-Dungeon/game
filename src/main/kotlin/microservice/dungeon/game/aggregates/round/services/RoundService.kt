@@ -7,6 +7,10 @@ import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundNotFoundException
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
@@ -23,18 +27,39 @@ class RoundService @Autowired constructor (
     private val gameRepository: GameRepository,
     private val eventPublisherService: EventPublisherService,
     private val robotCommandDispatcherClient: RobotCommandDispatcherClient,
-    private val tradingCommandDispatcherClient: TradingCommandDispatcherClient
+    private val tradingCommandDispatcherClient: TradingCommandDispatcherClient,
+    private val roundStatusEventBuilder: RoundStatusEventBuilder
 ) {
-    private val logger = KotlinLogging.logger {}
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
 
     fun endCommandInputs(roundId: UUID) {
-        val round: Round = roundRepository.findById(roundId).get()
+        val round: Round
+        val transactionId = UUID.randomUUID()
+
+        try {
+            round = roundRepository.findById(roundId).get()
+        } catch (e: Exception) {
+            logger.error("Failed to end Command-Input-Phase. Round does not exist. [roundId=$roundId]")
+            logger.error(e.message)
+            throw RoundNotFoundException("Failed to find round with roundId $roundId.")
+        }
+
         round.endCommandInputPhase()
         roundRepository.save(round)
-//        val commandInputEnded = CommandInputEnded(round)
-//        eventStoreService.storeEvent(commandInputEnded)
-//        eventPublisherService.publishEvents(listOf(commandInputEnded))
+
+        val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
+            transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_ENDED
+        )
+        eventStoreService.storeEvent(roundEvent)
+        eventPublisherService.publishEvent(roundEvent)
+        logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber=${round.getRoundNumber()}, roundStatus=${RoundStatus.COMMAND_INPUT_ENDED}]")
+
+
+        logger.info("Command-Input-Phase ended. [roundNumber=$roundId]")
     }
 
 
@@ -152,13 +177,30 @@ class RoundService @Autowired constructor (
 
 
     fun endRound(roundId: UUID) {
-        val round: Round = roundRepository.findById(roundId).get()
-        val response = round.endRound()
-        roundRepository.save(round)
-        if (response) {
-//            val roundEnded = RoundEnded(round)
-//            eventStoreService.storeEvent(roundEnded)
-//            eventPublisherService.publishEvents(listOf(roundEnded))
+        val round: Round
+        val transactionId = UUID.randomUUID()
+
+        try {
+            round = roundRepository.findById(roundId).get()
+
+        } catch (e: Exception){
+            logger.error("Failed to end round. Round does not exist. [roundId=$roundId]")
+            logger.error(e.message)
+            throw RoundNotFoundException("Failed to find round with roundId $roundId.")
         }
+
+        val response: Boolean = round.endRound()
+        roundRepository.save(round)
+
+        if (response) {
+            val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
+                transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.ROUND_ENDED
+            )
+            eventStoreService.storeEvent(roundEvent)
+            eventPublisherService.publishEvent(roundEvent)
+            logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber=${round.getRoundNumber()}, roundStatus=ROUND_ENDED]")
+        }
+
+        logger.info("Round ended. [roundNumber=${round.getRoundNumber()}]")
     }
 }
