@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.round.domain
 import microservice.dungeon.game.aggregates.core.MethodNotAllowedForStatusException
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import mu.KotlinLogging
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -30,89 +31,115 @@ class Round(
     @Column(name = "ROUND_STARTED")
     private var roundStarted: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
 ) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     fun endCommandInputPhase() {
         if (roundStatus != RoundStatus.COMMAND_INPUT_STARTED) {
+            logger.warn("Failed to set Round-Status to COMMAND_INPUT_ENDED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.COMMAND_INPUT_STARTED}")
         }
         roundStatus = RoundStatus.COMMAND_INPUT_ENDED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverBlockingCommandsToRobot() {
         if (roundStatus != RoundStatus.COMMAND_INPUT_ENDED) {
+            logger.warn("Failed to set Round-Status to BLOCKING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.COMMAND_INPUT_ENDED}")
         }
         roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverSellingCommandsToRobot() {
         if (roundStatus != RoundStatus.BLOCKING_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to SELLING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BLOCKING_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverBuyingCommandsToRobot() {
         if (roundStatus != RoundStatus.SELLING_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to BUYING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.SELLING_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverMovementItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.BUYING_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BUYING_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverMovementCommandsToRobot() {
         if (roundStatus != RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to MOVEMENT_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverBattleItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.MOVEMENT_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to BATTLE_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverBattleCommandsToRobot() {
         if (roundStatus != RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to BATTLE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverMiningCommandsToRobot() {
         if (roundStatus != RoundStatus.BATTLE_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to MINING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BATTLE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverRepairItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.MINING_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to REPAIR_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MINING_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun deliverRegeneratingCommandsToRobot() {
         if (roundStatus != RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED) {
+            logger.warn("Failed to set Round-Status to REGENERATING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED}")
         }
         roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
     fun endRound(): Boolean {
-        if (roundStatus ==  RoundStatus.ROUND_ENDED) {
+        if (roundStatus == RoundStatus.ROUND_ENDED) {
             return false
         }
         roundStatus = RoundStatus.ROUND_ENDED
+        logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
         return true
     }
 

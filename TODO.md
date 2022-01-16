@@ -3,7 +3,6 @@
 ## TODO
 
 **Round**
-- Refactor Events
 - Logging
 - RoundService Integration Test
 

@@ -30,11 +30,9 @@ class RoundService @Autowired constructor (
     private val tradingCommandDispatcherClient: TradingCommandDispatcherClient,
     private val roundStatusEventBuilder: RoundStatusEventBuilder
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
-
 
     fun endCommandInputs(roundId: UUID) {
         val round: Round
@@ -58,11 +56,8 @@ class RoundService @Autowired constructor (
         eventPublisherService.publishEvent(roundEvent)
         logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber=${round.getRoundNumber()}, roundStatus=${RoundStatus.COMMAND_INPUT_ENDED}]")
 
-
         logger.info("Command-Input-Phase ended. [roundNumber=$roundId]")
     }
-
-
 
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
@@ -72,109 +67,109 @@ class RoundService @Autowired constructor (
             )
             .map { command -> BlockCommandDTO.fromCommand(command) }
         )
+
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Blocking-Commands dispatched.")
+        logger.info("Blocking-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.deliverSellingCommandsToRobot()
+
         tradingCommandDispatcherClient.sendSellingCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.SELLING
             )
             .map { command -> SellCommandDTO.fromCommand (command) }
         )
-        round.deliverBuyingCommandsToRobot()
+        round.deliverSellingCommandsToRobot()
         tradingCommandDispatcherClient.sendBuyingCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BUYING
             )
                 .map { command -> BuyCommandDTO.fromCommand (command) }
         )
+        round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Trading-Commands dispatched.")
+        logger.info("Trading-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.deliverMovementItemUseCommandsToRobot()
+
         robotCommandDispatcherClient.sendMovementItemUseCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MOVEITEMUSE
             )
             .map { command -> UseItemMovementCommandDTO.fromCommand(command) }
         )
-        round.deliverMovementCommandsToRobot()
+        round.deliverMovementItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendMovementCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MOVEMENT
             )
             .map { command -> MovementCommandDTO.fromCommand(command) }
         )
+        round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Movement-Commands dispatched.")
+        logger.info("Movement-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.deliverBattleItemUseCommandsToRobot()
+
         robotCommandDispatcherClient.sendBattleItemUseCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BATTLEITEMUSE
             )
             .map { command -> UseItemFightCommandDTO.fromCommand(command) }
         )
-        round.deliverBattleCommandsToRobot()
+        round.deliverBattleItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendBattleCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BATTLE
             )
                 .map { command -> FightCommandDTO.fromCommand(command) }
         )
+        round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Battle-Commands dispatched.")
+        logger.info("Battle-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun deliverMiningCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.deliverMiningCommandsToRobot()
+
         robotCommandDispatcherClient.sendMiningCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MINING
             )
                 .map { command -> MineCommandDTO.fromCommand(command) }
         )
+        round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Mining-Commands dispatched.")
+        logger.info("Mining-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun deliverRegeneratingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        round.deliverRepairItemUseCommandsToRobot()
+
         robotCommandDispatcherClient.sendRepairItemUseCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.REPAIRITEMUSE
             )
                 .map { command -> UseItemRepairCommandDTO.fromCommand(command) }
         )
-        round.deliverRegeneratingCommandsToRobot()
+        round.deliverRepairItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendRegeneratingCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.REGENERATE
             )
                 .map { command -> RegenerateCommandDTO.fromCommand(command) }
         )
+        round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Regeneration-Commands dispatched.")
+        logger.info("Regeneration-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
     }
-
 
     fun endRound(roundId: UUID) {
         val round: Round
