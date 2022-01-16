@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
+import microservice.dungeon.game.aggregates.game.events.PlayerStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
@@ -37,7 +38,8 @@ import java.util.*
 class GameServiceIntegrationTest @Autowired constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
-    private val gameStatusEventBuilder: GameStatusEventBuilder
+    private val gameStatusEventBuilder: GameStatusEventBuilder,
+    private val playerStatusEventBuilder: PlayerStatusEventBuilder
 ) {
     private var mockRoundService: RoundService? = null
     private var mockGameWorldsClient: MapGameWorldsClient? = null
@@ -62,7 +64,8 @@ class GameServiceIntegrationTest @Autowired constructor(
             mockEventStoreService!!,
             mockEventPublisherService!!,
             mockGameWorldsClient!!,
-            gameStatusEventBuilder
+            gameStatusEventBuilder,
+            playerStatusEventBuilder
         )
     }
 

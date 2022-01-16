@@ -8,6 +8,8 @@ import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
+import microservice.dungeon.game.aggregates.game.events.PlayerStatusEvent
+import microservice.dungeon.game.aggregates.game.events.PlayerStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
@@ -31,7 +33,8 @@ class GameServiceTest {
     private var mockEventPublisherService: EventPublisherService? = null
     private var mockMapGameWorldsClient: MapGameWorldsClient? = null
 
-    private val gameStatusEventBuilder: GameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
+    private val gameStatusEventBuilder = GameStatusEventBuilder("anyTopic", "anyType", 1)
+    private val playerStatusEventBuilder = PlayerStatusEventBuilder("anyTopic", "anyType", 1)
 
     private var gameService: GameService? = null
 
@@ -51,7 +54,8 @@ class GameServiceTest {
             mockEventStoreService!!,
             mockEventPublisherService!!,
             mockMapGameWorldsClient!!,
-            gameStatusEventBuilder
+            gameStatusEventBuilder,
+            playerStatusEventBuilder
         )
     }
 
@@ -167,7 +171,34 @@ class GameServiceTest {
 
     @Test
     fun shouldPublishPlayerJoinedGameOnSuccess() {
-        assertTrue(false)
+        // given
+        val game = Game(1,1)
+        val player = Player("dadepu", "dadepu@smail.th-koeln.de")
+        whenever(mockGameRepository!!.findById(game.getGameId()))
+            .thenReturn(Optional.of(game))
+        whenever(mockPlayerRepository!!.findByPlayerToken(player.getPlayerToken()))
+            .thenReturn(Optional.of(player))
+
+        // when
+        val transactionId: UUID = gameService!!.joinGame(player.getPlayerToken(), game.getGameId())
+
+        // then
+        verify(mockEventStoreService!!).storeEvent(check { event: PlayerStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(transactionId)
+            assertThat(event.playerId)
+                .isEqualTo(player.getPlayerId())
+            assertThat(event.playerUsername)
+                .isEqualTo(player.getUserName())
+        })
+        verify(mockEventPublisherService!!).publishEvent(check { event: PlayerStatusEvent ->
+            assertThat(event.getTransactionId())
+                .isEqualTo(transactionId)
+            assertThat(event.playerId)
+                .isEqualTo(player.getPlayerId())
+            assertThat(event.playerUsername)
+                .isEqualTo(player.getUserName())
+        })
     }
 
     @Test

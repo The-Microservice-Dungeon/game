@@ -8,6 +8,8 @@ import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
+import microservice.dungeon.game.aggregates.game.events.PlayerStatusEvent
+import microservice.dungeon.game.aggregates.game.events.PlayerStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
@@ -30,7 +32,8 @@ class GameService @Autowired constructor(
     private val eventStoreService: EventStoreService,
     private val eventPublisherService: EventPublisherService,
     private val mapGameWorldsClient: MapGameWorldsClient,
-    private val gameStatusEventBuilder: GameStatusEventBuilder
+    private val gameStatusEventBuilder: GameStatusEventBuilder,
+    private val playerStatusEventBuilder: PlayerStatusEventBuilder
 ) {
     private val gameLoopService: GameLoopService = GameLoopService(
         gameRepository, roundService, gameStatusEventBuilder, eventStoreService, eventPublisherService)
@@ -82,8 +85,13 @@ class GameService @Autowired constructor(
 
         game.joinGame(player)
         gameRepository.save(game)
-
         logger.info("Player has joined the game. [playerName=${player.getUserName()}, numberOfPlayers=${game.getParticipatingPlayers().size}/${game.getMaxPlayers()}]")
+
+        val playerJoinedEvent: PlayerStatusEvent = playerStatusEventBuilder.makePlayerStatusEvent(transactionId, player.getPlayerId(), player.getUserName())
+        eventStoreService.storeEvent(playerJoinedEvent)
+        eventPublisherService.publishEvent(playerJoinedEvent)
+        logger.debug("PlayerStatusEvent handed to publisher & store. [transactionId=$transactionId, playerId=${player.getPlayerId()}, playerUsername=${player.getUserName()}]")
+
         return transactionId
     }
 
