@@ -15,10 +15,7 @@ import java.util.*
 class CommandController @Autowired constructor(private val commandService: CommandService) {
 
     @GetMapping("/commands", produces = ["application/json"])
-    fun getAllRoundCommands(
-        @RequestParam gameId: UUID,
-        @RequestParam roundNumber: Int
-    ): ResponseEntity<List<Command>> {
+    fun getAllRoundCommands(@RequestParam gameId: UUID, @RequestParam roundNumber: Int): ResponseEntity<List<Command>> {
         try {
             val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
             if (roundCommands != null) {

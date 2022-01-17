@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
-import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
+import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDTO
+import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDTO
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.trading.SendBuyingCommandsToTradingSuccessful

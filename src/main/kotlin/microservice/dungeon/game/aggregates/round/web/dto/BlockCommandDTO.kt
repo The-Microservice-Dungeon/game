@@ -1,26 +1,26 @@
-package microservice.dungeon.game.aggregates.command.dtos
+package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
-class RegenerateCommandDTO(
+class BlockCommandDTO(
     val robotId: UUID,
     val transactionId: UUID
 ) {
     companion object {
-        const val stringPrefix = "regenerate"
+        const val stringPrefix = "block"
 
-        fun fromCommand(command: Command) = RegenerateCommandDTO(
+        fun fromCommand(command: Command) = BlockCommandDTO(
             command.robotId!!,
             command.transactionId
         )
 
-        fun fromString(serializedString: String): RegenerateCommandDTO {
+        fun fromString(serializedString: String): BlockCommandDTO {
             val explodedString = serializedString.split(" ")
             if (explodedString[0] != stringPrefix) {
                 throw IllegalArgumentException(explodedString[0])
             }
-            return RegenerateCommandDTO(
+            return BlockCommandDTO(
                 UUID.fromString(explodedString[1]),
                 UUID.fromString(explodedString[2])
             )
@@ -32,7 +32,7 @@ class RegenerateCommandDTO(
     }
 
     override fun equals(other: Any?): Boolean =
-        (other is RegenerateCommandDTO)
+        (other is BlockCommandDTO)
                 && robotId == other.robotId
                 && transactionId == other.transactionId
 }

@@ -1,4 +1,4 @@
-package microservice.dungeon.game.integrationtests.model.command
+package microservice.dungeon.game.integrationtests.model.command.controller
 
 import microservice.dungeon.game.aggregates.command.controller.CommandController
 import microservice.dungeon.game.aggregates.command.domain.Command
@@ -42,8 +42,6 @@ class CommandControllerIntegrationTest {
         commandController = CommandController(mockCommandService!!)
         webTestClient = WebTestClient.bindToController(commandController!!).build()
     }
-
-
 
     @Test
     fun contextLoads() {

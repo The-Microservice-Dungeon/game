@@ -2,9 +2,8 @@ package microservice.dungeon.game.aggregates.round.web
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
-import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
+import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDTO
+import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDTO
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

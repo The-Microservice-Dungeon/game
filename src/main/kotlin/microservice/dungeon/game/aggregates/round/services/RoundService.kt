@@ -1,7 +1,6 @@
 package microservice.dungeon.game.aggregates.round.services
 
 import microservice.dungeon.game.aggregates.command.domain.CommandType
-import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
@@ -14,6 +13,7 @@ import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.dto.*
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

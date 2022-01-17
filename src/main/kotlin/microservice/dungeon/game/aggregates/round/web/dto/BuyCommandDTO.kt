@@ -1,6 +1,7 @@
-package microservice.dungeon.game.aggregates.command.dtos
+package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.dtos.TradingPayload
 import java.util.*
 
 class BuyCommandDTO(

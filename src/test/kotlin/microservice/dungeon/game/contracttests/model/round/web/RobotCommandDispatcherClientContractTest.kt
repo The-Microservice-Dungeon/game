@@ -2,8 +2,8 @@ package microservice.dungeon.game.contracttests.model.round.web
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandObject
-import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.dto.*
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.robot.*
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput

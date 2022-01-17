@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.round.web
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.*
+import microservice.dungeon.game.aggregates.round.web.dto.*
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

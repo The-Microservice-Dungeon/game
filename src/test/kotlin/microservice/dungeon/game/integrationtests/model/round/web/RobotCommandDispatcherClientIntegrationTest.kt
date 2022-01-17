@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.model.round.web
 import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.dto.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat

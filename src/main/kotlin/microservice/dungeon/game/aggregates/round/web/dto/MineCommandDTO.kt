@@ -1,42 +1,38 @@
-package microservice.dungeon.game.aggregates.command.dtos
+package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
-class UseItemRepairCommandDTO(
+class MineCommandDTO(
     val robotId: UUID,
-    val itemName: String,
     val transactionId: UUID
 ) {
     companion object {
-        const val stringPrefix = "use-item-repair"
+        const val stringPrefix = "mine"
 
-        fun fromCommand(command: Command) = UseItemRepairCommandDTO(
+        fun fromCommand(command: Command) = MineCommandDTO(
             command.robotId!!,
-            command.commandObject.itemName!!,
             command.transactionId
         )
 
-        fun fromString(serializedString: String): UseItemRepairCommandDTO {
+        fun fromString(serializedString: String): MineCommandDTO {
             val explodedString = serializedString.split(" ")
             if (explodedString[0] != stringPrefix) {
                 throw IllegalArgumentException(explodedString[0])
             }
-            return UseItemRepairCommandDTO(
+            return MineCommandDTO(
                 UUID.fromString(explodedString[1]),
-                explodedString[2],
-                UUID.fromString(explodedString[3])
+                UUID.fromString(explodedString[2])
             )
         }
     }
 
     override fun toString(): String {
-        return "$stringPrefix $robotId $itemName $transactionId"
+        return "$stringPrefix $robotId $transactionId"
     }
 
     override fun equals(other: Any?): Boolean =
-        (other is UseItemRepairCommandDTO)
+        (other is MineCommandDTO)
                 && robotId == other.robotId
-                && itemName == other.itemName
                 && transactionId == other.transactionId
 }
