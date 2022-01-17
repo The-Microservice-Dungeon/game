@@ -6,6 +6,7 @@
 - Tests
   - Repository
 - Verify Command Inputs
+- Custom Query
 
 **Round**
 Catch mapping errors

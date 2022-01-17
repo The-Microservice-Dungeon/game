@@ -1,25 +1,20 @@
-package microservice.dungeon.game.aggregates.command.dtos
+package microservice.dungeon.game.aggregates.command.controller.dto
 
-import microservice.dungeon.game.aggregates.command.domain.CommandPayload
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import java.util.*
 
-class CommandDTO(
+class CommandRequestDto(
     val gameId: UUID,
-
     val playerToken: UUID,
-
     val robotId: UUID?,
-
-    val commandType: CommandType,
-
-    val commandPayload: CommandPayload
+    val commandType: String,
+    val commandObject: CommandObjectRequestDto
 ) {
     override fun equals(other: Any?): Boolean =
-        (other is CommandDTO)
+        (other is CommandRequestDto)
                 && gameId == other.gameId
                 && playerToken == other.playerToken
                 && robotId == other.robotId
                 && commandType == other.commandType
-                && commandPayload == other.commandPayload
+                && commandObject == other.commandObject
 }
