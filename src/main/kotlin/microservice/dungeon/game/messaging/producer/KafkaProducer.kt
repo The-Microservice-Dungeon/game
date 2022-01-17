@@ -13,10 +13,6 @@ class KafkaProducer @Autowired constructor (
     private val kafkaTemplate: KafkaTemplate<String, String>
 ) : KafkaProducing {
 
-    override fun send(topic: String, payload: String) {
-        kafkaTemplate.send(topic, payload)
-    }
-
     override fun send(event: Event) {
         val record = ProducerRecord<String, String>(event.getTopic(), event.toDTO().serialize())
         record.headers().add(
