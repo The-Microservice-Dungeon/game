@@ -167,6 +167,10 @@ class Game constructor (
         }
     }
 
+    fun isParticipating(player: Player): Boolean {
+        return participatingPlayers.asIterable().map { it.getPlayerId() }.contains(player.getPlayerId())
+    }
+
     override fun toString(): String {
         return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
     }

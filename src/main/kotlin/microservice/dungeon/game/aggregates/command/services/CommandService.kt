@@ -8,6 +8,7 @@ import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
+import microservice.dungeon.game.aggregates.game.domain.GameParticipationException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.Player
@@ -41,20 +42,24 @@ class CommandService @Autowired constructor(
         try {
             player = playerRepository.findByPlayerToken(playerToken).get()
         } catch (e: Exception) {
-            logger.warn("TODO")
-            throw PlayerNotFoundException("TODO")
+            logger.warn("Command-Creation failed. Player not found.")
+            throw PlayerNotFoundException("Player not found.")
         }
         try {
             game = gameRepository.findById(gameId).get()
         } catch (e: Exception) {
-            logger.warn("TODO")
-            throw GameNotFoundException("TODO")
+            logger.warn("Command-Creation failed. Game not found. [gameId=${gameId}]")
+            throw GameNotFoundException("Game not found.")
         }
         try {
             round = game.getCurrentRound()!!
         } catch (e: Exception) {
-            logger.warn("TODO")
-            throw GameStateException("TODO")
+            logger.warn("Command-Creation failed. Round not found.")
+            throw GameStateException("Game not in a state to accept commands. [gameStatus=${game.getGameStatus()}]")
+        }
+        if (!game.isParticipating(player)) {
+            logger.warn("Command-Creation failed. Player is not participating in the game. [playerName=${player.getUserName()}]")
+            throw GameParticipationException("Player is not participating in the game.")
         }
         val robot = try {
             robotRepository.findById(robotId!!).get()
@@ -62,11 +67,11 @@ class CommandService @Autowired constructor(
             null
         }
 
-        // TODO COMMAND
-            // TODO PREVENT DUPLICATES
-            // TODO ONLY VALID COMMANDS
-        // TODO SAVE
-        val command: Command = Command(
+        //TODO DELETE DUPLICATES
+        //TODO VALID COMMANDS ONLY
+        //TODO PLAYER MUST BE PARTICIPATING
+
+        val newCommand = Command(
             commandId = transactionId,
             round = round,
             player = player,
@@ -79,9 +84,9 @@ class CommandService @Autowired constructor(
                 itemQuantity = commandRequestDTO.commandObject.itemQuantity
             )
         )
-        commandRepository.save(command)
+        commandRepository.save(newCommand)
+        logger.info("Command successfully created. [playerName=${player.getUserName()}, roundNumber=${round.getRoundNumber()}]")
 
-        logger.info("TODO")
         return transactionId
     }
 
