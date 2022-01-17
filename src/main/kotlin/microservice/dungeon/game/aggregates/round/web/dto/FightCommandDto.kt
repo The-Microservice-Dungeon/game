@@ -23,7 +23,6 @@ class FightCommandDto(
                 )
             } catch (e: Exception) {
                 logger.error("Failed to parse Command as FightCommandDto. [commandId=${command.getCommandId()}]")
-                logger.error(e.message)
                 throw CommandParsingException("Failed to parse Command as FightCommandDto.")
             }
         }

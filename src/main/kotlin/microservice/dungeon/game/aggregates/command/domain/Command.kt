@@ -46,4 +46,16 @@ class Command constructor(
     fun getCommandType(): CommandType = commandType
 
     fun getCommandPayload(): CommandPayload = commandPayload
+
+    companion object {
+        fun <A> parseCommandsToDto(commands: List<Command>, mapper: (Command) -> A): List<A> {
+            val mappedCommands: MutableList<A> = mutableListOf()
+            commands.forEach {
+                try {
+                    mappedCommands.add(mapper(it))
+                } catch (ignored: Exception) {}
+            }
+            return mappedCommands.toList()
+        }
+    }
 }

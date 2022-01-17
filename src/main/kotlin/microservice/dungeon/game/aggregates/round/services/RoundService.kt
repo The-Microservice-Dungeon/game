@@ -64,16 +64,8 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         val commands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BLOCKING)
-        val commandDtos: List<BlockCommandDto> = commands.let { x ->
-            val commandDtos: MutableList<BlockCommandDto> = mutableListOf()
-            x.forEach {
-                try {
-                    commandDtos.add(BlockCommandDto.makeFromCommand(it))
-                } catch (ignored: Exception) {
-                    //TODO LOGGING
-                }
-            }
-            commandDtos.toList()
+        val commandDtos: List<BlockCommandDto> = Command.parseCommandsToDto(commands) {
+            BlockCommandDto.makeFromCommand(it)
         }
 
         robotCommandDispatcherClient.sendBlockingCommands(commandDtos)
@@ -85,15 +77,18 @@ class RoundService @Autowired constructor (
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        tradingCommandDispatcherClient.sendSellingCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.SELLING)
-                .map { command -> SellCommandDto.makeFromCommand (command) }
-        )
+        val sellingCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.SELLING)
+        val sellingCommandDtos: List<SellCommandDto> = Command.parseCommandsToDto(sellingCommands) {
+            SellCommandDto.makeFromCommand(it)
+        }
+        val buyingCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BUYING)
+        val buyingCommandDtos: List<BuyCommandDto> = Command.parseCommandsToDto(buyingCommands) {
+            BuyCommandDto.makeFromCommand(it)
+        }
+
+        tradingCommandDispatcherClient.sendSellingCommands(sellingCommandDtos)
+        tradingCommandDispatcherClient.sendBuyingCommands(buyingCommandDtos)
         round.deliverSellingCommandsToRobot()
-        tradingCommandDispatcherClient.sendBuyingCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BUYING)
-                .map { command -> BuyCommandDto.makeFromCommand (command) }
-        )
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
         logger.info("Trading-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
@@ -102,15 +97,18 @@ class RoundService @Autowired constructor (
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        robotCommandDispatcherClient.sendMovementItemUseCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEITEMUSE)
-                .map { command -> UseItemMovementCommandDto.makeFromCommand(command) }
-        )
+        val itemMovementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEITEMUSE)
+        val itemMovementCommandDtos: List<UseItemMovementCommandDto> = Command.parseCommandsToDto(itemMovementCommands) {
+            UseItemMovementCommandDto.makeFromCommand(it)
+        }
+        val movementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEMENT)
+        val movementCommandDtos: List<MovementCommandDto> = Command.parseCommandsToDto(movementCommands) {
+            MovementCommandDto.makeFromCommand(it)
+        }
+
+        robotCommandDispatcherClient.sendMovementItemUseCommands(itemMovementCommandDtos)
+        robotCommandDispatcherClient.sendMovementCommands(movementCommandDtos)
         round.deliverMovementItemUseCommandsToRobot()
-        robotCommandDispatcherClient.sendMovementCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEMENT)
-                .map { command -> MovementCommandDto.makeFromCommand(command) }
-        )
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
         logger.info("Movement-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
@@ -119,15 +117,18 @@ class RoundService @Autowired constructor (
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        robotCommandDispatcherClient.sendBattleItemUseCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLEITEMUSE)
-                .map { command -> UseItemFightCommandDto.makeFromCommand(command) }
-        )
+        val itemFightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLEITEMUSE)
+        val itemFightCommandDtos: List<UseItemFightCommandDto> = Command.parseCommandsToDto(itemFightCommands) {
+            UseItemFightCommandDto.makeFromCommand(it)
+        }
+        val fightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLE)
+        val fightCommandDtos: List<FightCommandDto> = Command.parseCommandsToDto(fightCommands) {
+            FightCommandDto.makeFromCommand(it)
+        }
+
+        robotCommandDispatcherClient.sendBattleItemUseCommands(itemFightCommandDtos)
+        robotCommandDispatcherClient.sendBattleCommands(fightCommandDtos)
         round.deliverBattleItemUseCommandsToRobot()
-        robotCommandDispatcherClient.sendBattleCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLE)
-                .map { command -> FightCommandDto.makeFromCommand(command) }
-        )
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
         logger.info("Battle-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
@@ -136,10 +137,12 @@ class RoundService @Autowired constructor (
     fun deliverMiningCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        robotCommandDispatcherClient.sendMiningCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MINING)
-                .map { command -> MineCommandDto.makeFromCommand(command) }
-        )
+        val miningCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MINING)
+        val miningCommandDtos: List<MineCommandDto> = Command.parseCommandsToDto(miningCommands) {
+            MineCommandDto.makeFromCommand(it)
+        }
+
+        robotCommandDispatcherClient.sendMiningCommands(miningCommandDtos)
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
         logger.info("Mining-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
@@ -148,15 +151,18 @@ class RoundService @Autowired constructor (
     fun deliverRegeneratingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        robotCommandDispatcherClient.sendRepairItemUseCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REPAIRITEMUSE)
-                .map { command -> UseItemRepairCommandDto.makeFromCommand(command) }
-        )
+        val itemRepairCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REPAIRITEMUSE)
+        val itemRepairCommandDtos: List<UseItemRepairCommandDto> = Command.parseCommandsToDto(itemRepairCommands) {
+            UseItemRepairCommandDto.makeFromCommand(it)
+        }
+        val regenCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REGENERATE)
+        val regenCommandDtos: List<RegenerateCommandDto> = Command.parseCommandsToDto(regenCommands) {
+            RegenerateCommandDto.makeFromCommands(it)
+        }
+
+        robotCommandDispatcherClient.sendRepairItemUseCommands(itemRepairCommandDtos)
+        robotCommandDispatcherClient.sendRegeneratingCommands(regenCommandDtos)
         round.deliverRepairItemUseCommandsToRobot()
-        robotCommandDispatcherClient.sendRegeneratingCommands(
-            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REGENERATE)
-                .map { command -> RegenerateCommandDto.makeFromCommands(command) }
-        )
         round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)
         logger.info("Regeneration-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")

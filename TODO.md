@@ -7,9 +7,6 @@
 2. Fetch all Commands per Round
 3. Unit Tests
 
-**Round**
-1. Catch mapping errors
-
 ## Bonus
 
 **Game**

@@ -25,7 +25,6 @@ class UseItemFightCommandDto(
                 )
             } catch (e: Exception) {
                 logger.error("Failed to parse Command as UseItemFightCommandDto. [commandId=${command.getCommandId()}]")
-                logger.error(e.message)
                 throw CommandParsingException("Failed to parse Command as UseItemFightCommandDto.")
             }
         }

@@ -18,7 +18,6 @@ class BlockCommandDto(
                 BlockCommandDto(command.getRobot()!!.getRobotId(), command.getCommandId())
             } catch (e: Exception) {
                 logger.error("Failed to parse Command as BlockCommandDto. [commandId=${command.getCommandId()}]")
-                logger.error(e.message)
                 throw CommandParsingException("Failed to parse Command as BlockCommandDto.")
             }
         }
