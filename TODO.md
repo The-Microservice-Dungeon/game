@@ -5,10 +5,10 @@
 **Command**
 1. Valid Commands only
 2. Fetch all Commands per Round
+3. Unit Tests
 
 **Round**
 1. Catch mapping errors
-2. CommandParsingError
 
 ## Bonus
 

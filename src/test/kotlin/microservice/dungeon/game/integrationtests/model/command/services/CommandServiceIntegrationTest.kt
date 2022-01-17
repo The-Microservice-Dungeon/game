@@ -19,12 +19,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import java.util.*
 
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29101"
 ])
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29101", "port=29101"])
+@DirtiesContext
 class CommandServiceIntegrationTest @Autowired constructor(
     private val commandService: CommandService,
     private val commandRepository: CommandRepository,
@@ -39,9 +41,9 @@ class CommandServiceIntegrationTest @Autowired constructor(
     @BeforeEach
     fun setUp() {
         commandRepository.deleteAll()
-        playerRepository.deleteAll()
         roundRepository.deleteAll()
         gameRepository.deleteAll()
+        playerRepository.deleteAll()
 
         player = Player("dadepu", "dadepu@smail.th-koeln.de")
         playerRepository.save(player!!)

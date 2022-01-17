@@ -1,6 +1,8 @@
 package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
+import mu.KotlinLogging
 import java.util.*
 
 class UseItemRepairCommandDto(
@@ -9,13 +11,22 @@ class UseItemRepairCommandDto(
     val transactionId: UUID
 ) {
     companion object {
+        private val logger = KotlinLogging.logger {}
         const val stringPrefix = "use-item-repair"
 
-        fun makeFromCommand(command: Command) = UseItemRepairCommandDto(
-            command.getRobot()!!.getRobotId(),
-            command.getCommandPayload().getItemName()!!,
-            command.getCommandId()
-        )
+        fun makeFromCommand(command: Command): UseItemRepairCommandDto {
+            return try {
+                UseItemRepairCommandDto(
+                    command.getRobot()!!.getRobotId(),
+                    command.getCommandPayload().getItemName()!!,
+                    command.getCommandId()
+                )
+            } catch (e: Exception) {
+                logger.error("Failed to parse Command as UseItemRepairCommandDto. [commandId=${command.getCommandId()}]")
+                logger.error(e.message)
+                throw CommandParsingException("Failed to parse Command as UseItemRepairCommandDto.")
+            }
+        }
 
         fun makeFromSerializedString(serializedString: String): UseItemRepairCommandDto {
             val explodedString = serializedString.split(" ")

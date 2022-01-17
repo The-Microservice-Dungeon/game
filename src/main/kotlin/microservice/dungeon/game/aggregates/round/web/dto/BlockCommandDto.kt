@@ -1,6 +1,8 @@
 package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
+import mu.KotlinLogging
 import java.util.*
 
 class BlockCommandDto(
@@ -8,11 +10,18 @@ class BlockCommandDto(
     val transactionId: UUID
 ) {
     companion object {
+        private val logger = KotlinLogging.logger {}
         const val stringPrefix = "block"
 
-        fun makeFromCommand(command: Command) = BlockCommandDto(
-            command.getRobot()!!.getRobotId(), command.getCommandId()
-        )
+        fun makeFromCommand(command: Command): BlockCommandDto {
+            return try {
+                BlockCommandDto(command.getRobot()!!.getRobotId(), command.getCommandId())
+            } catch (e: Exception) {
+                logger.error("Failed to parse Command as BlockCommandDto. [commandId=${command.getCommandId()}]")
+                logger.error(e.message)
+                throw CommandParsingException("Failed to parse Command as BlockCommandDto.")
+            }
+        }
 
         fun makeFromSerializedString(serializedString: String): BlockCommandDto {
             val explodedString = serializedString.split(" ")

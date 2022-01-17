@@ -91,7 +91,7 @@ class CommandService @Autowired constructor(
         return transactionId
     }
 
-    fun save(dto: CommandRequestDto): UUID {
+//    fun save(dto: CommandRequestDto): UUID {
 //        val currentRoundNumber = 0 //TODO("REPLACE") gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
 //
 //        val player = playerRepository.findByPlayerToken(dto.playerToken)
@@ -115,6 +115,6 @@ class CommandService @Autowired constructor(
 //        }
 //        command = commandRepository.save(command)
 //        return command.commandId
-        return UUID.randomUUID()
-    }
+//        return UUID.randomUUID()
+//    }
 }

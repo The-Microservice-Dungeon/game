@@ -1,8 +1,10 @@
 package microservice.dungeon.game.aggregates.command.domain
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.robot.domain.Robot
 import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.events.dto.RoundStatusEventDto
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
