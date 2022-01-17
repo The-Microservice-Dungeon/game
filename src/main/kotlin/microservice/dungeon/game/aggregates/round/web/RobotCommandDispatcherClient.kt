@@ -24,7 +24,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
 
     private val webClient = WebClient.create(robotBaseURL)
 
-    fun sendBlockingCommands(commands: List<BlockCommandDTO>) {
+    fun sendBlockingCommands(commands: List<BlockCommandDto>) {
         logger.debug("Starting to dispatch Blocking-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -37,7 +37,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendMovementItemUseCommands(commands: List<UseItemMovementCommandDTO>) {
+    fun sendMovementItemUseCommands(commands: List<UseItemMovementCommandDto>) {
         logger.debug("Starting to dispatch Movement-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -50,7 +50,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendMovementCommands(commands: List<MovementCommandDTO>) {
+    fun sendMovementCommands(commands: List<MovementCommandDto>) {
         logger.debug("Starting to dispatch Movement-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -63,7 +63,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendBattleItemUseCommands(commands: List<UseItemFightCommandDTO>) {
+    fun sendBattleItemUseCommands(commands: List<UseItemFightCommandDto>) {
         logger.debug("Starting to dispatch Battle-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -76,7 +76,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendBattleCommands(commands: List<FightCommandDTO>) {
+    fun sendBattleCommands(commands: List<FightCommandDto>) {
         logger.debug("Starting to dispatch Battle-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -89,7 +89,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendMiningCommands(commands: List<MineCommandDTO>) {
+    fun sendMiningCommands(commands: List<MineCommandDto>) {
         logger.debug("Starting to dispatch Mining-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -102,7 +102,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendRepairItemUseCommands(commands: List<UseItemRepairCommandDTO>) {
+    fun sendRepairItemUseCommands(commands: List<UseItemRepairCommandDto>) {
         logger.debug("Starting to dispatch Repair-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
@@ -115,7 +115,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendRegeneratingCommands(commands: List<RegenerateCommandDTO>) {
+    fun sendRegeneratingCommands(commands: List<RegenerateCommandDto>) {
         logger.debug("Starting to dispatch Regeneration-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {

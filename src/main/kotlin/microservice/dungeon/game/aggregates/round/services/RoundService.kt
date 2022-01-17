@@ -65,7 +65,7 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BLOCKING
             )
-            .map { command -> BlockCommandDTO.fromCommand(command) }
+            .map { command -> BlockCommandDto.makeFromCommand(command) }
         )
 
         round.deliverBlockingCommandsToRobot()
@@ -80,14 +80,14 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.SELLING
             )
-            .map { command -> SellCommandDTO.fromCommand (command) }
+            .map { command -> SellCommandDto.makeFromCommand (command) }
         )
         round.deliverSellingCommandsToRobot()
         tradingCommandDispatcherClient.sendBuyingCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BUYING
             )
-                .map { command -> BuyCommandDTO.fromCommand (command) }
+                .map { command -> BuyCommandDto.makeFromCommand (command) }
         )
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
@@ -101,14 +101,14 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MOVEITEMUSE
             )
-            .map { command -> UseItemMovementCommandDTO.fromCommand(command) }
+            .map { command -> UseItemMovementCommandDto.makeFromCommand(command) }
         )
         round.deliverMovementItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendMovementCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MOVEMENT
             )
-            .map { command -> MovementCommandDTO.fromCommand(command) }
+            .map { command -> MovementCommandDto.makeFromCommand(command) }
         )
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
@@ -122,14 +122,14 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BATTLEITEMUSE
             )
-            .map { command -> UseItemFightCommandDTO.fromCommand(command) }
+            .map { command -> UseItemFightCommandDto.makeFromCommand(command) }
         )
         round.deliverBattleItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendBattleCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BATTLE
             )
-                .map { command -> FightCommandDTO.fromCommand(command) }
+                .map { command -> FightCommandDto.makeFromCommand(command) }
         )
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
@@ -143,7 +143,7 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.MINING
             )
-                .map { command -> MineCommandDTO.fromCommand(command) }
+                .map { command -> MineCommandDto.makeFromCommand(command) }
         )
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
@@ -157,14 +157,14 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.REPAIRITEMUSE
             )
-                .map { command -> UseItemRepairCommandDTO.fromCommand(command) }
+                .map { command -> UseItemRepairCommandDto.makeFromCommand(command) }
         )
         round.deliverRepairItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendRegeneratingCommands(
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.REGENERATE
             )
-                .map { command -> RegenerateCommandDTO.fromCommand(command) }
+                .map { command -> RegenerateCommandDto.makeFromCommands(command) }
         )
         round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)

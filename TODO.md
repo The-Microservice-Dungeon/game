@@ -4,7 +4,13 @@
 
 **Command**
 - JPA
-- Fix
+- Tests
+  - Repository
+- Verify Command Inputs
+- CommandParsingError
+
+**Round**
+Round: Command -> DTO may throw
 
 ## Bonus
 
@@ -59,6 +65,8 @@ PlayerStatusEvent
 - **POST /players**
   - 409 removed
   - 403 when player already exists
-- **GET /players?name=&mail=
+- **GET /players?name=&mail=**
   - 200
   - 404
+
+**Logs**

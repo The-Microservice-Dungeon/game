@@ -2,8 +2,8 @@ package microservice.dungeon.game.aggregates.round.web
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDTO
-import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDTO
+import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDto
+import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDto
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,7 +24,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
 
     private val webClient = WebClient.create(tradingBaseURL)
 
-    fun sendSellingCommands(commands: List<SellCommandDTO>) {
+    fun sendSellingCommands(commands: List<SellCommandDto>) {
         logger.debug("Starting to dispatch Selling-Commands to TradingService ... [commandSize=${commands.size}]")
 
         return try {
@@ -37,7 +37,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    fun sendBuyingCommands(commands: List<BuyCommandDTO>) {
+    fun sendBuyingCommands(commands: List<BuyCommandDto>) {
         logger.debug("Starting to dispatch Buying-Commands to TradingService ... [commandSize=${commands.size}]")
 
         return try {

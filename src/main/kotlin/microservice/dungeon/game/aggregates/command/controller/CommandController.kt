@@ -16,18 +16,19 @@ class CommandController @Autowired constructor(private val commandService: Comma
 
     @GetMapping("/commands", produces = ["application/json"])
     fun getAllRoundCommands(@RequestParam gameId: UUID, @RequestParam roundNumber: Int): ResponseEntity<List<Command>> {
-        try {
-            val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
-            if (roundCommands != null) {
-                return ResponseEntity(roundCommands, HttpStatus.OK)
-            } else {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "roundNumber not found")
-            }
-        } catch (e: IllegalArgumentException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString())
-        } catch (e: Exception) {
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString())
-        }
+//        try {
+//            val roundCommands = commandService.getAllRoundCommands(gameId, roundNumber)
+//            if (roundCommands != null) {
+//                return ResponseEntity(roundCommands, HttpStatus.OK)
+//            } else {
+//                throw ResponseStatusException(HttpStatus.NOT_FOUND, "roundNumber not found")
+//            }
+//        } catch (e: IllegalArgumentException) {
+//            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString())
+//        } catch (e: Exception) {
+//            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString())
+//        }
+        throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])

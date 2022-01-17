@@ -4,28 +4,28 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.dtos.TradingPayload
 import java.util.*
 
-class BuyCommandDTO(
+class BuyCommandDto(
     val transactionId: UUID,
     val playerId: UUID,
     val payload: TradingPayload
 ) {
     companion object {
-        fun fromCommand(command: Command): BuyCommandDTO {
-            return BuyCommandDTO(
-                command.transactionId,
-                command.playerId,
+        fun makeFromCommand(command: Command): BuyCommandDto {
+            return BuyCommandDto(
+                command.getCommandId(),
+                command.getPlayer().getPlayerId(),
                 TradingPayload(
                     "buy",
-                    command.commandObject.itemQuantity!!,
-                    command.commandObject.planetId!!,
-                    command.commandObject.itemName!!
+                    command.getCommandPayload().getItemQuantity()!!,
+                    command.getCommandPayload().getPlanetId()!!,
+                    command.getCommandPayload().getItemName()!!
                 )
             )
         }
     }
 
     override fun equals(other: Any?): Boolean =
-        (other is BuyCommandDTO)
+        (other is BuyCommandDto)
                 && transactionId == other.transactionId
                 && playerId == other.playerId
                 && payload == other.payload

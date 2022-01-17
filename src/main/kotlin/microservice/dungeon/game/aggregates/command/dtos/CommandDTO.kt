@@ -1,6 +1,6 @@
 package microservice.dungeon.game.aggregates.command.dtos
 
-import microservice.dungeon.game.aggregates.command.domain.CommandObject
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import java.util.*
 
@@ -13,7 +13,7 @@ class CommandDTO(
 
     val commandType: CommandType,
 
-    val commandObject: CommandObject
+    val commandPayload: CommandPayload
 ) {
     override fun equals(other: Any?): Boolean =
         (other is CommandDTO)
@@ -21,5 +21,5 @@ class CommandDTO(
                 && playerToken == other.playerToken
                 && robotId == other.robotId
                 && commandType == other.commandType
-                && commandObject == other.commandObject
+                && commandPayload == other.commandPayload
 }

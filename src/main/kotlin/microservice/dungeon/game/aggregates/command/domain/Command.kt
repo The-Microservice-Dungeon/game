@@ -1,56 +1,47 @@
 package microservice.dungeon.game.aggregates.command.domain
 
-import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.robot.domain.Robot
+import microservice.dungeon.game.aggregates.round.domain.Round
 import org.hibernate.annotations.Type
 import java.util.*
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name = "commands")
+@Table(name = "COMMANDS")
 class Command constructor(
-    @Id @Type(type = "uuid-char")
-    val transactionId: UUID = UUID.randomUUID(),
-
+    @Id
+    @Column(name = "COMMAND_ID")
     @Type(type = "uuid-char")
-    val gameId: UUID,
+    private val commandId: UUID = UUID.randomUUID(),
 
-    @Type(type = "uuid-char")
-    val playerId: UUID,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ROUND_ID")
+    private val round: Round,
 
-    @Type(type = "uuid-char")
-    val robotId: UUID?,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PLAYER_ID")
+    private val player: Player,
 
-    val commandType: CommandType,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ROBOT_ID")
+    private val robot: Robot?,
+
+    @Column(name = "COMMAND_TYPE")
+    private val commandType: CommandType,
 
     @Embedded
-    val commandObject: CommandObject,
-
-    val roundNumber: Int
+    private val commandPayload: CommandPayload,
 ) {
-    fun toDto(): CommandDTO = CommandDTO(gameId, playerId, robotId, commandType, commandObject)
+    fun getCommandId(): UUID = commandId
 
-    override fun equals(other: Any?): Boolean =
-        (other is Command)
-                && transactionId == other.transactionId
-                && gameId == other.gameId
-                && playerId == other.playerId
-                && robotId == other.robotId
-                && commandType == other.commandType
-                && commandObject == other.commandObject
-                && roundNumber == other.roundNumber
+    fun getRound(): Round = round
 
-    companion object {
-        fun fromDto(dto: CommandDTO, roundNumber: Int, playerId: UUID): Command = Command(
-            transactionId = UUID.randomUUID(),
-            gameId = dto.gameId,
-            playerId = playerId,
-            robotId = dto.robotId,
-            commandType = dto.commandType,
-            commandObject = dto.commandObject,
-            roundNumber = roundNumber
-        )
-    }
+    fun getPlayer(): Player = player
+
+    fun getRobot(): Robot? = robot
+
+    fun getCommandType(): CommandType = commandType
+
+    fun getCommandPayload(): CommandPayload = commandPayload
 }

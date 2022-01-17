@@ -19,45 +19,30 @@ class CommandService @Autowired constructor(
     private val playerRepository: PlayerRepository
 ) {
 
-    fun getAllRoundCommands(gameId: UUID, roundNumber: Int): List<Command>? {
-        val currentRoundNumber = 0 //TODO("REPLACE!!") gameRepository.findById(gameId).get().getCurrentRoundCount()
-        val roundCommands = commandRepository.findAll()
-
-        if (currentRoundNumber >= roundNumber) {
-            throw IllegalAccessException("Current Round may not be requested")
-        }
-
-        roundCommands.removeIf { c -> c.roundNumber != roundNumber }
-        if (roundCommands.isNotEmpty()) {
-            return roundCommands
-        } else {
-            throw IllegalArgumentException("Round could not be found")
-        }
-    }
-
     fun save(dto: CommandDTO): UUID {
-        val currentRoundNumber = 0 //TODO("REPLACE") gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
-
-        val player = playerRepository.findByPlayerToken(dto.playerToken)
-
-        if (player.isEmpty) throw IllegalAccessException("Player could not be found.")
-
-        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().getPlayerId())
-
-        //TODO Test ;)
-        if (!robotRepository.findAll()
-                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId && r.getRobotStatus() == RobotStatus.ACTIVE }
-        ) {
-            throw IllegalAccessException("Player is not allowed to send commands to this robot or robot is inactive.")
-        }
-
-        val prevCommands = commandRepository.findAll()
-        prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
-
-        if (prevCommands.isNotEmpty()) {
-            commandRepository.deleteAll(prevCommands)
-        }
-        command = commandRepository.save(command)
-        return command.transactionId
+//        val currentRoundNumber = 0 //TODO("REPLACE") gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
+//
+//        val player = playerRepository.findByPlayerToken(dto.playerToken)
+//
+//        if (player.isEmpty) throw IllegalAccessException("Player could not be found.")
+//
+//        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().getPlayerId())
+//
+//        //TODO Test ;)
+//        if (!robotRepository.findAll()
+//                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId && r.getRobotStatus() == RobotStatus.ACTIVE }
+//        ) {
+//            throw IllegalAccessException("Player is not allowed to send commands to this robot or robot is inactive.")
+//        }
+//
+//        val prevCommands = commandRepository.findAll()
+//        prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
+//
+//        if (prevCommands.isNotEmpty()) {
+//            commandRepository.deleteAll(prevCommands)
+//        }
+//        command = commandRepository.save(command)
+//        return command.commandId
+        return UUID.randomUUID()
     }
 }

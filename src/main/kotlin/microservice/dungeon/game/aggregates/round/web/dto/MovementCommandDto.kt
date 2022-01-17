@@ -3,7 +3,7 @@ package microservice.dungeon.game.aggregates.round.web.dto
 import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
-class MovementCommandDTO(
+class MovementCommandDto(
     val robotId: UUID,
     val planetId: UUID,
     val transactionId: UUID
@@ -11,18 +11,18 @@ class MovementCommandDTO(
     companion object {
         const val stringPrefix = "move"
 
-        fun fromCommand(command: Command) = MovementCommandDTO(
-            command.robotId!!,
-            command.commandObject.planetId!!,
-            command.transactionId
+        fun makeFromCommand(command: Command) = MovementCommandDto(
+            command.getRobot()!!.getRobotId(),
+            command.getCommandPayload().getPlanetId()!!,
+            command.getCommandId()
         )
 
-        fun fromString(serializedString: String): MovementCommandDTO {
+        fun fromString(serializedString: String): MovementCommandDto {
             val explodedString = serializedString.split(" ")
             if (explodedString[0] != stringPrefix) {
                 throw IllegalArgumentException(explodedString[0])
             }
-            return MovementCommandDTO(
+            return MovementCommandDto(
                 UUID.fromString(explodedString[1]),
                 UUID.fromString(explodedString[2]),
                 UUID.fromString(explodedString[3])
@@ -35,7 +35,7 @@ class MovementCommandDTO(
     }
 
     override fun equals(other: Any?): Boolean =
-        (other is MovementCommandDTO)
+        (other is MovementCommandDto)
                 && robotId == other.robotId
                 && planetId == other.planetId
                 && transactionId == other.transactionId

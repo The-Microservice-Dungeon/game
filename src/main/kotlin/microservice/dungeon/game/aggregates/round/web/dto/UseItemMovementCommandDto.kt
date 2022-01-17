@@ -3,7 +3,7 @@ package microservice.dungeon.game.aggregates.round.web.dto
 import microservice.dungeon.game.aggregates.command.domain.Command
 import java.util.*
 
-class UseItemMovementCommandDTO(
+class UseItemMovementCommandDto(
     val robotId: UUID,
     val itemName: String,
     val transactionId: UUID
@@ -11,18 +11,18 @@ class UseItemMovementCommandDTO(
     companion object {
         const val stringPrefix = "use-item-movement"
 
-        fun fromCommand(command: Command) = UseItemMovementCommandDTO(
-            command.robotId!!,
-            command.commandObject.itemName!!,
-            command.transactionId
+        fun makeFromCommand(command: Command) = UseItemMovementCommandDto(
+            command.getRobot()!!.getRobotId(),
+            command.getCommandPayload().getItemName()!!,
+            command.getCommandId()
         )
 
-        fun fromString(serializedString: String): UseItemMovementCommandDTO {
+        fun makeFromSerializedString(serializedString: String): UseItemMovementCommandDto {
             val explodedString = serializedString.split(" ")
             if (explodedString[0] != stringPrefix) {
                 throw IllegalArgumentException(explodedString[0])
             }
-            return UseItemMovementCommandDTO(
+            return UseItemMovementCommandDto(
                 UUID.fromString(explodedString[1]),
                 explodedString[2],
                 UUID.fromString(explodedString[3])
@@ -35,7 +35,7 @@ class UseItemMovementCommandDTO(
     }
 
     override fun equals(other: Any?): Boolean =
-        (other is UseItemMovementCommandDTO)
+        (other is UseItemMovementCommandDto)
                 && robotId == other.robotId
                 && itemName == other.itemName
                 && transactionId == other.transactionId

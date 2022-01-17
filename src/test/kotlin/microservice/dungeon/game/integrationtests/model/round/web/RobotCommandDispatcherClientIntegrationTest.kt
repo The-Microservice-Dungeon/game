@@ -32,8 +32,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendBlockingCommands() {
         //given
         val inputCommands = listOf(
-            BlockCommandDTO(UUID.randomUUID(), UUID.randomUUID()),
-            BlockCommandDTO(UUID.randomUUID(), UUID.randomUUID())
+            BlockCommandDto(UUID.randomUUID(), UUID.randomUUID()),
+            BlockCommandDto(UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -48,8 +48,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedBlockingCommandDTOs: List<BlockCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> BlockCommandDTO.fromString(x)
+        val recordedBlockingCommandDTOs: List<BlockCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> BlockCommandDto.makeFromSerializedString(x)
         }
 
         //then
@@ -69,8 +69,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendMovementItemUseCommands() {
         //given
         val inputCommands = listOf(
-            UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
-            UseItemMovementCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
+            UseItemMovementCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
+            UseItemMovementCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -85,8 +85,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedMovementItemUseCommandDTOs: List<UseItemMovementCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> UseItemMovementCommandDTO.fromString(x)
+        val recordedMovementItemUseCommandDTOs: List<UseItemMovementCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> UseItemMovementCommandDto.makeFromSerializedString(x)
         }
 
         //then
@@ -106,8 +106,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendMovementCommands() {
         //given
         val inputCommands = listOf(
-            MovementCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
-            MovementCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+            MovementCommandDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
+            MovementCommandDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -122,8 +122,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedMovementCommandDTOs: List<MovementCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> MovementCommandDTO.fromString(x)
+        val recordedMovementCommandDtos: List<MovementCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> MovementCommandDto.fromString(x)
         }
 
         //then
@@ -135,7 +135,7 @@ class RobotCommandDispatcherClientIntegrationTest {
             .isEqualTo(MediaType.APPLICATION_JSON.toString())
 
         //and
-        assertThat(recordedMovementCommandDTOs)
+        assertThat(recordedMovementCommandDtos)
             .isEqualTo(inputCommands)
     }
 
@@ -143,8 +143,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendBattleItemUseCommands() {
         //given
         val inputCommands = listOf(
-            UseItemFightCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID()),
-            UseItemFightCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID())
+            UseItemFightCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID()),
+            UseItemFightCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -159,8 +159,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedBattleItemUseCommandDTOs: List<UseItemFightCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> UseItemFightCommandDTO.fromString(x)
+        val recordedBattleItemUseCommandDTOs: List<UseItemFightCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> UseItemFightCommandDto.makeFromSerializedString(x)
         }
 
         //then
@@ -180,8 +180,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendBattleCommands() {
         //given
         val inputCommands = listOf(
-            FightCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
-            FightCommandDTO(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
+            FightCommandDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
+            FightCommandDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -196,8 +196,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedBattleCommandDTOs: List<FightCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> FightCommandDTO.fromString(x)
+        val recordedBattleCommandDTOs: List<FightCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> FightCommandDto.makeFromSerializedString(x)
         }
 
         //then
@@ -217,8 +217,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendMiningCommands() {
         //given
         val inputCommands = listOf(
-            MineCommandDTO(UUID.randomUUID(), UUID.randomUUID()),
-            MineCommandDTO(UUID.randomUUID(), UUID.randomUUID())
+            MineCommandDto(UUID.randomUUID(), UUID.randomUUID()),
+            MineCommandDto(UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -233,8 +233,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedMiningCommandDTOs: List<MineCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> MineCommandDTO.fromString(x)
+        val recordedMiningCommandDTOs: List<MineCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> MineCommandDto.fromString(x)
         }
 
         //then
@@ -254,8 +254,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendRepairItemUseCommands() {
         //given
         val inputCommands = listOf(
-            UseItemRepairCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
-            UseItemRepairCommandDTO(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
+            UseItemRepairCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID()),
+            UseItemRepairCommandDto(UUID.randomUUID(), "ANY_NAME", UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -270,8 +270,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedRepairItemUseCommandDTOs: List<UseItemRepairCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> UseItemRepairCommandDTO.fromString(x)
+        val recordedRepairItemUseCommandDTOs: List<UseItemRepairCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> UseItemRepairCommandDto.makeFromSerializedString(x)
         }
 
         //then
@@ -291,8 +291,8 @@ class RobotCommandDispatcherClientIntegrationTest {
     fun shouldAllowToSendRegeneratingCommands() {
         //given
         val inputCommands = listOf(
-            RegenerateCommandDTO(UUID.randomUUID(), UUID.randomUUID()),
-            RegenerateCommandDTO(UUID.randomUUID(), UUID.randomUUID())
+            RegenerateCommandDto(UUID.randomUUID(), UUID.randomUUID()),
+            RegenerateCommandDto(UUID.randomUUID(), UUID.randomUUID())
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
@@ -307,8 +307,8 @@ class RobotCommandDispatcherClientIntegrationTest {
             recordedRequest.body.readUtf8(),
             RobotCommandWrapperDTO::class.java
         )
-        val recordedRegeneratingCommandDTOs: List<RegenerateCommandDTO> = recordedRobotCommandWrapperDTO.commands.map {
-                x -> RegenerateCommandDTO.fromString(x)
+        val recordedRegeneratingCommandDTOs: List<RegenerateCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+                x -> RegenerateCommandDto.makeFromSerializedString(x)
         }
 
         //then
