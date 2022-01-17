@@ -3,14 +3,13 @@
 ## TODO
 
 **Command**
-- JPA
 - Tests
   - Repository
 - Verify Command Inputs
-- CommandParsingError
 
 **Round**
-Round: Command -> DTO may throw
+Catch mapping errors
+CommandParsingError
 
 ## Bonus
 

@@ -18,6 +18,7 @@ import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.dto.BlockCommandDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -192,6 +193,28 @@ class RoundServiceTest {
         // then
         verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING)
         verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(any())
+    }
+
+    @Test
+    fun shouldIgnoreConversionErrorsFromCommandToDtoWhenDispatchingBlockingCommands() {
+        // given
+        val validCommand = getValidCommand(CommandType.BLOCKING)
+        val invalidCommand = getInvalidCommand(CommandType.BLOCKING)
+        val round = Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED)
+
+        whenever(mockRoundRepository!!.findById(ANY_GAMEID))
+            .thenReturn(Optional.of(round))
+        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING))
+            .thenReturn(listOf(validCommand, invalidCommand))
+        
+        // when
+        roundService!!.deliverBlockingCommands(ANY_GAMEID)
+
+        // then
+        verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(check { commands: List<BlockCommandDto> ->
+            assertThat(commands)
+                .hasSize(1)
+        })
     }
 
 
@@ -537,7 +560,9 @@ class RoundServiceTest {
 
 
 
-    private fun getListOfCommands(commandType: CommandType): List<Command> {
+    private fun getListOfCommands(commandType: CommandType): List<Command> = listOf(getValidCommand(commandType))
+
+    private fun getValidCommand(commandType: CommandType): Command {
         val round: Round = mock()
         whenever(round.getRoundNumber()).thenReturn(ANY_ROUND_NUMBER)
         whenever(round.getGameId()).thenReturn(ANY_GAMEID)
@@ -548,19 +573,34 @@ class RoundServiceTest {
         val robot: Robot = mock()
         whenever(robot.getRobotId()).thenReturn(ANY_ROBOTID)
 
-        return listOf(
-            Command(
-                round = round,
-                player = player,
-                robot = robot,
-                commandType = commandType,
-                commandPayload = CommandPayload(
-                    planetId = UUID.randomUUID(),
-                    targetId = UUID.randomUUID(),
-                    itemName = "any name",
-                    itemQuantity = 1
-                )
+        return Command(
+            round = round,
+            player = player,
+            robot = robot,
+            commandType = commandType,
+            commandPayload = CommandPayload(
+                planetId = UUID.randomUUID(),
+                targetId = UUID.randomUUID(),
+                itemName = "any name",
+                itemQuantity = 1
             )
+        )
+    }
+
+    private fun getInvalidCommand(commandType: CommandType): Command {
+        val round: Round = mock()
+        whenever(round.getRoundNumber()).thenReturn(ANY_ROUND_NUMBER)
+        whenever(round.getGameId()).thenReturn(ANY_GAMEID)
+
+        val player: Player = mock()
+        whenever(player.getPlayerId()).thenReturn(ANY_PLAYERID)
+
+        return Command(
+            round = round,
+            player = player,
+            robot = null,
+            commandType = commandType,
+            commandPayload = CommandPayload(null, null, null, null)
         )
     }
 }

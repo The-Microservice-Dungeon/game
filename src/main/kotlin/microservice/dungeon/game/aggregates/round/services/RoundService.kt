@@ -1,5 +1,6 @@
 package microservice.dungeon.game.aggregates.round.services
 
+import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
@@ -61,13 +62,23 @@ class RoundService @Autowired constructor (
 
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
-        robotCommandDispatcherClient.sendBlockingCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.BLOCKING
-            )
-            .map { command -> BlockCommandDto.makeFromCommand(command) }
-        )
 
+        val commands: List<Command> = commandRepository.findByGameIdAndRoundNumberAndCommandType(
+            round.getGameId(), round.getRoundNumber(), CommandType.BLOCKING
+        )
+        val commandDtos: List<BlockCommandDto> = commands.let { x ->
+            val commandDtos: MutableList<BlockCommandDto> = mutableListOf()
+            x.forEach {
+                try {
+                    commandDtos.add(BlockCommandDto.makeFromCommand(it))
+                } catch (ignored: Exception) {
+                    //TODO LOGGING
+                }
+            }
+            commandDtos.toList()
+        }
+
+        robotCommandDispatcherClient.sendBlockingCommands(commandDtos)
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
         logger.info("Blocking-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
@@ -87,7 +98,7 @@ class RoundService @Autowired constructor (
             commandRepository.findByGameIdAndRoundNumberAndCommandType(
                 round.getGameId(), round.getRoundNumber(), CommandType.BUYING
             )
-                .map { command -> BuyCommandDto.makeFromCommand (command) }
+            .map { command -> BuyCommandDto.makeFromCommand (command) }
         )
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
