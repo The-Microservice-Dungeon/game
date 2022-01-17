@@ -4,10 +4,7 @@
 
 **Command**
 1. Valid Commands only
-2. IntegrationTest: Delete previous Commands
-3. IntegrationTest: Fetch Commands per Round
-4. IntegrationTest: Save Command
-5. Fetch all Commands per Round
+2. Fetch all Commands per Round
 
 **Round**
 1. Catch mapping errors
