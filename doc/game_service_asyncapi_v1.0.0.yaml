@@ -85,14 +85,12 @@ components:
       payload:
         type: object
         properties:
-          userId:
+          playerId:
             type: string
             format: UUID
             example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
           name:
-            type: string  
-          lobbyAction:
-            enum: [ "joined" ]
+            type: string
     roundStatus:
       description: >
         Publishes all the status changes of each round of the game.
