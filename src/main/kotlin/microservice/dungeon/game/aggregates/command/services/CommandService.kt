@@ -20,6 +20,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class CommandService @Autowired constructor(
@@ -32,6 +33,7 @@ class CommandService @Autowired constructor(
         private val logger = KotlinLogging.logger {}
     }
 
+    @Transactional
     @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
     fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
         val transactionId: UUID = UUID.randomUUID()
@@ -67,10 +69,6 @@ class CommandService @Autowired constructor(
             null
         }
 
-        //TODO DELETE DUPLICATES
-        //TODO VALID COMMANDS ONLY
-        //TODO PLAYER MUST BE PARTICIPATING
-
         val newCommand = Command(
             commandId = transactionId,
             round = round,
@@ -84,7 +82,10 @@ class CommandService @Autowired constructor(
                 itemQuantity = commandRequestDTO.commandObject.itemQuantity
             )
         )
+        commandRepository.deleteCommandsByRoundAndPlayerAndRobot(round, player, robot)
+        logger.debug("Previous Player-Commands for Round, Player and Robot deleted.")
         commandRepository.save(newCommand)
+        logger.debug("Command saved. [transactionId=${newCommand.getCommandId()}]")
         logger.info("Command successfully created. [playerName=${player.getUserName()}, roundNumber=${round.getRoundNumber()}]")
 
         return transactionId
