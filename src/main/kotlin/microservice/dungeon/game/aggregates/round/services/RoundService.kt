@@ -63,9 +63,7 @@ class RoundService @Autowired constructor (
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        val commands: List<Command> = commandRepository.findByGameIdAndRoundNumberAndCommandType(
-            round.getGameId(), round.getRoundNumber(), CommandType.BLOCKING
-        )
+        val commands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BLOCKING)
         val commandDtos: List<BlockCommandDto> = commands.let { x ->
             val commandDtos: MutableList<BlockCommandDto> = mutableListOf()
             x.forEach {
@@ -88,17 +86,13 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         tradingCommandDispatcherClient.sendSellingCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.SELLING
-            )
-            .map { command -> SellCommandDto.makeFromCommand (command) }
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.SELLING)
+                .map { command -> SellCommandDto.makeFromCommand (command) }
         )
         round.deliverSellingCommandsToRobot()
         tradingCommandDispatcherClient.sendBuyingCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.BUYING
-            )
-            .map { command -> BuyCommandDto.makeFromCommand (command) }
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BUYING)
+                .map { command -> BuyCommandDto.makeFromCommand (command) }
         )
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
@@ -109,17 +103,13 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         robotCommandDispatcherClient.sendMovementItemUseCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.MOVEITEMUSE
-            )
-            .map { command -> UseItemMovementCommandDto.makeFromCommand(command) }
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEITEMUSE)
+                .map { command -> UseItemMovementCommandDto.makeFromCommand(command) }
         )
         round.deliverMovementItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendMovementCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.MOVEMENT
-            )
-            .map { command -> MovementCommandDto.makeFromCommand(command) }
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEMENT)
+                .map { command -> MovementCommandDto.makeFromCommand(command) }
         )
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
@@ -130,16 +120,12 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         robotCommandDispatcherClient.sendBattleItemUseCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.BATTLEITEMUSE
-            )
-            .map { command -> UseItemFightCommandDto.makeFromCommand(command) }
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLEITEMUSE)
+                .map { command -> UseItemFightCommandDto.makeFromCommand(command) }
         )
         round.deliverBattleItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendBattleCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.BATTLE
-            )
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLE)
                 .map { command -> FightCommandDto.makeFromCommand(command) }
         )
         round.deliverBattleCommandsToRobot()
@@ -151,9 +137,7 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         robotCommandDispatcherClient.sendMiningCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.MINING
-            )
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MINING)
                 .map { command -> MineCommandDto.makeFromCommand(command) }
         )
         round.deliverMiningCommandsToRobot()
@@ -165,16 +149,12 @@ class RoundService @Autowired constructor (
         val round: Round = roundRepository.findById(roundId).get()
 
         robotCommandDispatcherClient.sendRepairItemUseCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.REPAIRITEMUSE
-            )
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REPAIRITEMUSE)
                 .map { command -> UseItemRepairCommandDto.makeFromCommand(command) }
         )
         round.deliverRepairItemUseCommandsToRobot()
         robotCommandDispatcherClient.sendRegeneratingCommands(
-            commandRepository.findByGameIdAndRoundNumberAndCommandType(
-                round.getGameId(), round.getRoundNumber(), CommandType.REGENERATE
-            )
+            commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REGENERATE)
                 .map { command -> RegenerateCommandDto.makeFromCommands(command) }
         )
         round.deliverRegeneratingCommandsToRobot()

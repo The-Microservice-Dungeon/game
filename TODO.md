@@ -3,14 +3,15 @@
 ## TODO
 
 **Command**
-- Tests
-  - Repository
-- Verify Command Inputs
-- Custom Query
+1. Valid Commands only
+2. IntegrationTest: Delete previous Commands
+3. IntegrationTest: Fetch Commands per Round
+4. IntegrationTest: Save Command
+5. Fetch all Commands per Round
 
 **Round**
-Catch mapping errors
-CommandParsingError
+1. Catch mapping errors
+2. CommandParsingError
 
 ## Bonus
 

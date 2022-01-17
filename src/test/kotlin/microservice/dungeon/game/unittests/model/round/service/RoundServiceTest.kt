@@ -184,14 +184,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.BLOCKING))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverBlockingCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BLOCKING)
         verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(any())
     }
 
@@ -204,9 +204,9 @@ class RoundServiceTest {
 
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(round))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BLOCKING))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(round, CommandType.BLOCKING))
             .thenReturn(listOf(validCommand, invalidCommand))
-        
+
         // when
         roundService!!.deliverBlockingCommands(ANY_GAMEID)
 
@@ -259,14 +259,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.SELLING))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.SELLING))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverTradingCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.SELLING)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.SELLING)
         verify(mockTradingCommandDispatcherCLient!!).sendSellingCommands(any())
     }
 
@@ -277,14 +277,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BUYING))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.BUYING))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverTradingCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BUYING)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BUYING)
         verify(mockTradingCommandDispatcherCLient!!).sendSellingCommands(any())
         verify(mockTradingCommandDispatcherCLient!!).sendBuyingCommands(any())
     }
@@ -331,14 +331,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEITEMUSE))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.MOVEITEMUSE))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverMovementCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEITEMUSE)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.MOVEITEMUSE)
         verify(mockRobotCommandDispatcherClient!!).sendMovementItemUseCommands(any())
     }
 
@@ -349,14 +349,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.MOVEMENT))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverMovementCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MOVEMENT)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.MOVEMENT)
         verify(mockRobotCommandDispatcherClient!!).sendMovementItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendMovementCommands(any())
     }
@@ -403,14 +403,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLEITEMUSE))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.BATTLEITEMUSE))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverBattleCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLEITEMUSE)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BATTLEITEMUSE)
         verify(mockRobotCommandDispatcherClient!!).sendBattleItemUseCommands(any())
     }
 
@@ -421,14 +421,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLE))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.BATTLE))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverBattleCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.BATTLE)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BATTLE)
         verify(mockRobotCommandDispatcherClient!!).sendBattleItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendBattleCommands(any())
     }
@@ -474,14 +474,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MINING))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.MINING))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverMiningCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.MINING)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.MINING)
         verify(mockRobotCommandDispatcherClient!!).sendMiningCommands(any())
     }
 
@@ -527,14 +527,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REPAIRITEMUSE))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.REPAIRITEMUSE))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverRegeneratingCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REPAIRITEMUSE)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.REPAIRITEMUSE)
         verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
     }
 
@@ -545,14 +545,14 @@ class RoundServiceTest {
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
-        whenever(mockCommandRepository!!.findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REGENERATE))
+        whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.REGENERATE))
             .thenReturn(commands)
 
         // when
         roundService!!.deliverRegeneratingCommands(ANY_ROUND_ID)
 
         // then
-        verify(mockCommandRepository!!).findByGameIdAndRoundNumberAndCommandType(ANY_GAMEID, ANY_ROUND_NUMBER, CommandType.REGENERATE)
+        verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.REGENERATE)
         verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendRegeneratingCommands(any())
     }
