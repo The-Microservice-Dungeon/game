@@ -285,6 +285,54 @@ paths:
           description: Invalid input.
         "404":
           description: The given round couldnt be found.
+  "/logs/game-info":
+    get:
+      summary: Game-Logic related logging w/ level INFO
+      tags:
+        - logs
+      responses:
+        "200":
+          description: Log found.
+          content:
+            text/plain:
+              schema:
+                type: string
+  "/logs/game-trace":
+    get:
+      summary: Game-Logic related logging w/ level TRACE
+      tags:
+        - logs
+      responses:
+        "200":
+          description: Log found.
+          content:
+            text/plain:
+              schema:
+                type: string
+  "/logs/info":
+    get:
+      summary: Application related logging w/ level INFO
+      tags:
+        - logs
+      responses:
+        "200":
+          description: Log found.
+          content:
+            text/plain:
+              schema:
+                type: string
+  "/logs/error":
+    get:
+      summary: Application related logging w/ level ERROR
+      tags:
+        - logs
+      responses:
+        "200":
+          description: Log found.
+          content:
+            text/plain:
+              schema:
+                type: string
 
 
 components:
