@@ -27,8 +27,7 @@ import java.util.*
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29095", "port=29095"])
 class KafkaProducerMessagingCallbackIntegrationTest @Autowired constructor(
-    private val kafkaProducer: KafkaProducer,
-    private val kafkaProducerListener: KafkaProducerListener<String, String>
+
 ) {
 //    private var game: Game? = null
 //    private var round: Round? = null

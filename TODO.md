@@ -2,10 +2,6 @@
 
 ## TODO
 
-**Message-Producer**
-- Unit Test
-- Integration Test
-
 **Command**
 - JPA
 - Fix
@@ -22,6 +18,10 @@
 
 **JPA**
 - Indexes
+
+**Message-Producer**
+- Unit Test
+- Integration Test
 
 **EventStore**
 - Unit Test

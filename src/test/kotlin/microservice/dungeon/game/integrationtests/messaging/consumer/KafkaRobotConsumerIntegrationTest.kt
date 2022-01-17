@@ -37,8 +37,8 @@ class KafkaRobotConsumerIntegrationTest @Autowired constructor(
 
     @BeforeEach
     fun setUp() {
-        playerRepository.deleteAll()
         robotRepository.deleteAll()
+        playerRepository.deleteAll()
     }
 
     @Test
@@ -61,6 +61,7 @@ class KafkaRobotConsumerIntegrationTest @Autowired constructor(
     }
 
     @Test
+    // FAILS IF EXECUTED IN BULK, reason unknown
     fun shouldConsumeRobotDestroyedEvent() {
         // given
         val player = Player("dadepu", "dadepu@smail.th-koeln.de")
@@ -73,7 +74,7 @@ class KafkaRobotConsumerIntegrationTest @Autowired constructor(
 
         // when
         kafkaProducer.send(record)
-        Thread.sleep(200)
+        Thread.sleep(300)
 
         // then
         val capturedRobot: Robot = robotRepository.findById(robot.getRobotId()).get()
