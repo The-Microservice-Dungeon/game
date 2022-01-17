@@ -1,16 +1,26 @@
 package microservice.dungeon.game.aggregates.command.services
 
+import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.dtos.CommandDTO
+import microservice.dungeon.game.aggregates.command.domain.CommandArgumentException
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
+import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
-import microservice.dungeon.game.aggregates.core.EntityNotFoundException
+import microservice.dungeon.game.aggregates.game.domain.Game
+import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
+import microservice.dungeon.game.aggregates.game.domain.GameParticipationException
+import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
-import microservice.dungeon.game.aggregates.robot.domain.RobotStatus
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
+import microservice.dungeon.game.aggregates.round.domain.Round
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class CommandService @Autowired constructor(
@@ -19,51 +29,92 @@ class CommandService @Autowired constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository
 ) {
-
-    fun getAllRoundCommands(gameId: UUID, roundNumber: Int): List<Command>? {
-        val currentRoundNumber = gameRepository.findById(gameId).get().getCurrentRoundCount()
-        val roundCommands = commandRepository.findAll()
-
-        if (currentRoundNumber == roundNumber) {
-            throw IllegalAccessException("Current round may not be requested.")
-        }
-        if (currentRoundNumber > roundNumber) {
-            throw IllegalArgumentException("Future rounds may not be requested.")
-        }
-
-        roundCommands.removeIf { c -> c.roundNumber != roundNumber }
-        if (roundCommands.isNotEmpty()) {
-            return roundCommands
-        } else {
-            throw IllegalArgumentException("No commands could be found.")
-        }
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 
-    fun save(dto: CommandDTO): UUID {
-        val currentRoundNumber = gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
+    @Transactional
+    @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
+    fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
+        val transactionId: UUID = UUID.randomUUID()
+        val player: Player
+        val game: Game
+        val round: Round
 
-        val player = playerRepository.findByPlayerToken(dto.playerToken)
-
-        if (player.isEmpty) throw EntityNotFoundException("Player could not be found.")
-
-        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().playerId)
-
-        //TODO Test ;)
-        if (dto.robotId != null) {
-            if (!robotRepository.findAll()
-                    .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId && r.getRobotStatus() == RobotStatus.ACTIVE }
-            ) {
-                throw IllegalAccessException("Player is not allowed to send commands to this robot or robot is inactive.")
-            }
-
-            val prevCommands = commandRepository.findAll()
-            prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
-
-            if (prevCommands.isNotEmpty()) {
-                commandRepository.deleteAll(prevCommands)
-            }
+        try {
+            player = playerRepository.findByPlayerToken(playerToken).get()
+        } catch (e: Exception) {
+            logger.warn("Command-Creation failed. Player not found.")
+            throw PlayerNotFoundException("Player not found.")
         }
-        command = commandRepository.save(command)
-        return command.transactionId
+        try {
+            game = gameRepository.findById(gameId).get()
+        } catch (e: Exception) {
+            logger.warn("Command-Creation failed. Game not found. [gameId=${gameId}]")
+            throw GameNotFoundException("Game not found.")
+        }
+        try {
+            round = game.getCurrentRound()!!
+        } catch (e: Exception) {
+            logger.warn("Command-Creation failed. Round not found.")
+            throw GameStateException("Game not in a state to accept commands. [gameStatus=${game.getGameStatus()}]")
+        }
+        if (!game.isParticipating(player)) {
+            logger.warn("Command-Creation failed. Player is not participating in the game. [playerName=${player.getUserName()}]")
+            throw GameParticipationException("Player is not participating in the game.")
+        }
+        val robot = try {
+            robotRepository.findById(robotId!!).get()
+        } catch (e: Exception) {
+            null
+        }
+
+        val newCommand = Command(
+            commandId = transactionId,
+            round = round,
+            player = player,
+            robot = robot,
+            commandType = commandType,
+            commandPayload = CommandPayload(
+                planetId = commandRequestDTO.commandObject.planetId,
+                targetId = commandRequestDTO.commandObject.targetId,
+                itemName = commandRequestDTO.commandObject.itemName,
+                itemQuantity = commandRequestDTO.commandObject.itemQuantity
+            )
+        )
+        commandRepository.deleteCommandsByRoundAndPlayerAndRobot(round, player, robot)
+        logger.debug("Previous Player-Commands for Round, Player and Robot deleted.")
+        commandRepository.save(newCommand)
+        logger.debug("Command saved. [transactionId=${newCommand.getCommandId()}]")
+        logger.info("Command successfully created. [playerName=${player.getUserName()}, roundNumber=${round.getRoundNumber()}]")
+
+        return transactionId
     }
+
+//    fun save(dto: CommandRequestDto): UUID {
+//        val currentRoundNumber = 0 //TODO("REPLACE") gameRepository.findById(dto.gameId).get().getCurrentRoundCount()
+//
+//        val player = playerRepository.findByPlayerToken(dto.playerToken)
+//
+//        if (player.isEmpty) throw IllegalAccessException("Player could not be found.")
+//
+//        var command: Command = Command.fromDto(dto, currentRoundNumber, player.get().getPlayerId())
+//
+//        //TODO Test ;)
+//        if (!robotRepository.findAll()
+//                .any { r -> r.getRobotId() == command.robotId && r.getPlayerId() == command.playerId && r.getRobotStatus() == RobotStatus.ACTIVE }
+//        ) {
+//            throw IllegalAccessException("Player is not allowed to send commands to this robot or robot is inactive.")
+//        }
+//
+//        val prevCommands = commandRepository.findAll()
+//        prevCommands.removeIf { c -> c.robotId != command.robotId && c.roundNumber == currentRoundNumber }
+//
+//        if (prevCommands.isNotEmpty()) {
+//            commandRepository.deleteAll(prevCommands)
+//        }
+//        command = commandRepository.save(command)
+//        return command.commandId
+//        return UUID.randomUUID()
+//    }
 }

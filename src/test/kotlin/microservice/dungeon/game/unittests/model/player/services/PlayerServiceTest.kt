@@ -1,107 +1,51 @@
 package microservice.dungeon.game.unittests.model.player.services
 
-import microservice.dungeon.game.aggregates.core.Event
-import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
-import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
-import microservice.dungeon.game.aggregates.player.events.AbstractPlayerEvent
-import microservice.dungeon.game.aggregates.player.events.PlayerCreated
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.player.services.PlayerService
-import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
-import org.assertj.core.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.kotlin.*
-import java.time.LocalDateTime
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.*
 
 class PlayerServiceTest {
-    private val ANY_USERNAME = "ANY_USERNAME"
-    private val ANY_MAILADDRESS = "ANY_MAILADDRESS"
-    private val ANY_PLAYER = Player(ANY_USERNAME, ANY_MAILADDRESS)
-
-    private var mockEventPublisherService: EventPublisherService? = null
-    private var mockEventStoreService: EventStoreService? = null
     private var mockPlayerRepository: PlayerRepository? = null
     private var playerService: PlayerService? = null
 
-
     @BeforeEach
     fun setUp() {
-        mockEventPublisherService = mock()
-        mockEventStoreService = mock()
         mockPlayerRepository = mock()
-        playerService = PlayerService(mockPlayerRepository!!, mockEventPublisherService!!, mockEventStoreService!!)
+        playerService = PlayerService(mockPlayerRepository!!)
     }
 
-
     @Test
-    fun shouldAllowNewPlayerCreation() {
+    fun shouldAllowToCreateNewPlayer() {
         // given
+        val userName = "dadepu"
+        val mailAddress = "dadepu@smail.th-koeln.de"
+
         // when
-        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        val responsePlayer: Player = playerService!!.createNewPlayer(userName, mailAddress)
 
         // then
-        verify(mockPlayerRepository!!).save(player)
-        assertThat(player)
-            .isCreatedFrom(ANY_USERNAME, ANY_MAILADDRESS)
+        verify(mockPlayerRepository!!).save(responsePlayer)
     }
 
     @Test
-    fun shouldNotAllowPlayerCreationWhenUserNameOrMailAddressAlreadyExists() {
+    fun shouldThrowWhenPlayerAlreadyExistsWhilePlayerCreation() {
         // given
-        whenever(mockPlayerRepository!!.findByUserNameOrMailAddress(anyString(), anyString()))
-            .thenReturn(Optional.of(
-                ANY_PLAYER
-            ))
+        val player = Player("anyName", "anyMail")
+        whenever(mockPlayerRepository!!.findByUserNameOrMailAddress(player.getUserName(), player.getMailAddress()))
+            .thenReturn(Optional.of(player))
 
         // when, then
-        assertThatExceptionOfType(PlayerAlreadyExistsException::class.java).isThrownBy {
-            playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
+        assertThrows(PlayerAlreadyExistsException::class.java) {
+            playerService!!.createNewPlayer(player.getUserName(), player.getMailAddress())
         }
     }
 
-//    @Test
-//    @Disabled
-//    fun shouldPublishEventWhenNewPlayerCreated() {
-//        // given
-//        // when
-//        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
-//
-//        // then
-//        val playerCreatedCaptor = argumentCaptor<List<Event>>()
-//        verify(mockEventPublisherService!!).publishEvents(playerCreatedCaptor.capture())
-//        val capturedEvent = playerCreatedCaptor.firstValue.first()
-//
-//        assertThat(capturedEvent)
-//            .isInstanceOf(PlayerCreated::class.java)
-//        assertThat(capturedEvent as AbstractPlayerEvent)
-//            .matches(player)
-//        assertThat(capturedEvent.getOccurredAt().getTime())
-//            .isBeforeOrEqualTo(LocalDateTime.now())
-//    }
-
-//    @Test
-//    @Disabled
-//    fun shouldStorePublishedEventWhenNewPlayerCreated() {
-//        // given
-//        // when
-//        val player: Player = playerService!!.createNewPlayer(ANY_USERNAME, ANY_MAILADDRESS)
-//
-//        // then
-//        val playerCreatedCaptor = argumentCaptor<Event>()
-//        verify(mockEventStoreService!!).storeEvent(playerCreatedCaptor.capture())
-//        val capturedEvent = playerCreatedCaptor.firstValue
-//
-//        assertThat(capturedEvent)
-//            .isInstanceOf(PlayerCreated::class.java)
-//        assertThat(capturedEvent as AbstractPlayerEvent)
-//            .matches(player)
-//        assertThat(capturedEvent.getOccurredAt().getTime())
-//            .isBeforeOrEqualTo(LocalDateTime.now())
-//    }
 }

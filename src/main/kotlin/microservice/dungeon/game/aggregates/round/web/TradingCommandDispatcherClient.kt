@@ -2,8 +2,9 @@ package microservice.dungeon.game.aggregates.round.web
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
+import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDto
+import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDto
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -17,19 +18,41 @@ class TradingCommandDispatcherClient @Autowired constructor(
     @Value(value = "\${rest.trading.baseurl}")
     private val tradingBaseURL: String
 ) {
-    private val webClient = WebClient.create(tradingBaseURL)
-
-
-
-    fun sendSellingCommands(commands: List<SellCommandDTO>) {
-        transmitCommandsToTrading(commands)
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 
-    fun sendBuyingCommands(commands: List<BuyCommandDTO>) {
-        transmitCommandsToTrading(commands)
+    private val webClient = WebClient.create(tradingBaseURL)
+
+    fun sendSellingCommands(commands: List<SellCommandDto>) {
+        logger.debug("Starting to dispatch Selling-Commands to TradingService ... [commandSize=${commands.size}]")
+
+        return try {
+            transmitCommandsToTrading(commands)
+            logger.debug("... dispatching of Selling-Commands successful.")
+
+        } catch (e: Exception) {
+            logger.error("... dispatching of Selling-Commands failed!")
+            logger.error(e.message)
+        }
+    }
+
+    fun sendBuyingCommands(commands: List<BuyCommandDto>) {
+        logger.debug("Starting to dispatch Buying-Commands to TradingService ... [commandSize=${commands.size}]")
+
+        return try {
+            transmitCommandsToTrading(commands)
+            logger.debug("... dispatching of Buying-Commands successful.")
+
+        } catch (e: Exception) {
+            logger.error("... dispatching of Buying-Commands failed!")
+            logger.error(e.message)
+        }
     }
 
     private fun transmitCommandsToTrading(commands: List<Any>) {
+        logger.trace("Endpoint is: POST ${tradingBaseURL}/commands")
+
         webClient.post().uri("/commands")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(ObjectMapper().writeValueAsString(commands))
@@ -38,7 +61,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
                     clientResponse.bodyToMono(JsonNode::class.java)
                 }
                 else {
-                    throw Exception("Err")
+                    throw Exception("Connection failed w/ status-code: ${clientResponse.statusCode()}")
                 }
             }.block()
     }

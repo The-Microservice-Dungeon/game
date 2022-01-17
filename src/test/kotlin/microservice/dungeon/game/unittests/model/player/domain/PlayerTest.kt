@@ -16,7 +16,6 @@ class PlayerTest {
         // given
         val player = Player(ANY_USERNAME, ANY_MAILADDRESS)
 
-        // when
         // then
         assertThat(player)
             .isCreatedFrom(ANY_USERNAME, ANY_MAILADDRESS)

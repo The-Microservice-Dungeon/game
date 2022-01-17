@@ -1,102 +1,133 @@
 package microservice.dungeon.game.unittests.model.robot.service
 
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
+import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.robot.domain.Robot
+import microservice.dungeon.game.aggregates.robot.domain.RobotAlreadyExistsException
+import microservice.dungeon.game.aggregates.robot.domain.RobotNotFoundException
 import microservice.dungeon.game.aggregates.robot.domain.RobotStatus
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import microservice.dungeon.game.aggregates.robot.services.RobotService
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatNoException
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.never
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.util.*
 
 class RobotServiceTest {
-    private var robotRepositoryMock: RobotRepository? = null
+    private var mockRobotRepository: RobotRepository? = null
+    private var mockPlayerRepository: PlayerRepository? = null
+
     private var robotService: RobotService? = null
 
-    private val ROBOT_ID = UUID.randomUUID()
-    private val PLAYER_ID = UUID.randomUUID()
-
-    private val ANY_ROBOT_ID = UUID.randomUUID()
-    private val ANY_PLAYER_ID = UUID.randomUUID()
-
+    private var player: Player? = null
 
     @BeforeEach
     fun setup() {
-        robotRepositoryMock = mock(RobotRepository::class.java)
-        robotService = RobotService(robotRepositoryMock!!)
+        mockRobotRepository = mock()
+        mockPlayerRepository = mock()
+        robotService = RobotService(
+            mockRobotRepository!!,
+            mockPlayerRepository!!
+        )
+        player = Player("dadepu","dadepu@smail.th-koeln.de")
     }
-
 
     @Test
     fun shouldAllowToCreateNewActiveRobot() {
+        // given
+        val robotId = UUID.randomUUID()
+        val playerId = player!!.getPlayerId()
+        whenever(mockPlayerRepository!!.findById(playerId))
+            .thenReturn(Optional.of(player!!))
+
         // when
-        robotService!!.newRobot(ROBOT_ID, PLAYER_ID)
+        robotService!!.newRobot(robotId, playerId)
 
         // then
-        argumentCaptor<Robot>().apply {
-            verify(robotRepositoryMock!!).save(capture())
-            val newRobot = firstValue
-
-            assertThat(newRobot.getRobotId())
-                .isEqualTo(ROBOT_ID)
-            assertThat(newRobot.getPlayerId())
-                .isEqualTo(PLAYER_ID)
-            assertThat(newRobot.getRobotStatus())
+        verify(mockPlayerRepository!!).findById(playerId)
+        verify(mockRobotRepository!!).save(check { robot: Robot ->
+            assertThat(robot.getRobotId())
+                .isEqualTo(robotId)
+            assertThat(robot.getPlayer())
+                .isEqualTo(player!!)
+            assertThat(robot.getRobotStatus())
                 .isEqualTo(RobotStatus.ACTIVE)
-        }
-    }
-
-    @Test
-    fun shouldNotAllowToCreateNewActiveRobotWhenSameRobotAlreadyExists() {
-        // given
-        whenever(robotRepositoryMock!!.findById(any()))
-            .thenReturn(Optional.of(
-                Robot(ROBOT_ID, ANY_PLAYER_ID))
-            )
-
-        // when
-        robotService!!.newRobot(ROBOT_ID, ANY_PLAYER_ID)
-
-        // then
-        verify(robotRepositoryMock!!, never()).save(any())
-    }
-
-
-    @Test
-    fun shouldAllowToMakeRobotInactive() {
-        // given
-        whenever(robotRepositoryMock!!.findById(any()))
-            .thenReturn(Optional.of(
-                Robot(ROBOT_ID, ANY_PLAYER_ID))
-            )
-
-        // when
-        robotService!!.destroyRobot(ROBOT_ID)
-
-        // then
-        verify(robotRepositoryMock!!).save(argThat { robot ->
-            robot.getRobotStatus() == RobotStatus.INACTIVE
         })
     }
 
     @Test
-    fun shouldNotSaveRobotWhenMakingRobotInactiveAndRobotDoesNotExist() {
+    fun shouldThrowWhenRobotAlreadyExistsWhileCreatingNew() {
         // given
-        whenever(robotRepositoryMock!!.findById(any()))
+        val robotId = UUID.randomUUID()
+        val playerId = player!!.getPlayerId()
+        whenever(mockPlayerRepository!!.findById(playerId))
+            .thenReturn(Optional.of(player!!))
+        whenever(mockRobotRepository!!.existsById(robotId))
+            .thenReturn(true)
+
+        // when then
+        assertThrows(RobotAlreadyExistsException::class.java) {
+            robotService!!.newRobot(robotId, playerId)
+        }
+
+        // and then
+        verify(mockRobotRepository!!).existsById(robotId)
+    }
+
+    @Test
+    fun shouldThrowWhenPlayerNotFoundWhileCreatingNewRobot() {
+        // given
+        val robotId = UUID.randomUUID()
+        val playerId = player!!.getPlayerId()
+        whenever(mockPlayerRepository!!.findById(playerId))
             .thenReturn(Optional.empty())
 
+        // when then
+        assertThrows(PlayerNotFoundException::class.java) {
+            robotService!!.newRobot(robotId, playerId)
+        }
+
+        // and then
+        verify(mockPlayerRepository!!).findById(playerId)
+    }
+
+    @Test
+    fun shouldAllowToMakeRobotInactive() {
+        // given
+        val robotId = UUID.randomUUID()
+        val spyRobot: Robot = spy(Robot(robotId, mock()))
+        whenever(mockRobotRepository!!.findById(robotId))
+            .thenReturn(Optional.of(spyRobot))
+
         // when
-        robotService!!.destroyRobot(ROBOT_ID)
+        robotService!!.destroyRobot(robotId)
 
         // then
-        verify(robotRepositoryMock!!, never()).save(any())
+        verify(spyRobot).destroyRobot()
+        verify(mockRobotRepository!!).save(check { robot: Robot ->
+            assertThat(robot)
+                .isEqualTo(spyRobot)
+            assertThat(robot.getRobotStatus())
+                .isEqualTo(RobotStatus.INACTIVE)
+        })
+    }
+
+    @Test
+    fun shouldThrowWhenRobotNotFoundWhileTryingToDestroy() {
+        // given
+        val robotId = UUID.randomUUID()
+
+        // when
+        assertThrows(RobotNotFoundException::class.java) {
+            robotService!!.destroyRobot(robotId)
+        }
+
+        // then
+        verify(mockRobotRepository!!).findById(robotId)
     }
 }

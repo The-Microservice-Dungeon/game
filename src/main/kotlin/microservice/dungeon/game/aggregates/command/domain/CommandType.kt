@@ -10,5 +10,26 @@ enum class CommandType {
     REGENERATE,
     BATTLEITEMUSE,
     REPAIRITEMUSE,
-    MOVEITEMUSE
+    MOVEITEMUSE;
+
+    companion object {
+        @Throws(IllegalArgumentException::class)
+        fun getTypeFromString(input: String): CommandType {
+            return when (input) {
+                "blocking" -> BLOCKING
+                "buying" -> BUYING
+                "selling" -> SELLING
+                "movement" -> MOVEMENT
+                "battle" -> BATTLE
+                "mining" -> MINING
+                "regeneration" -> REGENERATE
+                "battleItemUse" -> BATTLEITEMUSE
+                "repairItemUse" -> REPAIRITEMUSE
+                "moveItemUse" -> MOVEITEMUSE
+                else -> {
+                    throw IllegalArgumentException("$input is not a valid type")
+                }
+            }
+        }
+    }
 }

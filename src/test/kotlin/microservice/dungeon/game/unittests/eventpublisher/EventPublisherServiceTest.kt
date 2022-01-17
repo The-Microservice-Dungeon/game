@@ -1,7 +1,6 @@
 package microservice.dungeon.game.unittests.eventpublisher
 
 import microservice.dungeon.game.aggregates.core.Event
-import microservice.dungeon.game.aggregates.core.EventDto
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
 import microservice.dungeon.game.messaging.producer.KafkaProducing
@@ -11,7 +10,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import java.util.*
 
 class EventPublisherServiceTest {
@@ -27,23 +25,39 @@ class EventPublisherServiceTest {
     }
 
     @Test
-    fun publishEventShouldSendListOfEvents2() {
+    fun shouldAllowToPublishListOfEvents() {
+        // given
         val mockEvent: Event = mock()
         val validListOfEvents = listOf(mockEvent, mockEvent)
-        eventPublisherService!!
-            .publishEvents(validListOfEvents)
 
-        verify(kafkaProducingMock!!, times(2))
-            .send(mockEvent)
+        // when
+        eventPublisherService!!.publishEvents(validListOfEvents)
+
+        // then
+        verify(kafkaProducingMock!!, times(2)).send(mockEvent)
     }
 
     @Test
-    fun onSuccessfulPublishShouldMarkEventAsPublished() {
-        val validEventId = UUID.randomUUID()
-        eventPublisherService!!
-            .onSuccessfulPublish(validEventId)
+    fun shouldAllowToPublishEvent() {
+        // given
+        val mockEvent: Event = mock()
 
-        verify(eventStoreServiceMock!!)
-            .markAsPublished(listOf(validEventId))
+        // when
+        eventPublisherService!!.publishEvent(mockEvent)
+
+        // then
+        verify(kafkaProducingMock!!).send(mockEvent)
+    }
+
+    @Test
+    fun shouldAllowToUpdateEventsAsSuccessfullyPublished() {
+        // given
+        val eventId = UUID.randomUUID()
+
+        // when
+        eventPublisherService!!.onSuccessfulPublish(eventId)
+
+        // then
+        verify(eventStoreServiceMock!!).markAsPublished(listOf(eventId))
     }
 }

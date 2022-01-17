@@ -1,5 +1,6 @@
 package microservice.dungeon.game.unittests.model.round.domain
 
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import org.assertj.core.api.Assertions.assertThat
@@ -7,27 +8,31 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import java.time.LocalDateTime
 import java.util.*
 
 class RoundTest {
-    private val someGameId = UUID.randomUUID()
+    private val game = Game(10, 100)
+    private val someGameId = game.getGameId()
     private val someRoundId = UUID.randomUUID()
     private val someRoundNumber = 3
 
 
     @Test
-    fun newRoundShouldHaveStatusCommandInputStartedWhenInitialized() {
-        val round = Round(someGameId, someRoundNumber)
+    fun shouldConstructValidStateFromDefaults() {
+        val round = Round(game = game, roundNumber = someRoundNumber)
 
         assertThat(round.getRoundStatus())
             .isEqualTo(RoundStatus.COMMAND_INPUT_STARTED)
+        assertThat(round.getRoundStarted())
+            .isBeforeOrEqualTo(LocalDateTime.now())
     }
 
 
     @Test
     fun endCommandInputPhaseShouldSetStatusToCommandInputEnded() {
         val expectedStatus = RoundStatus.COMMAND_INPUT_STARTED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.endCommandInputPhase()
 
         assertThat(round.getRoundStatus())
@@ -41,7 +46,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun endCommandInputPhaseShouldThrowWhenStatusIsOtherThanExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.endCommandInputPhase()
@@ -51,7 +56,7 @@ class RoundTest {
     @Test
     fun deliverBlockingCommandsToRobotShouldSetStatusToBlockingCommandsDispatched() {
         val expectedStatus = RoundStatus.COMMAND_INPUT_ENDED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverBlockingCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -65,7 +70,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverBlockingCommandsToRobotShouldThrowWhenStatusIsOtherThanExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverBlockingCommandsToRobot()
@@ -75,7 +80,7 @@ class RoundTest {
     @Test
     fun shouldAllowToDeliverSellingCommands() {
         val expectedStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverSellingCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -89,7 +94,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowToDeliverSellingCommandsWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverSellingCommandsToRobot()
@@ -99,7 +104,7 @@ class RoundTest {
     @Test
     fun shouldAllowToDeliverBuyingCommands() {
         val expectedStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverBuyingCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -113,7 +118,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowToDeliverBuyingCommandsWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverBuyingCommandsToRobot()
@@ -123,7 +128,7 @@ class RoundTest {
     @Test
     fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
         val expectedStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverMovementItemUseCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -137,7 +142,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowMovementItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverMovementItemUseCommandsToRobot()
@@ -147,7 +152,7 @@ class RoundTest {
     @Test
     fun deliverMovementCommandsToRobotShouldSetStatusToMovementCommandsDispatched() {
         val expectedStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverMovementCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -161,7 +166,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverMovementCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverMovementCommandsToRobot()
@@ -171,7 +176,7 @@ class RoundTest {
     @Test
     fun shouldAllowToDeliverBattleItemUseCommandsToRobot() {
         val expectedStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverBattleItemUseCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -185,7 +190,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowBattleItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverBattleItemUseCommandsToRobot()
@@ -195,7 +200,7 @@ class RoundTest {
     @Test
     fun deliverBattleCommandsToRobotShouldSetStatusToBattleCommandsDispatched() {
         val expectedStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverBattleCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -209,7 +214,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverBattleCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverBattleCommandsToRobot()
@@ -219,7 +224,7 @@ class RoundTest {
     @Test
     fun deliverMiningCommandsToRobotShouldSetStatusToMiningCommandsDispatched() {
         val expectedStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverMiningCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -233,7 +238,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverMiningCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverMiningCommandsToRobot()
@@ -243,7 +248,7 @@ class RoundTest {
     @Test
     fun shouldAllowToDeliverRepairItemUseCommands() {
         val expectedStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverRepairItemUseCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -257,7 +262,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun shouldNotAllowRepairItemUseCommandsDeliveryWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverRepairItemUseCommandsToRobot()
@@ -267,7 +272,7 @@ class RoundTest {
     @Test
     fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
         val expectedStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
-        val round = Round(someGameId, someRoundNumber, someRoundId, expectedStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
         round.deliverRegeneratingCommandsToRobot()
 
         assertThat(round.getRoundStatus())
@@ -281,7 +286,7 @@ class RoundTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun deliverRegeneratingCommandsToRobotShouldThrowWhenStatusIsOtherThenExpected(invalidStatus: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, invalidStatus)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = invalidStatus)
 
         assertThatThrownBy {
             round.deliverRegeneratingCommandsToRobot()
@@ -291,7 +296,7 @@ class RoundTest {
     @ParameterizedTest
     @EnumSource(RoundStatus::class)
     fun endRoundShouldSetStatusToRoundEnded(status: RoundStatus) {
-        val round = Round(someGameId, someRoundNumber, someRoundId, status)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = status)
         round.endRound()
 
         assertThat(round.getRoundStatus())
@@ -306,7 +311,7 @@ class RoundTest {
     )
     fun endRoundShouldShouldBeTrueWhenStatusChangeOccurred(status: RoundStatus) {
         // given
-        val round = Round(someGameId, someRoundNumber, someRoundId, status)
+        val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = status)
 
         // when
         val response = round.endRound()
@@ -321,7 +326,3 @@ class RoundTest {
         assertThat(alreadyEndedResponse).isFalse
     }
 }
-
-/*
-        Sell Buy ersetzen Trading
- */

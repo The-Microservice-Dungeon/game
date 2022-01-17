@@ -3,9 +3,12 @@ package microservice.dungeon.game.contracttests.model.round.web
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.domain.CommandObject
-import microservice.dungeon.game.aggregates.command.dtos.BuyCommandDTO
-import microservice.dungeon.game.aggregates.command.dtos.SellCommandDTO
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.robot.domain.Robot
+import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.web.dto.BuyCommandDto
+import microservice.dungeon.game.aggregates.round.web.dto.SellCommandDto
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.trading.SendBuyingCommandsToTradingSuccessful
@@ -15,6 +18,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.util.*
 
 class TradingCommandDispatcherClientContractTest {
@@ -35,14 +40,12 @@ class TradingCommandDispatcherClientContractTest {
         tradingCommandDispatcherClient = TradingCommandDispatcherClient(mockWebServer!!.url("/").toString())
     }
 
-
-
     @Test
     fun shouldConformToSendSellingCommandsSuccessful() {
         // given
         val contract = SendSellingCommandsToTradingSuccessful()
         val inputCommands = listOf(
-            SellCommandDTO.fromCommand(
+            SellCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(builtTradingCommand())
             )
         )
@@ -64,14 +67,12 @@ class TradingCommandDispatcherClientContractTest {
             .conformsWithRequestBody(recordedRequestBody)
     }
 
-
-
     @Test
     fun shouldConformToSendBuyingCommandsSuccessful() {
         // given
         val contract = SendBuyingCommandsToTradingSuccessful()
         val inputCommands = listOf(
-            BuyCommandDTO.fromCommand(
+            BuyCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(builtTradingCommand())
             )
         )
@@ -95,18 +96,24 @@ class TradingCommandDispatcherClientContractTest {
 
     private fun builtTradingCommand(): (TradingCommandInput) -> Command = { input ->
         Command(
-            transactionId = input.transactionId,
-            gameId = input.gameId,
-            playerId = input.playerId,
-            robotId = ANY_ROBOT_ID,
+            commandId = input.transactionId,
+            round = mock<Round>().also { mock: Round ->
+                whenever(mock.getRoundNumber()).thenReturn(ANY_ROUND_NUMBER)
+                whenever(mock.getGameId()).thenReturn(input.gameId)
+            },
+            player = mock<Player>().also { mock: Player ->
+                whenever(mock.getPlayerId()).thenReturn(input.playerId)
+            },
+            robot = mock<Robot>().also { mock: Robot ->
+                whenever(mock.getRobotId()).thenReturn(ANY_ROBOT_ID)
+            },
             commandType = input.commandType,
-            roundNumber = ANY_ROUND_NUMBER,
-            commandObject = CommandObject(
-                commandType = input.commandType,
+            commandPayload = CommandPayload(
                 planetId = input.planetId,
                 targetId = ANY_TARGET_ID,
                 itemName = input.itemName,
                 itemQuantity = input.amount
             )
-        ) }
+        )
+    }
 }

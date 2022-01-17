@@ -1,9 +1,12 @@
 package microservice.dungeon.game.contracttests.model.round.web
 
 import microservice.dungeon.game.aggregates.command.domain.Command
-import microservice.dungeon.game.aggregates.command.domain.CommandObject
-import microservice.dungeon.game.aggregates.command.dtos.*
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
+import microservice.dungeon.game.aggregates.player.domain.Player
+import microservice.dungeon.game.aggregates.robot.domain.Robot
+import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
+import microservice.dungeon.game.aggregates.round.web.dto.*
 import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertThat
 import microservice.dungeon.game.contracts.round.web.robot.*
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
@@ -11,6 +14,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class RobotCommandDispatcherClientContractTest {
     private var mockWebServer: MockWebServer? = null
@@ -30,7 +35,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendBlockingCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            BlockCommandDTO.fromCommand(
+            BlockCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -57,7 +62,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendMovementCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            MovementCommandDTO.fromCommand(
+            MovementCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -84,7 +89,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendBattleCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            FightCommandDTO.fromCommand(
+            FightCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -111,7 +116,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendMiningCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            MineCommandDTO.fromCommand(
+            MineCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -138,7 +143,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendRegeneratingCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            RegenerateCommandDTO.fromCommand(
+            RegenerateCommandDto.makeFromCommands(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -165,7 +170,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendItemUseBattleCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            UseItemFightCommandDTO.fromCommand(
+            UseItemFightCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -192,7 +197,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendItemUseRepairCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            UseItemRepairCommandDTO.fromCommand(
+            UseItemRepairCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -219,7 +224,7 @@ class RobotCommandDispatcherClientContractTest {
         // given
         val contract = SendItemUseMovementCommandsToRobotSuccessful()
         val inputCommands = listOf(
-            UseItemMovementCommandDTO.fromCommand(
+            UseItemMovementCommandDto.makeFromCommand(
                 contract.makeCommandFromContract(buildRobotCommand())
             )
         )
@@ -245,18 +250,24 @@ class RobotCommandDispatcherClientContractTest {
 
     private fun buildRobotCommand(): (RobotCommandInput) -> Command = { input ->
         Command(
-            transactionId = input.transactionId,
-            gameId = input.gameId,
-            playerId = input.playerId,
-            robotId = input.robotId,
+            commandId = input.transactionId,
+            round = mock<Round>().also { mock: Round ->
+                whenever(mock.getRoundNumber()).thenReturn(input.roundNumber)
+                whenever(mock.getGameId()).thenReturn(input.gameId)
+            },
+            player = mock<Player>().also { mock: Player ->
+                whenever(mock.getPlayerId()).thenReturn(input.playerId)
+            },
+            robot = mock<Robot>().also { mock: Robot ->
+                whenever(mock.getRobotId()).thenReturn(input.robotId)
+            },
             commandType = input.commandType,
-            roundNumber = input.roundNumber,
-            commandObject = CommandObject(
-                commandType = input.commandType,
+            commandPayload = CommandPayload(
                 planetId = input.planetId,
                 targetId = input.targetId,
                 itemName = input.itemName,
                 itemQuantity = input.itemQuantity
             )
-        ) }
+        )
+    }
 }
