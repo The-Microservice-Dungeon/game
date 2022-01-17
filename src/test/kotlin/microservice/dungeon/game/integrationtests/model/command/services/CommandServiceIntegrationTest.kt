@@ -3,6 +3,7 @@ package microservice.dungeon.game.integrationtests.model.command.services
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandObjectRequestDto
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.command.services.CommandService
@@ -45,9 +46,10 @@ class CommandServiceIntegrationTest @Autowired constructor(
         player = Player("dadepu", "dadepu@smail.th-koeln.de")
         playerRepository.save(player!!)
 
-        game = Game(1,1)
+        game = Game(1,10)
         game!!.joinGame(player!!)
         game!!.startGame()
+        game!!.startNewRound()
         round = game!!.getCurrentRound()
         gameRepository.save(game!!)
     }
@@ -63,14 +65,44 @@ class CommandServiceIntegrationTest @Autowired constructor(
         )
 
         // when
-        val transactionId: UUID = commandService.createNewCommand(
+        val commandId: UUID = commandService.createNewCommand(
             requestBody.gameId, requestBody.playerToken, null, CommandType.SELLING, requestBody
         )
 
         // then
-        val command: Command = commandRepository.findById(transactionId).get()
+        val command: Command = commandRepository.findById(commandId).get()
         assertThat(command.getCommandType())
             .isEqualTo(CommandType.SELLING)
+    }
+
+    @Test
+    fun shouldDeleteDuplicatePlayerCommandsForSameRobotAndRoundWhenCreatingNewCommand() {
+        // given
+        val previousCommand = Command(UUID.randomUUID(), round!!, player!!, null, CommandType.SELLING,
+            CommandPayload(null, null, "ROBOT", 1)
+        )
+        commandRepository.save(previousCommand)
+
+        val newCommandRequest = CommandRequestDto(
+            gameId = game!!.getGameId(), playerToken = player!!.getPlayerToken(), null, "selling",
+            CommandObjectRequestDto(
+                "selling", null, null, "ROBOT", 1
+            )
+        )
+
+        // when
+        val commandId: UUID = commandService.createNewCommand(
+            newCommandRequest.gameId, newCommandRequest.playerToken, null, CommandType.SELLING, newCommandRequest
+        )
+
+        // then
+        val existsPreviousCommand = commandRepository.existsById(previousCommand.getCommandId())
+        val existsNewCommand = commandRepository.existsById(commandId)
+
+        assertThat(existsPreviousCommand)
+            .isFalse
+        assertThat(existsNewCommand)
+            .isTrue
     }
 
     // create new commands
