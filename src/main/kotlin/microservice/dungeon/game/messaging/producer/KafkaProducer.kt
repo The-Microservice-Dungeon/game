@@ -36,4 +36,8 @@ class KafkaProducer @Autowired constructor (
         )
         kafkaTemplate.send(record)
     }
+
+    override fun send(record: ProducerRecord<String, String>) {
+        kafkaTemplate.send(record)
+    }
 }

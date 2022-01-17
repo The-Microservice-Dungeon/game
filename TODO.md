@@ -6,13 +6,6 @@
 - Unit Test
 - Integration Test
 
-**EventStore**
-- Integration Test
-
-**Robot-Consumer**
-- Unit Test
-- Integration Test
-
 **Command**
 - JPA
 - Fix
@@ -29,6 +22,10 @@
 
 **JPA**
 - Indexes
+
+**EventStore**
+- Unit Test
+- Integration Test
 
 
 ## API Changes

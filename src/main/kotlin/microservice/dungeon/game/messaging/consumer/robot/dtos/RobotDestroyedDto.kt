@@ -1,8 +1,10 @@
 package microservice.dungeon.game.messaging.consumer.robot.dtos
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.util.*
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class RobotDestroyedDto(
     val robotId: UUID,
     val playerId: UUID
@@ -15,10 +17,8 @@ class RobotDestroyedDto(
     }
 
     fun serialize(): String {
-        val objectMapper = ObjectMapper().findAndRegisterModules()
         return objectMapper.writeValueAsString(this)
     }
-
 
 
     override fun equals(other: Any?): Boolean =

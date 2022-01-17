@@ -22,9 +22,10 @@ class KafkaRobotConsumer @Autowired constructor(
             logger.debug("Received new RobotSpawnEvent.")
             logger.trace(payload.toString())
             robotService.newRobot(payload.robotId, payload.playerId)
+
         } catch (e: Exception) {
             logger.error("Failed to consume RobotSpawnEvent.")
-            logger.error(e.message ?: "")
+            logger.error(e.message)
             logger.error(record.value())
         }
     }
@@ -36,9 +37,10 @@ class KafkaRobotConsumer @Autowired constructor(
             logger.debug("Received new RobotDestroyedEvent.")
             logger.trace(payload.toString())
             robotService.destroyRobot(payload.robotId)
+
         } catch (e: Exception){
             logger.error("Failed to consume RobotDestroyedEvent.")
-            logger.error(e.message ?: "")
+            logger.error(e.message)
             logger.error(record.value())
         }
     }

@@ -27,7 +27,7 @@ class EventPublisherServiceTest {
     }
 
     @Test
-    fun publishEventShouldSendListOfEvents2() {
+    fun publishEventShouldSendListOfEvents() {
         val mockEvent: Event = mock()
         val validListOfEvents = listOf(mockEvent, mockEvent)
         eventPublisherService!!
@@ -35,6 +35,18 @@ class EventPublisherServiceTest {
 
         verify(kafkaProducingMock!!, times(2))
             .send(mockEvent)
+    }
+
+    @Test
+    fun publishShouldHandEventOffToKafkaProducer() {
+        // given
+        val mockEvent: Event = mock()
+
+        // when
+        eventPublisherService!!.publishEvent(mockEvent)
+
+        // then
+        verify(kafkaProducingMock!!).send(mockEvent)
     }
 
     @Test
