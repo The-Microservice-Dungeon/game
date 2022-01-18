@@ -1,6 +1,6 @@
 package microservice.dungeon.game.aggregates.command.controller
 
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
+import microservice.dungeon.game.aggregates.command.controller.dto.CommandDto
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandResponseDto
 import microservice.dungeon.game.aggregates.command.domain.CommandArgumentException
 import microservice.dungeon.game.aggregates.command.domain.CommandType
@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 class CommandController @Autowired constructor(
@@ -28,7 +27,7 @@ class CommandController @Autowired constructor(
     }
 
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewCommand(@RequestBody requestBody: CommandRequestDto): ResponseEntity<CommandResponseDto> {
+    fun createNewCommand(@RequestBody requestBody: CommandDto): ResponseEntity<CommandResponseDto> {
         logger.debug("Request to create new command received ...")
         logger.trace("POST: /commands")
 
