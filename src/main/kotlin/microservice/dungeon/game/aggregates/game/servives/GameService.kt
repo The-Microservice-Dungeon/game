@@ -156,7 +156,7 @@ class GameService @Autowired constructor(
 
         try {
             game = gameRepository.findById(gameId).get()
-        } catch (e: GameNotFoundException) {
+        } catch (e: Exception) {
             logger.warn("Game not found while trying to change the maximum number of rounds. [gameId=$gameId]")
             throw GameNotFoundException("Game not found. [gameId=$gameId]")
         }
@@ -166,6 +166,26 @@ class GameService @Autowired constructor(
         logger.debug("Saved game with updated number of maximum rounds.")
         logger.info("Updated maximum number of rounds. [maxRounds=$maxRounds, gameId=$gameId]")
         return transactionId
+    }
+
+    @Transactional
+    @Throws(GameNotFoundException::class, GameStateException::class, IllegalArgumentException::class)
+    fun changeRoundDuration(gameId: UUID, duration: Long): UUID {
+        val transactional = UUID.randomUUID()
+        val game: Game
+
+        try {
+            game = gameRepository.findById(gameId).get()
+        } catch (e: Exception) {
+            logger.warn("Game not found while trying to change its round duration. [gameId=$gameId]")
+            throw GameNotFoundException("Game not found. [gameId=$gameId]")
+        }
+
+        game.changeRoundDuration(duration)
+        gameRepository.save(game)
+        logger.debug("saved game with updated round duration.")
+        logger.info("Updated round duration. [newDurationInMillis=$duration, gameId=$gameId]")
+        return transactional
     }
 }
 
