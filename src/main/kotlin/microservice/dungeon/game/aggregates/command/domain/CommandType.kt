@@ -31,5 +31,20 @@ enum class CommandType {
                 }
             }
         }
+
+        fun getStringFromType(input: CommandType): String {
+            return when (input) {
+                BLOCKING -> "blocking"
+                BUYING -> "buying"
+                SELLING -> "selling"
+                MOVEMENT -> "movement"
+                BATTLE -> "battle"
+                MINING -> "mining"
+                REGENERATE -> "regeneration"
+                BATTLEITEMUSE -> "battleItemUse"
+                REPAIRITEMUSE -> "repairItemUse"
+                MOVEITEMUSE -> "moveItemUse"
+            }
+        }
     }
 }
