@@ -264,7 +264,7 @@ paths:
           schema:
             type: integer
       responses:
-        "201":
+        "200":
           description: Contains all player commands of a round.
           content:
             application/json:
