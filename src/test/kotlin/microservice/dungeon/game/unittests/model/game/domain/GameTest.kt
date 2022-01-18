@@ -201,4 +201,31 @@ class GameTest {
         assertThat(timeStartedAfterNextRound)
             .isEqualTo(game.getRound(1).getRoundStarted())
     }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenNumberIsLowerThanOneWhenTryingToChangeNumberOfMaximumRounds() {
+        // given
+        val numberLowerThanOne = 0
+        val game = Game(1,5)
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeMaximumNumberOfRounds(numberLowerThanOne)
+        }
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenNumberIsBelowCurrentRoundCountWhenTryingToChangeNumberOfMaximumRounds() {
+        // given
+        val numberBelowCurrentCount = 2
+        val game = Game(1,5)
+        game.startGame()
+        game.startNewRound()
+        game.startNewRound()
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeMaximumNumberOfRounds(numberBelowCurrentCount)
+        }
+    }
 }
