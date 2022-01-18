@@ -147,6 +147,26 @@ class GameService @Autowired constructor(
 
         return transactionId
     }
+
+    @Transactional
+    @Throws(GameNotFoundException::class, GameStateException::class, IllegalArgumentException::class)
+    fun changeMaximumNumberOfRounds(gameId: UUID, maxRounds: Int): UUID {
+        val transactionId = UUID.randomUUID()
+        val game: Game
+
+        try {
+            game = gameRepository.findById(gameId).get()
+        } catch (e: GameNotFoundException) {
+            logger.warn("Game not found while trying to change the maximum number of rounds. [gameId=$gameId]")
+            throw GameNotFoundException("Game not found. [gameId=$gameId]")
+        }
+
+        game.changeMaximumNumberOfRounds(maxRounds)
+        gameRepository.save(game)
+        logger.debug("Saved game with updated number of maximum rounds.")
+        logger.info("Updated maximum number of rounds. [maxRounds=$maxRounds, gameId=$gameId]")
+        return transactionId
+    }
 }
 
 
