@@ -8,6 +8,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -346,5 +347,56 @@ class GameControllerIntegrationTest {
             .hasSize(1)
         assertThat(responseBodies[0])
             .isEqualTo(GameResponseDto(game))
+    }
+
+    @Test
+    fun shouldAllowToPatchMaximumNumberOfRounds() {
+        // given
+        val gameId = UUID.randomUUID()
+        val maxRounds = 5
+        val transactionId = UUID.randomUUID()
+        whenever(mockGameService!!.changeMaximumNumberOfRounds(gameId, maxRounds))
+            .thenReturn(transactionId)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+
+        // then
+        verify(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenGameNotExistsWhileTryingToChangeMaximumNumberOfRounds() {
+        // given
+        val gameId = UUID.randomUUID()
+        val maxRounds = 5
+        val transactionId = UUID.randomUUID()
+        doThrow(GameNotFoundException(""))
+            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenCatchingGameStateExceptionWhileTryingToChangeNumberOfMaxRounds() {
+        // given
+        val gameId = UUID.randomUUID()
+        val maxRounds = 5
+        val transactionId = UUID.randomUUID()
+        doThrow(GameStateException(""))
+            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isForbidden
     }
 }
