@@ -2,14 +2,13 @@ package microservice.dungeon.game.aggregates.round.web.dto
 
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
-import microservice.dungeon.game.aggregates.command.dtos.TradingPayload
 import mu.KotlinLogging
 import java.util.*
 
 class BuyCommandDto(
     val transactionId: UUID,
     val playerId: UUID,
-    val payload: TradingPayload
+    val payload: TradingPayloadDto
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -19,7 +18,7 @@ class BuyCommandDto(
                 BuyCommandDto(
                     command.getCommandId(),
                     command.getPlayer().getPlayerId(),
-                    TradingPayload(
+                    TradingPayloadDto(
                         "buy",
                         command.getCommandPayload().getItemQuantity()!!,
                         command.getCommandPayload().getPlanetId()!!,

@@ -1,6 +1,7 @@
 package microservice.dungeon.game.aggregates.command.controller.dto
 
-import microservice.dungeon.game.aggregates.command.domain.CommandType
+import com.fasterxml.jackson.databind.ObjectMapper
+import microservice.dungeon.game.aggregates.round.events.dto.RoundStatusEventDto
 import java.util.*
 
 class CommandRequestDto(
@@ -10,6 +11,14 @@ class CommandRequestDto(
     val commandType: String,
     val commandObject: CommandObjectRequestDto
 ) {
+    companion object {
+        private val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
+    }
+
+    fun serialize(): String {
+        return objectMapper.writeValueAsString(this)
+    }
+
     override fun equals(other: Any?): Boolean =
         (other is CommandRequestDto)
                 && gameId == other.gameId

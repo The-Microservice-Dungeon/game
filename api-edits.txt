@@ -1,0 +1,56 @@
+asyncAPI:
+    playerStatus:
+        payload:
+            "userId" to "playerId"
+            "lobbyAction" removed
+
+RESTAPI:
+    POST /games:
+        ResponseCodes:
+            406 removed
+            403 when action is not allowed, eg. an active game already exists
+    GET /games:
+        ResponseBody:
+            siehe Doc
+    POST /games/{gameId}/gameCommands/start
+        ResponseCodes:
+            406 removed
+            403 when game cannot be started
+    POST /games/{gameId}/gameCommands/end
+        ResponseCodes:
+            406 removed
+            403 when game cannot be ended
+    PUT /games/{gameId}/players/{playerToken}
+        ResponseCodes:
+            400 removed
+            406 removed
+            404 if game or player not found
+            403 if failed to join, eg. full or already running
+    PATCH /games/{gameId}/
+        TODO
+    PATCH
+        TODO
+
+    POST /players
+        ResponseCodes:
+            409 removed
+            403 if player already exists
+    GET /players?name=&mail=: (new)
+        RespondeCodes:
+            201
+            404
+
+    POST /commands
+        ResponseBody:
+            playerId to playerToken
+            robotId not required anymore (robot buying commands only)
+        ResponseCodes:
+            201 success
+            400 command syntax invalid
+            403 forbidden, game not ready or command invalid
+            404 player or game not found
+
+    GET /logs/
+        siehe Doc
+
+            

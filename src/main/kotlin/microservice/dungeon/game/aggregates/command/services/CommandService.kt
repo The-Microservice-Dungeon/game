@@ -36,7 +36,7 @@ class CommandService @Autowired constructor(
     @Transactional
     @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
     fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
-        val transactionId: UUID = UUID.randomUUID()
+        val transactionId: UUID
         val player: Player
         val game: Game
         val round: Round
@@ -69,19 +69,15 @@ class CommandService @Autowired constructor(
             null
         }
 
-        val newCommand = Command(
-            commandId = transactionId,
+        val newCommand = Command.makeCommandFromDto(
             round = round,
             player = player,
             robot = robot,
             commandType = commandType,
-            commandPayload = CommandPayload(
-                planetId = commandRequestDTO.commandObject.planetId,
-                targetId = commandRequestDTO.commandObject.targetId,
-                itemName = commandRequestDTO.commandObject.itemName,
-                itemQuantity = commandRequestDTO.commandObject.itemQuantity
-            )
+            dto = commandRequestDTO
         )
+        transactionId = newCommand.getCommandId()
+
         commandRepository.deleteCommandsByRoundAndPlayerAndRobot(round, player, robot)
         logger.debug("Previous Player-Commands for Round, Player and Robot deleted.")
         commandRepository.save(newCommand)

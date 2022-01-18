@@ -2,26 +2,32 @@ package microservice.dungeon.game.aggregates.command.controller
 
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandResponseDto
+import microservice.dungeon.game.aggregates.command.controller.dto.RoundCommandsResponseDto
+import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandArgumentException
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.command.services.CommandService
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
+import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 class CommandController @Autowired constructor(
     private val commandService: CommandService,
-    private val commandRepository: CommandRepository
+    private val commandRepository: CommandRepository,
+    private val roundRepository: RoundRepository,
+    private val gameRepository: GameRepository
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -80,6 +86,40 @@ class CommandController @Autowired constructor(
             logger.warn("Request to create new command failed for unknown reasons.")
             logger.warn(e.message)
             logger.trace("Responding with 500")
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @GetMapping("/commands", produces = ["application/json"])
+    fun getAllRoundCommands(@RequestParam(name = "gameId") gameId: UUID, @RequestParam(name = "roundNumber") roundNumber: Int): ResponseEntity<RoundCommandsResponseDto> {
+        logger.debug("Request to collect all round-commands received ... [gameId=$gameId, roundNumber=$roundNumber]")
+
+        val game: Game
+        val round: Round
+
+        // TODO BAD WORKAROUND
+        try {
+            game = gameRepository.findById(gameId).get()
+            round = roundRepository.findRoundByGameAndRoundNumber(game, roundNumber).get()
+
+        } catch (e: Exception) {
+            logger.warn("Failed to process request. Game or round were not found.")
+            logger.trace("Responding with 404.")
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+
+        return try {
+            val commands: List<Command> = commandRepository.findAllCommandsByRound(round)
+            val responseDto = RoundCommandsResponseDto(round, commands)
+
+            logger.debug("Request successful. Returning ${commands.size} commands.")
+            logger.trace("Responding with 200.")
+            ResponseEntity(responseDto, HttpStatus.OK)
+
+        } catch (e: Exception) {
+            logger.error("Failed to process request for internal reasons.")
+            logger.error(e.message)
+            logger.trace("Responding with 500.")
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }

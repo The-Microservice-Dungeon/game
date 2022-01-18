@@ -2,7 +2,6 @@ package microservice.dungeon.game.aggregates.round.web
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.dto.*
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +27,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Blocking-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Blocking-Commands successful.")
 
         } catch (e: Exception) {
@@ -41,7 +40,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Movement-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Movement-ItemUse-Commands successful.")
 
         } catch (e: Exception) {
@@ -54,7 +53,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Movement-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Movement-Commands successful.")
 
         } catch (e: Exception) {
@@ -67,7 +66,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Battle-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Battle-ItemUse-Commands successful.")
 
         } catch (e: Exception) {
@@ -80,7 +79,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Battle-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Battle-Commands successful.")
 
         } catch (e: Exception) {
@@ -93,7 +92,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Mining-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Mining-Commands successful.")
 
         } catch (e: Exception) {
@@ -106,7 +105,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Repair-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Repair-ItemUse-Commands successful.")
 
         } catch (e: Exception) {
@@ -119,7 +118,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.debug("Starting to dispatch Regeneration-Commands to RobotService ... [commandSize=${commands.size}]")
 
         return try {
-            transmitCommandsToRobot(RobotCommandWrapperDTO.makeFromDTOList(commands))
+            transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Regeneration-Commands successful.")
 
         } catch (e: Exception) {
@@ -128,7 +127,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         }
     }
 
-    private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDTO) {
+    private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDto) {
         logger.trace("Endpoint is: POST ${robotBaseURL}/commands")
 
         webClient.post().uri("/commands")
