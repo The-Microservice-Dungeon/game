@@ -136,4 +136,21 @@ class GameServiceIntegrationTest @Autowired constructor(
         assertThat(capturedGame.getGameStatus())
             .isEqualTo(GameStatus.GAME_FINISHED)
     }
+
+    @Test
+    fun shouldPersistGameWithUpdatedMaximumNumberOfRounds() {
+        // given
+        val game = Game(1,3)
+        game.startGame()
+        val newMax = 3
+        gameRepository.save(game)
+
+        // when
+        gameService!!.changeMaximumNumberOfRounds(game.getGameId(), newMax)
+
+        // then
+        val capturedGame: Game = gameRepository.findById(game.getGameId()).get()
+        assertThat(capturedGame.getMaxRounds())
+            .isEqualTo(newMax)
+    }
 }
