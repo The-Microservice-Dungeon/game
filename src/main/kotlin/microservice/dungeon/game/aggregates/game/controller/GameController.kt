@@ -100,7 +100,7 @@ class GameController @Autowired constructor(
         }
     }
 
-    @PutMapping("/games/{gameId}/players/{playerToken}", consumes = ["application/json"], produces = ["application/json"])
+    @PutMapping("/games/{gameId}/players/{playerToken}", produces = ["application/json"])
     fun joinGame(@PathVariable(name = "gameId") gameId: UUID, @PathVariable(name = "playerToken") playerToken: UUID): ResponseEntity<JoinGameResponseDto> {
         logger.debug("Request to join game received ... [gameId=${gameId}]")
         logger.trace("PUT /games/$gameId/players/xxx")
