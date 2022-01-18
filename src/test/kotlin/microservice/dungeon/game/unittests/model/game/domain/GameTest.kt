@@ -228,4 +228,30 @@ class GameTest {
             game.changeMaximumNumberOfRounds(numberBelowCurrentCount)
         }
     }
+
+    @Test
+    fun shouldThrowGameStateExceptionWhenGameStateIsFinishedWhenTryingToChangeRoundDuration() {
+        // given
+        val anyValidNumber: Long = 60000
+        val finishedGame = Game(1,1)
+        finishedGame.endGame()
+
+        // when
+        assertThrows(GameStateException::class.java) {
+            finishedGame.changeRoundDuration(anyValidNumber)
+        }
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenDurationIsBelowTwoSecondsWhenTryingToChangeRoundDuration() {
+        // given
+        val belowOneSecond: Long = 1999
+        val game = Game(1,2)
+        game.startGame()
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeRoundDuration(belowOneSecond)
+        }
+    }
 }
