@@ -17,6 +17,7 @@ import org.mockito.kotlin.*
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import java.lang.IllegalArgumentException
 import java.util.*
 
 class GameControllerIntegrationTest {
@@ -396,6 +397,78 @@ class GameControllerIntegrationTest {
         // when
         webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
             .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isForbidden
+    }
+
+    @Test
+    fun shouldAllowToPatchRoundDuration() {
+        // given
+        val gameId = UUID.randomUUID()
+        val durationDto = PatchGameDuration(3000)
+        val transactionId = UUID.randomUUID()
+        whenever(mockGameService!!.changeRoundDuration(gameId, durationDto.duration))
+            .thenReturn(transactionId)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}/duration")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(durationDto)
+            .exchange()
+            .expectStatus().isOk
+
+        // then
+        verify(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenCatchingGameNotFoundExceptionWhenTryingToPatchRoundDuration() {
+        // given
+        val gameId = UUID.randomUUID()
+        val durationDto = PatchGameDuration(3000)
+        doThrow(GameNotFoundException(""))
+            .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}/duration")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(durationDto)
+            .exchange()
+            .expectStatus().isNotFound
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenCatchingGameStateExceptionWhenTryingToPatchRoundDuration() {
+        // given
+        val gameId = UUID.randomUUID()
+        val durationDto = PatchGameDuration(3000)
+        doThrow(GameStateException(""))
+            .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}/duration")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(durationDto)
+            .exchange()
+            .expectStatus().isForbidden
+    }
+
+    @Test
+    fun shouldRespondForbiddenWhenCatchingIllegalArgumentExceptionWhenTryingToPatchRoundDuration() {
+        // given
+        val gameId = UUID.randomUUID()
+        val durationDto = PatchGameDuration(3000)
+        doThrow(IllegalArgumentException(""))
+            .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
+
+        // when
+        webTestClient!!.patch().uri("/games/${gameId}/duration")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(durationDto)
             .exchange()
             .expectStatus().isForbidden
     }
