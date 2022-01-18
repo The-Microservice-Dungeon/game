@@ -153,4 +153,21 @@ class GameServiceIntegrationTest @Autowired constructor(
         assertThat(capturedGame.getMaxRounds())
             .isEqualTo(newMax)
     }
+
+    @Test
+    fun shouldPersistGameWithUpdatedRoundDuration() {
+        // given
+        val game = Game(1,1)
+        game.startGame()
+        val newDuration: Long = 3000
+        gameRepository.save(game)
+
+        // when
+        gameService!!.changeRoundDuration(game.getGameId(), newDuration)
+
+        // then
+        val capturedGame: Game = gameRepository.findById(game.getGameId()).get()
+        assertThat(capturedGame.getTotalRoundTimespanInMS())
+            .isEqualTo(newDuration)
+    }
 }
