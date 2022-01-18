@@ -201,4 +201,57 @@ class GameTest {
         assertThat(timeStartedAfterNextRound)
             .isEqualTo(game.getRound(1).getRoundStarted())
     }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenNumberIsLowerThanOneWhenTryingToChangeNumberOfMaximumRounds() {
+        // given
+        val numberLowerThanOne = 0
+        val game = Game(1,5)
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeMaximumNumberOfRounds(numberLowerThanOne)
+        }
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenNumberIsBelowCurrentRoundCountWhenTryingToChangeNumberOfMaximumRounds() {
+        // given
+        val numberBelowCurrentCount = 2
+        val game = Game(1,5)
+        game.startGame()
+        game.startNewRound()
+        game.startNewRound()
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeMaximumNumberOfRounds(numberBelowCurrentCount)
+        }
+    }
+
+    @Test
+    fun shouldThrowGameStateExceptionWhenGameStateIsFinishedWhenTryingToChangeRoundDuration() {
+        // given
+        val anyValidNumber: Long = 60000
+        val finishedGame = Game(1,1)
+        finishedGame.endGame()
+
+        // when
+        assertThrows(GameStateException::class.java) {
+            finishedGame.changeRoundDuration(anyValidNumber)
+        }
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentExceptionWhenDurationIsBelowTwoSecondsWhenTryingToChangeRoundDuration() {
+        // given
+        val belowOneSecond: Long = 1999
+        val game = Game(1,2)
+        game.startGame()
+
+        // when
+        assertThrows(IllegalArgumentException::class.java) {
+            game.changeRoundDuration(belowOneSecond)
+        }
+    }
 }

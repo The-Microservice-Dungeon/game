@@ -5,6 +5,7 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import mu.KotlinLogging
 import org.hibernate.annotations.Type
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -169,6 +170,36 @@ class Game constructor (
 
     fun isParticipating(player: Player): Boolean {
         return participatingPlayers.asIterable().map { it.getPlayerId() }.contains(player.getPlayerId())
+    }
+
+    fun changeMaximumNumberOfRounds(maxRounds: Int) {
+        if (gameStatus == GameStatus.GAME_FINISHED) {
+            logger.warn("Failed to change maximum number of rounds. Game is already finished.")
+            throw GameStateException("Game is already finished.")
+        }
+        if (maxRounds < 1) {
+            logger.warn("Failed to change maximum number of rounds. Maximum number of rounds may never be below 1. [requested=$maxRounds]")
+            throw IllegalArgumentException("Maximum number of rounds may never below 1.")
+        }
+        if (getCurrentRound() != null && maxRounds <= getCurrentRound()!!.getRoundNumber()) {
+            logger.warn("Failed to change maximum number of rounds. Maximum number of rounds may never be below the current round-number. [current=${getCurrentRound()!!.getRoundNumber()}, requested=$maxRounds]")
+            throw IllegalArgumentException("Maximum number of rounds is below current round-number.")
+        }
+        this.maxRounds = maxRounds
+        logger.debug("Changed maximum number of rounds to $maxRounds. [gameId=$gameId]")
+    }
+
+    fun changeRoundDuration(duration: Long) {
+        if (gameStatus == GameStatus.GAME_FINISHED) {
+            logger.warn("Failed to change game duration. Game is already closed. [gameStatus=$gameStatus]")
+            throw GameStateException("Game is already finished.")
+        }
+        if (duration < 2000) {
+            logger.warn("Failed to change game duration. Game duration may never be below 2 seconds. [durationInMillis=$duration]")
+            throw IllegalArgumentException("Game duration may never be below 2 seconds. [durationInMillis=$duration]")
+        }
+        this.totalRoundTimespanInMS = duration
+        logger.debug("Changed totalRoundTimespanInMS to $duration. [gameId=$gameId]")
     }
 
     override fun toString(): String {
