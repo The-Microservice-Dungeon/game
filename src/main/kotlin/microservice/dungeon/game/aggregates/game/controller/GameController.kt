@@ -171,13 +171,13 @@ class GameController @Autowired constructor(
         return response
     }
 
-    @PatchMapping("/games/{gameId}")
-    fun patchMaximumNumberOfRounds(@PathVariable(name = "gameId") gameId: UUID, @RequestParam(name = "maxRounds") maxRounds: Int): ResponseEntity<HttpStatus> {
-        logger.debug("Received request to change maximum number of rounds ... [gameId=$gameId, maxRounds=$maxRounds]")
+    @PatchMapping("/games/{gameId}/maxRounds")
+    fun patchMaximumNumberOfRounds(@PathVariable(name = "gameId") gameId: UUID, @RequestBody dto: PatchGameMaxRoundsDto): ResponseEntity<HttpStatus> {
+        logger.debug("Received request to change maximum number of rounds ... [gameId=$gameId, maxRounds=${dto.maxRounds}]")
 
         return try {
-            gameService.changeMaximumNumberOfRounds(gameId, maxRounds)
-            logger.debug("Request successful. Changed maximum number of rounds to $maxRounds.")
+            gameService.changeMaximumNumberOfRounds(gameId, dto.maxRounds)
+            logger.debug("Request successful. Changed maximum number of rounds to ${dto.maxRounds}.")
             logger.trace("Responding with 200.")
             ResponseEntity(HttpStatus.OK)
 
@@ -204,7 +204,7 @@ class GameController @Autowired constructor(
     }
 
     @PatchMapping("/games/{gameId}/duration")
-    fun patchRoundDuration(@RequestBody dto: PatchGameDuration, @PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
+    fun patchRoundDuration(@RequestBody dto: PatchGameDurationDto, @PathVariable(name = "gameId") gameId: UUID): ResponseEntity<HttpStatus> {
         logger.debug("Received request to change round duration ... [gameId=$gameId, duration=${dto.duration}]")
 
         return try {

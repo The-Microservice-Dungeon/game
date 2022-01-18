@@ -1,5 +1,5 @@
 package microservice.dungeon.game.aggregates.game.controller.dto
 
-class PatchGameDuration(
+class PatchGameDurationDto(
     val duration: Long
 )

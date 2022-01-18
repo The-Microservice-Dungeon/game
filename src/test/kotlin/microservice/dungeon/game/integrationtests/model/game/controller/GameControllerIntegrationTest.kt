@@ -8,7 +8,6 @@ import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
-import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -354,33 +353,36 @@ class GameControllerIntegrationTest {
     fun shouldAllowToPatchMaximumNumberOfRounds() {
         // given
         val gameId = UUID.randomUUID()
-        val maxRounds = 5
+        val maxRoundDto = PatchGameMaxRoundsDto(5)
         val transactionId = UUID.randomUUID()
-        whenever(mockGameService!!.changeMaximumNumberOfRounds(gameId, maxRounds))
+        whenever(mockGameService!!.changeMaximumNumberOfRounds(gameId, maxRoundDto.maxRounds))
             .thenReturn(transactionId)
 
         // when
-        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+        webTestClient!!.patch().uri("/games/${gameId}/maxRounds")
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(maxRoundDto)
             .exchange()
             .expectStatus().isOk
 
         // then
-        verify(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+        verify(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRoundDto.maxRounds)
     }
 
     @Test
     fun shouldRespondNotFoundWhenGameNotExistsWhileTryingToChangeMaximumNumberOfRounds() {
         // given
         val gameId = UUID.randomUUID()
-        val maxRounds = 5
-        val transactionId = UUID.randomUUID()
+        val maxRoundDto = PatchGameMaxRoundsDto(5)
         doThrow(GameNotFoundException(""))
-            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRoundDto.maxRounds)
 
         // when
-        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+        webTestClient!!.patch().uri("/games/${gameId}/maxRounds")
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(maxRoundDto)
             .exchange()
             .expectStatus().isNotFound
     }
@@ -389,14 +391,15 @@ class GameControllerIntegrationTest {
     fun shouldRespondForbiddenWhenCatchingGameStateExceptionWhileTryingToChangeNumberOfMaxRounds() {
         // given
         val gameId = UUID.randomUUID()
-        val maxRounds = 5
-        val transactionId = UUID.randomUUID()
+        val maxRoundDto = PatchGameMaxRoundsDto(5)
         doThrow(GameStateException(""))
-            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRounds)
+            .whenever(mockGameService!!).changeMaximumNumberOfRounds(gameId, maxRoundDto.maxRounds)
 
         // when
-        webTestClient!!.patch().uri("/games/${gameId}?maxRounds=${maxRounds}")
+        webTestClient!!.patch().uri("/games/${gameId}/maxRounds")
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(maxRoundDto)
             .exchange()
             .expectStatus().isForbidden
     }
@@ -405,7 +408,7 @@ class GameControllerIntegrationTest {
     fun shouldAllowToPatchRoundDuration() {
         // given
         val gameId = UUID.randomUUID()
-        val durationDto = PatchGameDuration(3000)
+        val durationDto = PatchGameDurationDto(3000)
         val transactionId = UUID.randomUUID()
         whenever(mockGameService!!.changeRoundDuration(gameId, durationDto.duration))
             .thenReturn(transactionId)
@@ -426,7 +429,7 @@ class GameControllerIntegrationTest {
     fun shouldRespondNotFoundWhenCatchingGameNotFoundExceptionWhenTryingToPatchRoundDuration() {
         // given
         val gameId = UUID.randomUUID()
-        val durationDto = PatchGameDuration(3000)
+        val durationDto = PatchGameDurationDto(3000)
         doThrow(GameNotFoundException(""))
             .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
 
@@ -443,7 +446,7 @@ class GameControllerIntegrationTest {
     fun shouldRespondForbiddenWhenCatchingGameStateExceptionWhenTryingToPatchRoundDuration() {
         // given
         val gameId = UUID.randomUUID()
-        val durationDto = PatchGameDuration(3000)
+        val durationDto = PatchGameDurationDto(3000)
         doThrow(GameStateException(""))
             .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
 
@@ -460,7 +463,7 @@ class GameControllerIntegrationTest {
     fun shouldRespondForbiddenWhenCatchingIllegalArgumentExceptionWhenTryingToPatchRoundDuration() {
         // given
         val gameId = UUID.randomUUID()
-        val durationDto = PatchGameDuration(3000)
+        val durationDto = PatchGameDurationDto(3000)
         doThrow(IllegalArgumentException(""))
             .whenever(mockGameService!!).changeRoundDuration(gameId, durationDto.duration)
 
