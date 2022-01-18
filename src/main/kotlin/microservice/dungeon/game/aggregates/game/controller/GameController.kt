@@ -3,6 +3,7 @@ package microservice.dungeon.game.aggregates.game.controller
 import microservice.dungeon.game.aggregates.game.controller.dto.*
 import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
+import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
 import microservice.dungeon.game.aggregates.game.servives.GameService
@@ -168,6 +169,33 @@ class GameController @Autowired constructor(
             logger.trace(responseDto.serialize())
         }
         return response
+    }
+
+    @PatchMapping("/games/{gameId}")
+    fun patchMaximumNumberOfRounds(@PathVariable(name = "gameId") gameId: UUID, @RequestParam(name = "maxRounds") maxRounds: Int): ResponseEntity<HttpStatus> {
+        logger.debug("Received request to change maximum number of rounds ... [gameId=$gameId, maxRounds=$maxRounds]")
+
+        return try {
+            gameService.changeMaximumNumberOfRounds(gameId, maxRounds)
+            logger.debug("Request successful. Changed maximum number of rounds to $maxRounds.")
+            logger.trace("Responding with 200.")
+            ResponseEntity(HttpStatus.OK)
+
+        } catch (e: GameNotFoundException) {
+            logger.warn("Request failed. Game not found. [gameId=$gameId]")
+            logger.warn(e.message)
+            ResponseEntity(HttpStatus.NOT_FOUND)
+
+        } catch (e: GameStateException) {
+            logger.warn("Request failed. Game is not in a state that allows it to be changed.")
+            logger.warn(e.message)
+            ResponseEntity(HttpStatus.FORBIDDEN)
+
+        } catch (e: Exception) {
+            logger.error("Request failed unexpectedly.")
+            logger.error(e.message)
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
 //    @GetMapping("/games")
