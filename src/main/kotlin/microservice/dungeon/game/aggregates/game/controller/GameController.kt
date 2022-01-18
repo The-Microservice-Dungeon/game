@@ -191,6 +191,11 @@ class GameController @Autowired constructor(
             logger.warn(e.message)
             ResponseEntity(HttpStatus.FORBIDDEN)
 
+        } catch (e: IllegalArgumentException) {
+            logger.warn("Request failed. Requested change not allowed due to some constraints.")
+            logger.warn(e.message)
+            ResponseEntity(HttpStatus.FORBIDDEN)
+
         } catch (e: Exception) {
             logger.error("Request failed unexpectedly.")
             logger.error(e.message)
