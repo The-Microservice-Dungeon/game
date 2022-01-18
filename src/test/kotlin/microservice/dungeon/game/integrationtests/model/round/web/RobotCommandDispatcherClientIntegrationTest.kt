@@ -1,7 +1,6 @@
 package microservice.dungeon.game.integrationtests.model.round.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import microservice.dungeon.game.aggregates.command.dtos.*
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.dto.*
 import okhttp3.mockwebserver.MockResponse
@@ -46,7 +45,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedBlockingCommandDTOs: List<BlockCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> BlockCommandDto.makeFromSerializedString(x)
@@ -83,7 +82,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedMovementItemUseCommandDTOs: List<UseItemMovementCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> UseItemMovementCommandDto.makeFromSerializedString(x)
@@ -120,7 +119,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedMovementCommandDtos: List<MovementCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> MovementCommandDto.fromString(x)
@@ -157,7 +156,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedBattleItemUseCommandDTOs: List<UseItemFightCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> UseItemFightCommandDto.makeFromSerializedString(x)
@@ -194,7 +193,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedBattleCommandDTOs: List<FightCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> FightCommandDto.makeFromSerializedString(x)
@@ -231,7 +230,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         val recordedRequest = mockWebServer!!.takeRequest()
         val recordedRobotCommandWrapperDTO = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
         val recordedMiningCommandDTOs: List<MineCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
                 x -> MineCommandDto.fromString(x)
@@ -266,11 +265,11 @@ class RobotCommandDispatcherClientIntegrationTest {
 
         //and
         val recordedRequest = mockWebServer!!.takeRequest()
-        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+        val recordedRobotCommandWrapperDto = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
-        val recordedRepairItemUseCommandDTOs: List<UseItemRepairCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+        val recordedRepairItemUseCommandDTOs: List<UseItemRepairCommandDto> = recordedRobotCommandWrapperDto.commands.map {
                 x -> UseItemRepairCommandDto.makeFromSerializedString(x)
         }
 
@@ -303,11 +302,11 @@ class RobotCommandDispatcherClientIntegrationTest {
 
         //and
         val recordedRequest = mockWebServer!!.takeRequest()
-        val recordedRobotCommandWrapperDTO = objectMapper.readValue(
+        val recordedRobotCommandWrapperDto = objectMapper.readValue(
             recordedRequest.body.readUtf8(),
-            RobotCommandWrapperDTO::class.java
+            RobotCommandWrapperDto::class.java
         )
-        val recordedRegeneratingCommandDTOs: List<RegenerateCommandDto> = recordedRobotCommandWrapperDTO.commands.map {
+        val recordedRegeneratingCommandDTOs: List<RegenerateCommandDto> = recordedRobotCommandWrapperDto.commands.map {
                 x -> RegenerateCommandDto.makeFromSerializedString(x)
         }
 
