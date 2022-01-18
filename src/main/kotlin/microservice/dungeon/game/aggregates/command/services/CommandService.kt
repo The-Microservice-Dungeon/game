@@ -1,6 +1,6 @@
 package microservice.dungeon.game.aggregates.command.services
 
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandDto
+import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandArgumentException
 import microservice.dungeon.game.aggregates.command.domain.CommandPayload
@@ -35,7 +35,7 @@ class CommandService @Autowired constructor(
 
     @Transactional
     @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
-    fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandDTO: CommandDto): UUID {
+    fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
         val transactionId: UUID = UUID.randomUUID()
         val player: Player
         val game: Game
@@ -76,10 +76,10 @@ class CommandService @Autowired constructor(
             robot = robot,
             commandType = commandType,
             commandPayload = CommandPayload(
-                planetId = commandDTO.commandObject.planetId,
-                targetId = commandDTO.commandObject.targetId,
-                itemName = commandDTO.commandObject.itemName,
-                itemQuantity = commandDTO.commandObject.itemQuantity
+                planetId = commandRequestDTO.commandObject.planetId,
+                targetId = commandRequestDTO.commandObject.targetId,
+                itemName = commandRequestDTO.commandObject.itemName,
+                itemQuantity = commandRequestDTO.commandObject.itemQuantity
             )
         )
         commandRepository.deleteCommandsByRoundAndPlayerAndRobot(round, player, robot)

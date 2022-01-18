@@ -1,7 +1,7 @@
 package microservice.dungeon.game.integrationtests.model.command.services
 
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandObjectDto
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandDto
+import microservice.dungeon.game.aggregates.command.controller.dto.CommandObjectRequestDto
+import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandPayload
 import microservice.dungeon.game.aggregates.command.domain.CommandType
@@ -59,9 +59,9 @@ class CommandServiceIntegrationTest @Autowired constructor(
     @Test
     fun shouldPersistCommandWhenCreatingNewCommand() {
         // given
-        val requestBody = CommandDto(
+        val requestBody = CommandRequestDto(
             gameId = game!!.getGameId(), playerToken = player!!.getPlayerToken(), null, "selling",
-            CommandObjectDto(
+            CommandObjectRequestDto(
                 "selling", null, null, "ROBOT", 1
             )
         )
@@ -85,9 +85,9 @@ class CommandServiceIntegrationTest @Autowired constructor(
         )
         commandRepository.save(previousCommand)
 
-        val newCommandRequest = CommandDto(
+        val newCommandRequest = CommandRequestDto(
             gameId = game!!.getGameId(), playerToken = player!!.getPlayerToken(), null, "selling",
-            CommandObjectDto(
+            CommandObjectRequestDto(
                 "selling", null, null, "ROBOT", 1
             )
         )

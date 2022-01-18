@@ -2,7 +2,7 @@ package microservice.dungeon.game.aggregates.command.controller.dto
 
 import java.util.*
 
-class CommandObjectDto(
+class CommandObjectRequestDto(
     val commandType: String,
     val planetId: UUID?,
     val targetId: UUID?,
@@ -10,7 +10,7 @@ class CommandObjectDto(
     val itemQuantity: Int?
 ) {
     override fun equals(other: Any?): Boolean =
-        (other is CommandObjectDto)
+        (other is CommandObjectRequestDto)
                 && commandType == other.commandType
                 && planetId == other.planetId
                 && targetId == other.targetId
