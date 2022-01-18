@@ -1,31 +1,35 @@
 package microservice.dungeon.game.integrationtests.model.command.controller
 
 import microservice.dungeon.game.aggregates.command.controller.CommandController
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandObjectRequestDto
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
-import microservice.dungeon.game.aggregates.command.controller.dto.CommandResponseDto
+import microservice.dungeon.game.aggregates.command.controller.dto.*
+import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandArgumentException
+import microservice.dungeon.game.aggregates.command.domain.CommandPayload
 import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.command.services.CommandService
-import microservice.dungeon.game.aggregates.game.controller.dto.CreateGameResponseDto
+import microservice.dungeon.game.aggregates.game.domain.Game
 import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
+import microservice.dungeon.game.aggregates.game.repositories.GameRepository
+import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
+import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
-import org.junit.jupiter.api.Assertions.assertTrue
+import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.InOrder
 import org.mockito.kotlin.*
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import java.util.*
 
 class CommandControllerIntegrationTest {
     private var mockCommandRepository: CommandRepository? = null
+    private var mockRoundRepository: RoundRepository? = null
+    private var mockGameRepository: GameRepository? = null
     private var mockCommandService: CommandService? = null
     private var commandController: CommandController? = null
     private var webTestClient: WebTestClient? = null
@@ -34,8 +38,11 @@ class CommandControllerIntegrationTest {
     @BeforeEach
     fun setUp() {
         mockCommandRepository = mock()
+        mockRoundRepository = mock()
+        mockGameRepository = mock()
         mockCommandService = mock()
-        commandController = CommandController(mockCommandService!!, mockCommandRepository!!)
+        commandController = CommandController(
+            mockCommandService!!, mockCommandRepository!!, mockRoundRepository!!, mockGameRepository!!)
         webTestClient = WebTestClient.bindToController(commandController!!).build()
     }
 
@@ -160,6 +167,76 @@ class CommandControllerIntegrationTest {
             .bodyValue(requestBody)
             .exchange()
             .expectStatus().isForbidden
+    }
+
+    @Test
+    fun shouldAllowToFetchAllCommandsForAGivenRound() {
+        // given
+        val game = Game(1,2)
+            game.startGame()
+            game.startNewRound()
+        val player = Player("dadepu", "dadepu@smail.th-koeln.de")
+        val round = game.getCurrentRound()!!
+        val gameId = game.getGameId()
+        val roundNumber = round.getRoundNumber()
+        val command1 = Command(UUID.randomUUID(), round, player, null, CommandType.BUYING, CommandPayload(
+            null, null, "ROBOT", 1
+        ))
+        val command2 = Command(UUID.randomUUID(), round, player, null, CommandType.BUYING, CommandPayload(
+            null, null, "ROBOT", 1
+        ))
+
+        whenever(mockGameRepository!!.findById(gameId))
+            .thenReturn(Optional.of(game))
+        whenever(mockRoundRepository!!.findRoundByGameAndRoundNumber(game, roundNumber))
+            .thenReturn(Optional.of(round))
+        whenever(mockCommandRepository!!.findAllCommandsByRound(round))
+            .thenReturn(listOf(command1, command2))
+
+        // when
+        val result = webTestClient!!.get().uri("/commands?gameId=${gameId}&roundNumber=${roundNumber}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<RoundCommandsResponseDto>()
+            .returnResult()
+        val responseWrapper: RoundCommandsResponseDto = result.responseBody!!
+        val responseCommands: List<RoundCommandResponseDto> = responseWrapper.commands
+
+        // then
+        val inOrder: InOrder = inOrder(mockGameRepository!!, mockRoundRepository!!, mockCommandRepository!!)
+        inOrder.verify(mockGameRepository!!).findById(gameId)
+        inOrder.verify(mockRoundRepository!!).findRoundByGameAndRoundNumber(game, roundNumber)
+        inOrder.verify(mockCommandRepository!!).findAllCommandsByRound(round)
+
+        // and then
+        assertThat(responseWrapper.gameId)
+            .isEqualTo(gameId)
+        assertThat(responseWrapper.roundNumber)
+            .isEqualTo(roundNumber)
+        assertThat(responseWrapper.roundId)
+            .isEqualTo(round.getRoundId())
+
+        // and then
+        assertThat(responseCommands.map { it.transactionId })
+            .contains(command1.getCommandId())
+            .contains(command2.getCommandId())
+    }
+
+    @Test
+    fun shouldRespondNotFoundWhenRoundNotFoundWhileTryingToFetchCommands() {
+        // given
+        val gameId: UUID = UUID.randomUUID()
+        val roundNumber = 3
+
+        whenever(mockGameRepository!!.findById(gameId))
+            .thenReturn(Optional.empty())
+
+        // when
+        webTestClient!!.get().uri("/commands?gameId=${gameId}&roundNumber=${roundNumber}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNotFound
     }
 
 //    @Test

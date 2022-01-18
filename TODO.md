@@ -4,7 +4,10 @@
 
 **Command**
 1. Valid Commands only
-2. Fetch all Commands per Round
+2. Controller:
+   1. Fetch all Commands per Round
+      1. API 201 to 200
+      2. transactionId typo
 3. Unit Tests
 
 ## Bonus

@@ -1,5 +1,7 @@
 package microservice.dungeon.game.aggregates.command.controller.dto
 
+import microservice.dungeon.game.aggregates.command.domain.Command
+import microservice.dungeon.game.aggregates.command.domain.CommandType
 import java.util.*
 
 class CommandObjectRequestDto(
@@ -9,6 +11,14 @@ class CommandObjectRequestDto(
     val itemName: String?,
     val itemQuantity: Int?
 ) {
+    constructor(command: Command): this (
+        commandType = CommandType.getStringFromType(command.getCommandType()),
+        planetId = command.getCommandPayload().getPlanetId(),
+        targetId = command.getCommandPayload().getTargetId(),
+        itemName = command.getCommandPayload().getItemName(),
+        itemQuantity = command.getCommandPayload().getItemQuantity()
+    )
+
     override fun equals(other: Any?): Boolean =
         (other is CommandObjectRequestDto)
                 && commandType == other.commandType
