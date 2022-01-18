@@ -130,7 +130,7 @@ paths:
         "404":
           description: Player or game not found.
 
-  "/games/{gameId}/maxRounds/{maxRounds}":
+  "/games/{gameId}/maxRounds":
     patch:
       summary: Change number of rounds.
       tags:
@@ -138,29 +138,48 @@ paths:
       description: An Admin can change the maximal rounds of a game.
       parameters:
         - $ref: "#/components/parameters/gameId"
-        - $ref: "#/components/parameters/maxRounds"
-      security:
-        - BearerAuth: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maxRounds:
+                  type: integer
       responses:
         "200":
           description: The maximal of rounds has been successfully changed for the game.
-        "500":
-          description: The max rounds couldnt been changed.
+        "403":
+          description: Failed. Invalid game-state or illegal argument.
+        "404":
+          description: Failed. Game not found.
 
-  "/games/{gameId}/roundDuration/{newDuration}":
+  "/games/{gameId}/duration":
     patch:
       summary: Change duration of the rounds.
       tags:
         - games
-      description: An Admin can change the duration of the rounds from the game.
+      description: In MILLISECONDS !!! 1000 = 1s
       parameters:
         - $ref: "#/components/parameters/gameId"
-        - $ref: "#/components/parameters/newDuration"
-      security:
-        - BearerAuth: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                duration:
+                  type: integer
+                  description: In MILLISECONDS !!! 1000 = 1s
       responses:
         "200":
           description: The duration of the rounds have been successfully changed for the game.
+        "403":
+          description: Failed. Invalid game-state or illegal argument
+        "404":
+          description: Game not found.
         "500":
           description: The game duration couldnt been changed.
 
