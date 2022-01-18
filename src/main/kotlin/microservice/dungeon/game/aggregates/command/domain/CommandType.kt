@@ -27,7 +27,7 @@ enum class CommandType {
                 "repairItemUse" -> REPAIRITEMUSE
                 "moveItemUse" -> MOVEITEMUSE
                 else -> {
-                    throw IllegalArgumentException("$input is not a valid type")
+                    throw IllegalArgumentException("$input is not a valid CommandType.")
                 }
             }
         }
