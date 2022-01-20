@@ -133,7 +133,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
 
         webClient.post().uri("/commands")
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(ObjectMapper().writeValueAsString(wrappedCommands))
+            .bodyValue(wrappedCommands)
             .exchangeToMono{ clientResponse ->
                 if (clientResponse.statusCode() == HttpStatus.ACCEPTED) {
                     clientResponse.bodyToMono(JsonNode::class.java)

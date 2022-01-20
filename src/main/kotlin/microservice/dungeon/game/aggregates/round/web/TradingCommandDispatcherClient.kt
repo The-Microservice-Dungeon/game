@@ -56,7 +56,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
 
         webClient.post().uri("/commands")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(ObjectMapper().writeValueAsString(commands))
+            .bodyValue(commands)
             .exchangeToMono{ clientResponse ->
                 if (clientResponse.statusCode() == HttpStatus.OK) {
                     clientResponse.bodyToMono(JsonNode::class.java)
