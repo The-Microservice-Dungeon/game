@@ -131,7 +131,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
         logger.trace("Endpoint is: POST ${robotBaseURL}/commands")
 
         webClient.post().uri("/commands")
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(ObjectMapper().writeValueAsString(wrappedCommands))
             .exchangeToMono{ clientResponse ->
                 if (clientResponse.statusCode() == HttpStatus.ACCEPTED) {
