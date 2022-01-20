@@ -25,9 +25,12 @@ class TradingCommandDispatcherClient @Autowired constructor(
     private val webClient = WebClient.create(tradingBaseURL)
 
     fun sendSellingCommands(commands: List<SellCommandDto>) {
-        logger.debug("Starting to dispatch Selling-Commands to TradingService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Selling-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Selling-Commands to TradingService ... [commandSize=${commands.size}]")
             transmitCommandsToTrading(commands)
             logger.debug("... dispatching of Selling-Commands successful.")
 
@@ -38,9 +41,12 @@ class TradingCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendBuyingCommands(commands: List<BuyCommandDto>) {
-        logger.debug("Starting to dispatch Buying-Commands to TradingService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Buying-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Buying-Commands to TradingService ... [commandSize=${commands.size}]")
             transmitCommandsToTrading(commands)
             logger.debug("... dispatching of Buying-Commands successful.")
 

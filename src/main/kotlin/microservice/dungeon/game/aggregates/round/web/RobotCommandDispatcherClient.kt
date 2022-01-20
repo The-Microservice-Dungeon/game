@@ -24,9 +24,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     private val webClient = WebClient.create(robotBaseURL)
 
     fun sendBlockingCommands(commands: List<BlockCommandDto>) {
-        logger.debug("Starting to dispatch Blocking-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Blocking-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Blocking-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Blocking-Commands successful.")
 
@@ -37,9 +40,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendMovementItemUseCommands(commands: List<UseItemMovementCommandDto>) {
-        logger.debug("Starting to dispatch Movement-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Movement-ItemUse-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Movement-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Movement-ItemUse-Commands successful.")
 
@@ -50,9 +56,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendMovementCommands(commands: List<MovementCommandDto>) {
-        logger.debug("Starting to dispatch Movement-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Movement-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Movement-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Movement-Commands successful.")
 
@@ -63,9 +72,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendBattleItemUseCommands(commands: List<UseItemFightCommandDto>) {
-        logger.debug("Starting to dispatch Battle-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Battle-ItemUse-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Battle-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Battle-ItemUse-Commands successful.")
 
@@ -76,9 +88,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendBattleCommands(commands: List<FightCommandDto>) {
-        logger.debug("Starting to dispatch Battle-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Battle-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Battle-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Battle-Commands successful.")
 
@@ -89,9 +104,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendMiningCommands(commands: List<MineCommandDto>) {
-        logger.debug("Starting to dispatch Mining-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Mining-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Mining-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Mining-Commands successful.")
 
@@ -102,9 +120,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendRepairItemUseCommands(commands: List<UseItemRepairCommandDto>) {
-        logger.debug("Starting to dispatch Repair-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Repair-ItemUse-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Repair-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Repair-ItemUse-Commands successful.")
 
@@ -115,9 +136,12 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     fun sendRegeneratingCommands(commands: List<RegenerateCommandDto>) {
-        logger.debug("Starting to dispatch Regeneration-Commands to RobotService ... [commandSize=${commands.size}]")
-
+        if (commands.isEmpty()) {
+            logger.debug("No Regeneration-Commands to dispatch.")
+            return
+        }
         return try {
+            logger.debug("Starting to dispatch Regeneration-Commands to RobotService ... [commandSize=${commands.size}]")
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
             logger.debug("... dispatching of Regeneration-Commands successful.")
 
