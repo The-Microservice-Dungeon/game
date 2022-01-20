@@ -129,6 +129,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
 
     private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDto) {
         logger.trace("Endpoint is: POST ${robotBaseURL}/commands")
+        logger.trace(ObjectMapper().writeValueAsString(wrappedCommands))
 
         webClient.post().uri("/commands")
             .contentType(MediaType.APPLICATION_JSON)

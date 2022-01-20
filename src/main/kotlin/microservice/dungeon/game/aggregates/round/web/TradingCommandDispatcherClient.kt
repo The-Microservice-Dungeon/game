@@ -52,6 +52,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
 
     private fun transmitCommandsToTrading(commands: List<Any>) {
         logger.trace("Endpoint is: POST ${tradingBaseURL}/commands")
+        logger.trace(ObjectMapper().writeValueAsString(commands))
 
         webClient.post().uri("/commands")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
