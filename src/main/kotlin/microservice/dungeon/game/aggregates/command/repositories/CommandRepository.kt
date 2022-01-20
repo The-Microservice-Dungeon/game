@@ -17,4 +17,6 @@ interface CommandRepository : JpaRepository<Command, UUID> {
     fun findAllCommandsByRound(round: Round): List<Command>
 
     fun deleteCommandsByRoundAndPlayerAndRobot(round: Round, player: Player, robot: Robot?)
+
+    fun findAllByRoundGameGameIdAndRoundRoundNumber(gameId: UUID, roundNumber: Int): List<Command>
 }

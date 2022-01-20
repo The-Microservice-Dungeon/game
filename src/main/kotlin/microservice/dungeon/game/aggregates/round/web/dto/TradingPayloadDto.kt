@@ -4,9 +4,10 @@ import java.util.*
 
 class TradingPayloadDto (
     val commandType: String,
-    val amount: Int,
-    val planetId: UUID,
-    val itemName: String
+    val robotId: UUID?,
+    val amount: Int?,
+    val planetId: UUID?,
+    val itemName: String?
 ) {
     override fun equals(other: Any?): Boolean =
         (other is TradingPayloadDto)

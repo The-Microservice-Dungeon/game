@@ -44,6 +44,7 @@ class CommandRepositoryIntegrationTest @Autowired constructor (
         commandRepository.deleteAll()
         roundRepository.deleteAll()
         gameRepository.deleteAll()
+        playerRepository.deleteAll()
 
         player1 = Player("dadepu", "dadepu@smail.th-koeln.de")
         game1 = Game(10,10)
@@ -91,32 +92,30 @@ class CommandRepositoryIntegrationTest @Autowired constructor (
             .contains(command3!!.getCommandId())
     }
 
-//    @Test
-//    fun shouldAllowToFetchCommandsByRoundNumberAndGameId() {
-//        // given
-//        val gameId: UUID = game1!!.getGameId()
-//        val roundNumber1: Int = this.round1!!.getRoundNumber()
-//        val roundNumber2: Int = this.round2!!.getRoundNumber()
-//
-//        // when
-//        val fetchedRound1: List<Command> = commandRepository.findAllCommandsByGameIdAndRoundNumber()
-//
-//        println(fetchedRound1)
-//
-//        // then
-//        assertThat(fetchedRound1)
-//            .hasSize(1)
-//        assertThat(fetchedRound1.map { it.getCommandId() })
-//            .contains(command1!!.getCommandId())
-//
-////        // and when
-////        val fetchedRound2: List<Command> = commandRepository.findAllCommandsByGameIdAndRoundNumber(gameId)
-////
-////        // then
-////        assertThat(fetchedRound2)
-////            .hasSize(2)
-////        assertThat(fetchedRound2.map { it.getCommandId() })
-////            .contains(command2!!.getCommandId())
-////            .contains(command3!!.getCommandId())
-//    }
+    @Test
+    fun shouldAllowToFetchCommandsByRoundNumberAndGameId() {
+        // given
+        val gameId: UUID = game1!!.getGameId()
+        val roundNumber1: Int = this.round1!!.getRoundNumber()
+        val roundNumber2: Int = this.round2!!.getRoundNumber()
+
+        // when
+        val fetchedRound1: List<Command> = commandRepository.findAllByRoundGameGameIdAndRoundRoundNumber(gameId, roundNumber1)
+
+        // then
+        assertThat(fetchedRound1)
+            .hasSize(1)
+        assertThat(fetchedRound1.map { it.getCommandId() })
+            .contains(command1!!.getCommandId())
+
+        // and when
+        val fetchedRound2: List<Command> = commandRepository.findAllByRoundGameGameIdAndRoundRoundNumber(gameId, roundNumber2)
+
+        // then
+        assertThat(fetchedRound2)
+            .hasSize(2)
+        assertThat(fetchedRound2.map { it.getCommandId() })
+            .contains(command2!!.getCommandId())
+            .contains(command3!!.getCommandId())
+    }
 }

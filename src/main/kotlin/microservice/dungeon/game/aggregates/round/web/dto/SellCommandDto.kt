@@ -19,10 +19,11 @@ class SellCommandDto(
                     command.getCommandId(),
                     command.getPlayer().getPlayerId(),
                     TradingPayloadDto(
-                        "sell",
-                        command.getCommandPayload().getItemQuantity()!!,
-                        command.getCommandPayload().getPlanetId()!!,
-                        command.getCommandPayload().getItemName()!!
+                        commandType = "sell",
+                        robotId = command.getRobot()?.getRobotId(),
+                        amount = command.getCommandPayload().getItemQuantity(),
+                        planetId = command.getCommandPayload().getPlanetId(),
+                        itemName = command.getCommandPayload().getItemName()
                     )
                 )
             } catch (e: Exception) {
