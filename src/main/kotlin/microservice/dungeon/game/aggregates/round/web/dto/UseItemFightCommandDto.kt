@@ -1,5 +1,6 @@
 package microservice.dungeon.game.aggregates.round.web.dto
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
 import mu.KotlinLogging
@@ -25,6 +26,8 @@ class UseItemFightCommandDto(
                 )
             } catch (e: Exception) {
                 logger.error("Failed to parse Command as UseItemFightCommandDto. [commandId=${command.getCommandId()}]")
+                logger.error(e.message)
+                logger.error(ObjectMapper().findAndRegisterModules().writeValueAsString(command))
                 throw CommandParsingException("Failed to parse Command as UseItemFightCommandDto.")
             }
         }
