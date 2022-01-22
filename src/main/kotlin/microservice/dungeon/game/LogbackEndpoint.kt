@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.FileSystemUtils
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -44,16 +45,6 @@ class LogbackEndpoint @Autowired constructor(
     @GetMapping("/logs/game-trace", produces = [MediaType.TEXT_PLAIN_VALUE])
     fun getGameTraceLog(): String {
         return getLogOutput("$logFilePath/game-trace.log")
-    }
-
-    @DeleteMapping("/logs")
-    fun purgeLogs(): ResponseEntity<HttpStatus> {
-        return try {
-            Files.deleteIfExists(Path.of("./logs"));
-            ResponseEntity(HttpStatus.OK);
-        } catch (e: Exception) {
-            ResponseEntity(HttpStatus.OK)
-        }
     }
 
 
