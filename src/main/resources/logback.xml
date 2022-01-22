@@ -1,29 +1,63 @@
 <configuration>
-    <appender name="GAME-TRACE" class="ch.qos.logback.core.FileAppender">
+    <appender name="GAME-TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/game-trace.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/game-trace%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>3MB</maxFileSize>
+        </triggeringPolicy>
     </appender>
-    <appender name="GAME-INFO" class="ch.qos.logback.core.FileAppender">
+
+    <appender name="GAME-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/game-info.log</file>
         <append>true</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/game-info%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>500KB</maxFileSize>
+        </triggeringPolicy>
+
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="TRACE" class="ch.qos.logback.core.FileAppender">
+
+    <appender name="TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/trace.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/trace%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>3MB</maxFileSize>
+        </triggeringPolicy>
     </appender>
-    <appender name="INFO" class="ch.qos.logback.core.FileAppender">
+
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/info.log</file>
         <append>true</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -32,8 +66,19 @@
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/info%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>500KB</maxFileSize>
+        </triggeringPolicy>
     </appender>
-    <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
         <append>true</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -42,7 +87,18 @@
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
         </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/error%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>200KB</maxFileSize>
+        </triggeringPolicy>
     </appender>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{36} %L - %msg%n</pattern>
@@ -51,10 +107,14 @@
 
     <logger name="microservice.dungeon.game" level="TRACE">
         <appender-ref ref="GAME-TRACE" />
+    </logger>
+
+    <logger name="microservice.dungeon.game" level="INFO">
         <appender-ref ref="GAME-INFO" />
     </logger>
 
-    <root level="WARN">
+
+    <root level="ERROR">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO" />
         <appender-ref ref="TRACE" />

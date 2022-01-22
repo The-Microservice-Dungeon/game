@@ -352,6 +352,26 @@ paths:
             text/plain:
               schema:
                 type: string
+  "/logs":
+    get:
+      summary: Allows to access as specific log.
+      description: Allows access to rolling logs. Logs roll by increment. Eg error.log, error1.log, ...
+      parameters:
+        - in: query
+          name: file
+          required: true
+          schema:
+            type: string
+          description: Just the filename! Suffix must not be specified! Eg error, game-trace, ...
+      tags:
+        - logs
+      responses:
+        "200":
+          description: Log found.
+          content:
+            text/plan:
+              schema:
+                type: string
 
 
 components:
