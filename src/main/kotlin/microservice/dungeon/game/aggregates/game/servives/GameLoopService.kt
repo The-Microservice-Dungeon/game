@@ -26,6 +26,7 @@ class GameLoopService(
     private val logger = KotlinLogging.logger {}
 
     fun runGameLoop(gameId: UUID) {
+        logger.debug("Initializing Game-Loop for game gameId={}", gameId)
         var currentRoundId: UUID
         var currentGame: Game
         var currentTimeFrame: TimeFrame
@@ -33,21 +34,25 @@ class GameLoopService(
         try {
             currentGame = gameRepository.findById(gameId).get()
             currentRoundId = currentGame.getCurrentRound()!!.getRoundId()
+            logger.debug("Initial Round has roundId={}", currentRoundId)
+            logger.trace("Current Game is:")
+            logger.trace { currentGame.toString() }
 
         } catch (e: Exception) {
-            logger.error("Failed to obtain currentRoundId. Either the game has not started or does not exist.")
-            logger.error("[gameId=$gameId]")
-            throw GameStateException("Unable to start game-loop. No active round exists.")
+            logger.error("Failed to obtain currentRoundId. Either the Game has not been started or does not exist with gameId={}", gameId)
+            logger.error{ e.message }
+            throw GameStateException("Unable to start Game-Loop. No active round exists for gameId=$gameId")
         }
 
+        logger.info("Starting Game-Loop for gameId={}...", gameId)
         while (true) {
             currentTimeFrame = TimeFrame(currentGame)
             startRound(currentGame.getCurrentRound()!!)
-                logger.debug("Waiting for ${currentTimeFrame.getCommandInputTimeFrameInMS().toDouble() / 1000}s ...")
+                logger.info("Accepting Commands. Waiting for {}s ...", (currentTimeFrame.getCommandInputTimeFrameInMS().toDouble() / 1000))
                 Thread.sleep(currentTimeFrame.getCommandInputTimeFrameInMS())
 
             executeCommandsInOrder(currentRoundId)
-                logger.debug("Waiting for ${currentTimeFrame.getExecutionTimeFrameInMS().toDouble() / 1000}s ...")
+                logger.info("Commands executed. Waiting for {}s ...", (currentTimeFrame.getExecutionTimeFrameInMS().toDouble() / 1000))
                 Thread.sleep(currentTimeFrame.getExecutionTimeFrameInMS())
 
             endRound(currentRoundId)
@@ -57,29 +62,34 @@ class GameLoopService(
                 currentGame = g
                 currentRoundId = r
             } catch (e: Exception) {
+                logger.debug("Failed to start next Round: {}", e.message)
+                logger.debug("Exiting Game-Loop.")
                 break
             }
         }
         endGame(gameId)
-        logger.info("Game has ended.")
+        logger.info("Game ended. Game-Loop closed.")
     }
 
-    // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
+    // PUBLIC FOR DEBUG PURPOSES ONLY
     fun startRound(round: Round) {
         val transactionId = UUID.randomUUID()
+        logger.trace("Start-Round transactionId={}", transactionId)
+
         val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
             transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_STARTED
         )
+        logger.debug("Handing RoundStatusEvent off to EventPublisher & -Store. [transactionId={}, roundNumber={}, roundStatus={}]",
+            transactionId, roundEvent.roundId, roundEvent.roundStatus)
         eventStoreService.storeEvent(roundEvent)
         eventPublisherService.publishEvent(roundEvent)
-        logger.debug("RoundStatusEvent handed off to publisher & store. [transactionId=$transactionId, roundNumber=${roundEvent.roundId}, roundStatus=${roundEvent.roundStatus}]")
 
-        logger.info("Round started. Accepting commands ...")
+        logger.info("Round {} started.", round.getRoundNumber())
     }
 
-    // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
+    // PUBLIC FOR DEBUG PURPOSES ONLY
     fun executeCommandsInOrder(roundId: UUID) {
-        logger.info("Dispatching commands ...")
+        logger.info("Dispatching commands in order...")
         roundService.endCommandInputs(roundId)
         roundService.deliverBlockingCommands(roundId)
         roundService.deliverTradingCommands(roundId)
@@ -90,45 +100,51 @@ class GameLoopService(
         logger.info("Command dispatching completed.")
     }
 
-    // DEBUG ONLY: EXTERNAL  USE NOT PERMITTED
+    // PUBLIC FOR DEBUG PURPOSES ONLY
     fun endRound(roundId: UUID) {
         roundService.endRound(roundId)
-        logger.info("Round has ended.")
     }
 
-    // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
+    // PUBLIC FOR DEBUG PURPOSES ONLY
     fun makeNextRound(gameId: UUID): Pair<Game, UUID> {
+        logger.debug("Attempting to start next round...")
         val game: Game = fetchGame(gameId)
         game.startNewRound()
         val roundId = game.getCurrentRound()!!.getRoundId()
 
         gameRepository.save(game)
-        logger.debug("Saved game with next round.")
+        logger.debug("New Round successfully started and saved. [roundId={}, roundNumber={}",
+            roundId, game.getCurrentRound()!!.getRoundNumber())
         return Pair(game, roundId)
     }
 
-    // DEBUG ONLY: EXTERNAL USE NOT PERMITTED
+    // PUBLIC FOR DEBUG PURPOSES ONLY
     fun endGame(gameId: UUID) {
+        logger.debug("Ending Game...")
+
         val transactionId = UUID.randomUUID()
         val game: Game = fetchGame(gameId)
+        logger.trace("End-Round transactionId={}", transactionId)
+        logger.trace("Fetched Game is:")
+        logger.trace{ game.toString() }
 
         game.endGame()
         gameRepository.save(game)
+        logger.debug("Ended Game saved.")
+        logger.trace{ game.toString() }
 
         val gameEndedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, game.getGameId(), GameStatus.GAME_FINISHED)
+        logger.debug("Handing GameStatusEvent off to EventPublisher & -Store. [transactionId={}, gameId={}, gameStatus={}]",
+            transactionId, gameId, GameStatus.GAME_FINISHED)
         eventStoreService.storeEvent(gameEndedEvent)
         eventPublisherService.publishEvent(gameEndedEvent)
-        logger.debug("GameStatusEvent handed off to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_FINISHED}]")
-
-        logger.debug("Saved finished game.")
-        logger.trace(game.toString())
     }
 
     private fun fetchGame(gameId: UUID): Game {
         try {
             return gameRepository.findById(gameId).get()
         } catch (e: Exception) {
-            logger.error("Game-Loop terminated. Game was not found even though it should exist. $gameId")
+            logger.error("Game-Loop terminated. Game was not found even though it should exist. gameId={}", gameId)
             throw GameLoopException("Game-Loop terminated. Game was not found even though it should exist. $gameId")
         }
     }

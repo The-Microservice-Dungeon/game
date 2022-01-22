@@ -22,7 +22,7 @@ class PlayerController @Autowired constructor(
 
     @PostMapping("/players", consumes = ["application/json"], produces = ["application/json"])
     fun createNewPlayer(@RequestBody requestPlayer: PlayerResponseDto): ResponseEntity<PlayerResponseDto> {
-        logger.debug("Request to create new player received ... [playerName=${requestPlayer.name}]")
+        logger.debug("REST-Request to create new Player received ... [playerName={}]", requestPlayer.name)
 
         return try {
             val newPlayer = playerService.createNewPlayer(requestPlayer.name, requestPlayer.email)
