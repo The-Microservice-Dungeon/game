@@ -107,9 +107,6 @@
 
     <logger name="microservice.dungeon.game" level="TRACE">
         <appender-ref ref="GAME-TRACE" />
-    </logger>
-
-    <logger name="microservice.dungeon.game" level="INFO">
         <appender-ref ref="GAME-INFO" />
     </logger>
 
