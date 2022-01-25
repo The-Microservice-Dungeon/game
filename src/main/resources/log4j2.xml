@@ -13,6 +13,18 @@
             <DefaultRolloverStrategy fileIndex="min" max="5"/>
         </RollingFile>
 
+        <RollingFile name="Game-Debug" fileName="logs/game-debug.log" filePattern="logs/game-debug%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n</Pattern>
+            </PatternLayout>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="3 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingFile>
+
         <RollingFile name="Game-Trace" fileName="logs/game-trace.log" filePattern="logs/game-trace%i.log">
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n</Pattern>
@@ -57,6 +69,7 @@
         <AsyncLogger name="microservice.dungeon.game" level="TRACE" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="Game-Trace"/>
+            <AppenderRef ref="Game-Debug"/>
             <AppenderRef ref="Game-Info"/>
         </AsyncLogger>
 
