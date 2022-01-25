@@ -40,4 +40,8 @@ class Player constructor(
     fun getUserName(): String = userName
 
     fun getMailAddress(): String = mailAddress
+
+    override fun toString(): String {
+        return "Player(playerId=$playerId, playerToken=${"xxx"}, userName='$userName', mailAddress='${"xxx"}')"
+    }
 }
