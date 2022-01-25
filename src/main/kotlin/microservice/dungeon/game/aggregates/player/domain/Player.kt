@@ -5,25 +5,27 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "PLAYERS", indexes = [
-    Index(name = "playerUniqueIndexFromPlayerToken", columnList = "PLAYER_TOKEN", unique = true),
-    Index(name = "playerUniqueIndexFromUsername", columnList = "USER_NAME", unique = true),
-    Index(name = "playerUniqueIndexFromMailAddress", columnList = "MAIL_ADDRESS", unique = true)
+@Table(
+    name = "players",
+    uniqueConstraints = [
+        UniqueConstraint(name = "player_unique_playerToken", columnNames = ["player_token"]),
+        UniqueConstraint(name = "player_unique_userName", columnNames = ["user_name"]),
+        UniqueConstraint(name = "player_unique_mailAddress", columnNames = ["mail_address"])
 ])
 class Player constructor(
     @Id
-    @Column(name="PLAYER_ID")
+    @Column(name="player_id")
     @Type(type="uuid-char")
     private var playerId: UUID,
 
-    @Column(name="PLAYER_TOKEN")
+    @Column(name="player_token")
     @Type(type="uuid-char")
     private var playerToken: UUID,
 
-    @Column(name="USER_NAME")
+    @Column(name="user_name")
     private var userName: String,
 
-    @Column(name="MAIL_ADDRESS")
+    @Column(name="mail_address")
     private var mailAddress: String,
 ) {
 

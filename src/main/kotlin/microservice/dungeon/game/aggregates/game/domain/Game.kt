@@ -13,33 +13,38 @@ import javax.persistence.*
 import kotlin.jvm.Transient
 
 @Entity
-@Table(name = "GAMES")
+@Table(
+    name = "games",
+    indexes = [
+        Index(name = "game_gameStatus", columnList = "game_status")
+    ]
+)
 class Game constructor (
     @Id
     @Type(type="uuid-char")
-    @Column(name = "GAME_ID")
+    @Column(name = "game_id")
     private var gameId: UUID,
 
-    @Column(name = "GAME_STATUS")
+    @Column(name = "game_status")
     private var gameStatus: GameStatus,
 
-    @Column(name = "MAX_PLAYERS")
+    @Column(name = "max_players")
     private var maxPlayers: Int,
 
-    @Column(name = "MAX_ROUNDS")
+    @Column(name = "max_rounds")
     private var maxRounds: Int,
 
-    @Column(name = "TOTAL_ROUND_TIMESPAN")
+    @Column(name = "total_round_timespan")
     private var totalRoundTimespanInMS: Long,
 
-    @Column(name = "RELATIVE_COMMAND_INPUT_TIMESPAN")
+    @Column(name = "relative_command_input_timespan")
     private var relativeCommandInputTimespanInPercent: Int,
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinTable(
-        name = "GAME_PARTICIPATIONS",
-        joinColumns = [JoinColumn(name = "GAME_ID")],
-        inverseJoinColumns = [JoinColumn(name = "ROUND_ID")])
+        name = "game_participations",
+        joinColumns = [JoinColumn(name = "game_id")],
+        inverseJoinColumns = [JoinColumn(name = "round_id")])
     private var participatingPlayers: MutableSet<Player>,
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])

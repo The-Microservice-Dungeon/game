@@ -1,37 +1,41 @@
 package microservice.dungeon.game.aggregates.command.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.controller.dto.CommandRequestDto
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.robot.domain.Robot
 import microservice.dungeon.game.aggregates.round.domain.Round
-import microservice.dungeon.game.aggregates.round.events.dto.RoundStatusEventDto
 import mu.KotlinLogging
 import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "COMMANDS")
+@Table(
+    name = "commands",
+    indexes = [
+        Index(name = "command_index_roundIdAndCommandType", columnList = "round_id, command_type"),
+        Index(name = "command_index_roundIdAndPlayerId", columnList = "round_id, player_id")
+    ]
+)
 class Command constructor(
     @Id
-    @Column(name = "COMMAND_ID")
+    @Column(name = "command_id")
     @Type(type = "uuid-char")
     private val commandId: UUID = UUID.randomUUID(),
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ROUND_ID")
+    @JoinColumn(name = "round_id")
     private val round: Round,
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PLAYER_ID")
+    @JoinColumn(name = "player_id")
     private val player: Player,
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ROBOT_ID")
+    @JoinColumn(name = "robot_id")
     private val robot: Robot?,
 
-    @Column(name = "COMMAND_TYPE")
+    @Column(name = "command_type")
     private val commandType: CommandType,
 
     @Embedded
