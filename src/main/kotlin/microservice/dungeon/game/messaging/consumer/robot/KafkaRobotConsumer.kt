@@ -19,8 +19,8 @@ class KafkaRobotConsumer @Autowired constructor(
     fun makeNewRobot(record: ConsumerRecord<String, String>) {
         try {
             val payload = RobotCreatedDto.makeFromSerialization(record.value())
-            logger.debug("Received new RobotSpawnEvent.")
-            logger.trace(payload.toString())
+            logger.debug("Received new RobotSpawnEvent. [robotId={}]", payload.robotId)
+            logger.trace{payload.toString()}
             robotService.newRobot(payload.robotId, payload.playerId)
 
         } catch (e: Exception) {
@@ -35,7 +35,7 @@ class KafkaRobotConsumer @Autowired constructor(
         try {
             val payload = RobotDestroyedDto.makeFromSerialization(record.value())
             logger.debug("Received new RobotDestroyedEvent.")
-            logger.trace(payload.toString())
+            logger.trace{payload.toString()}
             robotService.destroyRobot(payload.robotId)
 
         } catch (e: Exception){

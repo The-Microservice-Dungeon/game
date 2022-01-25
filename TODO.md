@@ -1,3 +1,5 @@
 
-## Bugs
-- Command Error
+##Optional
+- **Transactional**
+
+- **FetchType.LAZY**
