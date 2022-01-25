@@ -12,4 +12,7 @@ class CreateGameResponseDto (
     fun serialize(): String {
         return objectMapper.writeValueAsString(this)
     }
+
+    override fun toString(): String =
+        "CreateGameResponseDto(gameId=$gameId)"
 }

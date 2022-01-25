@@ -20,4 +20,8 @@ class GameTimeResponseDto (
     fun serialize(): String {
         return objectMapper.writeValueAsString(this)
     }
+
+    override fun toString(): String {
+        return "GameTimeResponseDto(gameTime=$gameTime, roundCount=$roundCount, roundTime=$roundTime)"
+    }
 }
