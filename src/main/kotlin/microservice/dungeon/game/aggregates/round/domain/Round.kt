@@ -166,7 +166,7 @@ class Round(
     }
 
     override fun toString(): String {
-        return "Round(roundId=$roundId, gameId=${game.getGameId()}, roundNumber=$roundNumber, roundStatus=$roundStatus)"
+        return "Round(roundId=$roundId, gameId=${game.getGameId()}, roundNumber=$roundNumber, roundStatus='$roundStatus')"
     }
 
     fun isEqualByVal(other: Any?): Boolean {

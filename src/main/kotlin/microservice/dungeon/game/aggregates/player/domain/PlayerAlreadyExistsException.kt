@@ -1,4 +1,4 @@
 package microservice.dungeon.game.aggregates.player.domain
 
-class PlayerAlreadyExistsException: Exception("Player with same username or mailaddress already exists") {
+class PlayerAlreadyExistsException(playerName: String): Exception("Failed to create Player. $playerName already exists.") {
 }

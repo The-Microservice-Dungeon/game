@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="dadepu-player" packages="">
+    <Appenders>
+        <RollingFile name="Game-Info" fileName="logs/game-info.log" filePattern="logs/game-info%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n</Pattern>
+            </PatternLayout>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="750 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingFile>
+
+        <RollingFile name="Game-Debug" fileName="logs/game-debug.log" filePattern="logs/game-debug%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n</Pattern>
+            </PatternLayout>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="3 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingFile>
+
+        <RollingFile name="Game-Trace" fileName="logs/game-trace.log" filePattern="logs/game-trace%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="3 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingFile>
+
+        <RollingFile name="Error" fileName="logs/error.log" filePattern="logs/error%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %15c - %msg%n</Pattern>
+            </PatternLayout>
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="300 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="2"/>
+        </RollingFile>
+
+        <RollingFile name="Info" fileName="logs/info.log" filePattern="logs/info%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %15c - %msg%n</Pattern>
+            </PatternLayout>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="750 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingFile>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] %-5level %c{1.} - %msg%n%throwable" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="microservice.dungeon.game" level="TRACE" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Game-Trace"/>
+            <AppenderRef ref="Game-Debug"/>
+            <AppenderRef ref="Game-Info"/>
+        </AsyncLogger>
+
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="Error"/>
+            <AppenderRef ref="Info"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>

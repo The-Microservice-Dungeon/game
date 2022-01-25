@@ -208,7 +208,7 @@ class Game constructor (
     }
 
     override fun toString(): String {
-        return "Game(gameId=$gameId, gameStatus=$gameStatus, maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=$participatingPlayers, rounds=$rounds)"
+        return "Game(gameId=$gameId, gameStatus='$gameStatus', maxPlayers=$maxPlayers, maxRounds=$maxRounds, totalRoundTimespanInMS=$totalRoundTimespanInMS, relativeCommandInputTimespanInPercent=$relativeCommandInputTimespanInPercent, participatingPlayers=${participatingPlayers.map{it.getUserName()}}, currentRoundNumber=${getCurrentRound()?.getRoundNumber()})"
     }
 
     fun isEqualByVal(other: Any?): Boolean {

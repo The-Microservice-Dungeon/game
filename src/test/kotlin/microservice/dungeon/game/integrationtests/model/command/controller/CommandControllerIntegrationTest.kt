@@ -42,7 +42,7 @@ class CommandControllerIntegrationTest {
         mockGameRepository = mock()
         mockCommandService = mock()
         commandController = CommandController(
-            mockCommandService!!, mockCommandRepository!!, mockRoundRepository!!, mockGameRepository!!)
+            mockCommandService!!, mockCommandRepository!!, mockRoundRepository!!)
         webTestClient = WebTestClient.bindToController(commandController!!).build()
     }
 
@@ -186,11 +186,9 @@ class CommandControllerIntegrationTest {
             null, null, "ROBOT", 1
         ))
 
-        whenever(mockGameRepository!!.findById(gameId))
-            .thenReturn(Optional.of(game))
-        whenever(mockRoundRepository!!.findRoundByGameAndRoundNumber(game, roundNumber))
+        whenever(mockRoundRepository!!.findRoundByGame_GameIdAndRoundNumber(gameId, roundNumber))
             .thenReturn(Optional.of(round))
-        whenever(mockCommandRepository!!.findAllCommandsByRound(round))
+        whenever(mockCommandRepository!!.findAllByRoundGameGameIdAndRoundRoundNumber(gameId, roundNumber))
             .thenReturn(listOf(command1, command2))
 
         // when
@@ -204,12 +202,6 @@ class CommandControllerIntegrationTest {
         val responseCommands: List<RoundCommandResponseDto> = responseWrapper.commands
 
         // then
-        val inOrder: InOrder = inOrder(mockGameRepository!!, mockRoundRepository!!, mockCommandRepository!!)
-        inOrder.verify(mockGameRepository!!).findById(gameId)
-        inOrder.verify(mockRoundRepository!!).findRoundByGameAndRoundNumber(game, roundNumber)
-        inOrder.verify(mockCommandRepository!!).findAllCommandsByRound(round)
-
-        // and then
         assertThat(responseWrapper.gameId)
             .isEqualTo(gameId)
         assertThat(responseWrapper.roundNumber)

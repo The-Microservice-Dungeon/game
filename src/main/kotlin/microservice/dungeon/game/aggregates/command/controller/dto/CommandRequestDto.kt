@@ -19,6 +19,10 @@ class CommandRequestDto(
         return objectMapper.writeValueAsString(this)
     }
 
+    override fun toString(): String =
+        "CommandRequestDto(gameId=${gameId}, playerToken=${"XXX"}, robotId=${robotId}, commandType='${commandType}', " +
+        "commandObject=${commandObject})"
+
     override fun equals(other: Any?): Boolean =
         (other is CommandRequestDto)
                 && gameId == other.gameId

@@ -12,4 +12,7 @@ class CreateGameRequestDto (
     fun serialize(): String {
         return objectMapper.writeValueAsString(this)
     }
+
+    override fun toString(): String =
+        "CreateGameRequestDto(maxPlayers=$maxPlayers, maxRounds=$maxRounds)"
 }

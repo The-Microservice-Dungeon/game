@@ -20,13 +20,14 @@ class PlayerService @Autowired constructor(
     @Throws(PlayerAlreadyExistsException::class)
     fun createNewPlayer(userName: String, mailAddress: String): Player {
         if(!playerRepository.findByUserNameOrMailAddress(userName, mailAddress).isEmpty) {
-            logger.warn("Failed to create new Player. Player already exists. [name=${userName}")
-            throw PlayerAlreadyExistsException()
+            logger.debug("Failed to create new Player. Player already exists. [name={}]", userName)
+            throw PlayerAlreadyExistsException(userName)
         }
 
         val player = Player(userName, mailAddress)
         playerRepository.save(player)
         logger.info("New Player created. [name=${player.getUserName()}]")
+        logger.trace { player.toString() }
 
         return player
     }

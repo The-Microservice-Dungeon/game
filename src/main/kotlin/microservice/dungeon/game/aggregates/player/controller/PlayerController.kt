@@ -28,13 +28,13 @@ class PlayerController @Autowired constructor(
             val newPlayer = playerService.createNewPlayer(requestPlayer.name, requestPlayer.email)
             val responsePlayer = PlayerResponseDto.makeFromPlayer(newPlayer)
 
-            logger.debug("Request successful. Player created. [playerName=${newPlayer.getUserName()}, playerId=${newPlayer.getPlayerId()}]")
+            logger.debug("Request successful. Player created. [playerName={}, playerId={}]", newPlayer.getUserName(), newPlayer.getPlayerId())
             logger.trace("Responding with 201.")
             ResponseEntity(responsePlayer, HttpStatus.CREATED)
 
         } catch (e: Exception) {
-            logger.warn("Request to create new player failed.")
-            logger.warn(e.message)
+            logger.debug("Request to create new player failed. [playerName={}", requestPlayer.name)
+            logger.debug(e.message)
             logger.trace("Responding with 403.")
             ResponseEntity(HttpStatus.FORBIDDEN)
         }
@@ -42,19 +42,19 @@ class PlayerController @Autowired constructor(
 
     @GetMapping("/players", produces = ["application/json"])
     fun getPlayer(@RequestParam(name = "name") userName: String, @RequestParam(name = "mail") userMail: String): ResponseEntity<PlayerResponseDto> {
-        logger.debug("Request to fetch player-details received ... [playerName=${userName}]")
+        logger.debug("REST-Request to fetch Player-Details received ... [playerName={}]", userName)
 
         return try {
             val player: Player = playerRepository.findByUserNameAndMailAddress(userName, userMail).get()
             val responsePlayer = PlayerResponseDto.makeFromPlayer(player)
 
-            logger.debug("Request successful. Player found. [playerName=${player.getUserName()}]")
+            logger.debug("Request successful. Player found. [playerName={}]", player.getUserName())
             logger.trace("Responding with 200.")
             ResponseEntity(responsePlayer, HttpStatus.OK)
 
         } catch (e: Exception) {
-            logger.warn("Request to fetch player failed.")
-            logger.warn(e.message)
+            logger.debug("Request to fetch Player-Details failed. [playerName={}]", userName)
+            logger.debug(e.message)
             logger.trace("Responding with 404.")
             ResponseEntity(HttpStatus.NOT_FOUND)
         }

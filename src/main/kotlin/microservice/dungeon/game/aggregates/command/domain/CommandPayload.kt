@@ -28,4 +28,8 @@ class CommandPayload(
     fun getItemName(): String? = itemName
 
     fun getItemQuantity(): Int? = itemQuantity
+
+    override fun toString(): String {
+        return "CommandPayload(planetId=$planetId, targetId=$targetId, itemName='$itemName', itemQuantity=$itemQuantity)"
+    }
 }

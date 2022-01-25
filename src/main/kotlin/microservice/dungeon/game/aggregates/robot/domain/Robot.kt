@@ -39,4 +39,8 @@ class Robot constructor(
         robotStatus = RobotStatus.INACTIVE
         logger.trace("RobotStatus set to INACTIVE.")
     }
+
+    override fun toString(): String {
+        return "Robot(robotId=$robotId, playerId=${player.getPlayerId()}, playerName=${player.getUserName()}, robotStatus=$robotStatus)"
+    }
 }

@@ -27,7 +27,6 @@ class CommandController @Autowired constructor(
     private val commandService: CommandService,
     private val commandRepository: CommandRepository,
     private val roundRepository: RoundRepository,
-    private val gameRepository: GameRepository
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -35,15 +34,15 @@ class CommandController @Autowired constructor(
 
     @PostMapping("/commands", consumes = ["application/json"], produces = ["application/json"])
     fun createNewCommand(@RequestBody requestBody: CommandRequestDto): ResponseEntity<CommandResponseDto> {
-        logger.debug("Request to create new command received ...")
-        logger.trace("POST: /commands")
+        logger.debug("REST Request to create new command received ...")
 
         val commandType: CommandType
         try {
             commandType = CommandType.getTypeFromString(requestBody.commandType)
         } catch (e: Exception) {
-            logger.warn("Request to create new command failed. Provided commandType invalid. [input=${requestBody.commandType}]")
-            logger.warn(e.message)
+            logger.debug("Request to create new command failed. Provided commandType invalid. [input=${requestBody.commandType}]")
+            logger.trace{ e.message }
+            logger.trace{ requestBody.toString() }
             logger.trace("Responding with 400.")
             return ResponseEntity(HttpStatus.BAD_REQUEST)
         }
@@ -54,70 +53,75 @@ class CommandController @Autowired constructor(
             )
             val responseBody = CommandResponseDto(transactionId)
 
-            logger.debug("Request to create new command was successful.")
+            logger.debug("Request to create new command was successful. [transactionId={}]", transactionId)
             logger.trace("Responding with 201.")
             ResponseEntity(responseBody, HttpStatus.CREATED)
 
         } catch (e: PlayerNotFoundException) {
-            logger.warn("Request to create new command failed. Player not found.")
-            logger.warn(e.message)
+            logger.debug("Request to create new command failed. Player not found.")
+            logger.trace{ e.message }
+            logger.trace{ requestBody.toString() }
             logger.trace("Responding with 404.")
             ResponseEntity(HttpStatus.NOT_FOUND)
 
         } catch (e: GameNotFoundException) {
-            logger.warn("Request to create new command failed. Game not found.")
-            logger.warn(e.message)
+            logger.debug("Request to create new command failed. Game not found.")
+            logger.trace{ e.message }
+            logger.trace{ requestBody.toString() }
             logger.trace("Responding with 404.")
             ResponseEntity(HttpStatus.NOT_FOUND)
 
         } catch (e: GameStateException) {
-            logger.warn("Request to create new command failed. Game not ready.")
-            logger.warn(e.message)
+            logger.debug("Request to create new command failed. Game not ready.")
+            logger.trace{ e.message }
+            logger.trace{ requestBody.toString() }
             logger.trace("Responding with 403.")
             ResponseEntity(HttpStatus.FORBIDDEN)
 
         } catch (e: CommandArgumentException) {
-            logger.warn("Request to create new command failed. Command-Inputs invalid.")
-            logger.warn(e.message)
+            logger.debug("Request to create new command failed. Command-Inputs invalid.")
+            logger.trace{ e.message }
+            logger.trace{ requestBody.toString() }
             logger.trace("Responding with 403.")
             ResponseEntity(HttpStatus.FORBIDDEN)
 
         } catch (e: Exception) {
-            logger.warn("Request to create new command failed for unknown reasons.")
-            logger.warn(e.message)
+            logger.error("Request to create new command failed for unknown reasons.")
+            logger.error(e.message)
+            logger.error{ requestBody.toString() }
             logger.trace("Responding with 500")
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
     @GetMapping("/commands", produces = ["application/json"])
-    fun getAllRoundCommands(@RequestParam(name = "gameId") gameId: UUID, @RequestParam(name = "roundNumber") roundNumber: Int): ResponseEntity<RoundCommandsResponseDto> {
-        logger.debug("Request to collect all round-commands received ... [gameId=$gameId, roundNumber=$roundNumber]")
+    fun getAllRoundCommands(@RequestParam(name = "gameId") gameId: UUID, @RequestParam(name = "roundNumber") roundNumber: Int):
+            ResponseEntity<RoundCommandsResponseDto>
+    {
+        logger.debug("REST-Request to fetch Commands for Round {} received ... [gameId={}, roundNumber={}]",
+            roundNumber, gameId, roundNumber)
 
-        val game: Game
         val round: Round
-
-        // TODO BAD WORKAROUND
         try {
-            game = gameRepository.findById(gameId).get()
-            round = roundRepository.findRoundByGameAndRoundNumber(game, roundNumber).get()
+            round = roundRepository.findRoundByGame_GameIdAndRoundNumber(gameId, roundNumber).get()
 
         } catch (e: Exception) {
-            logger.warn("Failed to process request. Game or round were not found.")
+            logger.warn("Round not found while trying to fetch Commands for Round {}. [gameId={}, roundNumber={}]",
+                roundNumber, gameId, roundNumber)
             logger.trace("Responding with 404.")
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
         return try {
-            val commands: List<Command> = commandRepository.findAllCommandsByRound(round)
+            val commands: List<Command> = commandRepository.findAllByRoundGameGameIdAndRoundRoundNumber(gameId, roundNumber)
             val responseDto = RoundCommandsResponseDto(round, commands)
 
-            logger.debug("Request successful. Returning ${commands.size} commands.")
+            logger.debug("Fetched {} Commands for Round {}.", commands.size, roundNumber)
             logger.trace("Responding with 200.")
             ResponseEntity(responseDto, HttpStatus.OK)
 
         } catch (e: Exception) {
-            logger.error("Failed to process request for internal reasons.")
+            logger.error("Failed to fetch Round-Commands for internal reasons. [roundNumber={}, gameId={}]", roundNumber, gameId)
             logger.error(e.message)
             logger.trace("Responding with 500.")
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -19,6 +19,10 @@ class CommandObjectRequestDto(
         itemQuantity = command.getCommandPayload().getItemQuantity()
     )
 
+    override fun toString(): String =
+        "CommandObjectRequestDto(commandType='${commandType}', planetId=${planetId}, targetId=${targetId}, " +
+        "itemName='${itemName}', itemQuantity=${itemQuantity})"
+
     override fun equals(other: Any?): Boolean =
         (other is CommandObjectRequestDto)
                 && commandType == other.commandType
