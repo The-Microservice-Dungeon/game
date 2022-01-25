@@ -30,9 +30,9 @@ class TradingCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Selling-Commands to TradingService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Selling-Commands to TradingService ...", commands.size)
             transmitCommandsToTrading(commands)
-            logger.debug("... dispatching of Selling-Commands successful.")
+            logger.debug("... dispatching of Selling-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Selling-Commands failed!")
@@ -46,9 +46,9 @@ class TradingCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Buying-Commands to TradingService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Buying-Commands to TradingService ...", commands.size)
             transmitCommandsToTrading(commands)
-            logger.debug("... dispatching of Buying-Commands successful.")
+            logger.debug("... dispatching of Buying-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Buying-Commands failed!")
@@ -57,7 +57,7 @@ class TradingCommandDispatcherClient @Autowired constructor(
     }
 
     private fun transmitCommandsToTrading(commands: List<Any>) {
-        logger.trace("Endpoint is: POST ${tradingBaseURL}/commands")
+        logger.trace("Trading-Endpoint is: POST ${tradingBaseURL}/commands")
         logger.trace(ObjectMapper().writeValueAsString(commands))
 
         webClient.post().uri("/commands")

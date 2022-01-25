@@ -29,9 +29,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Blocking-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Blocking-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Blocking-Commands successful.")
+            logger.debug("... dispatching of Blocking-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Blocking-Commands failed!")
@@ -45,9 +45,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Movement-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Movement-ItemUse-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Movement-ItemUse-Commands successful.")
+            logger.debug("... dispatching of Movement-ItemUse-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Movement-ItemUse-Commands failed!")
@@ -61,9 +61,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Movement-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Movement-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Movement-Commands successful.")
+            logger.debug("... dispatching of Movement-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Movement-Commands failed!")
@@ -77,9 +77,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Battle-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Battle-ItemUse-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Battle-ItemUse-Commands successful.")
+            logger.debug("... dispatching of Battle-ItemUse-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Battle-ItemUse-Commands failed!")
@@ -93,9 +93,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Battle-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Battle-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Battle-Commands successful.")
+            logger.debug("... dispatching of Battle-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Battle-Commands failed!")
@@ -109,9 +109,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Mining-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Mining-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Mining-Commands successful.")
+            logger.debug("... dispatching of Mining-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Mining-Commands failed!")
@@ -125,9 +125,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Repair-ItemUse-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Repair-ItemUse-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Repair-ItemUse-Commands successful.")
+            logger.debug("... dispatching of Repair-ItemUse-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Repair-ItemUse-Commands failed!")
@@ -141,9 +141,9 @@ class RobotCommandDispatcherClient @Autowired constructor(
             return
         }
         return try {
-            logger.debug("Starting to dispatch Regeneration-Commands to RobotService ... [commandSize=${commands.size}]")
+            logger.debug("Starting to dispatch {} Regeneration-Commands to RobotService ...", commands.size)
             transmitCommandsToRobot(RobotCommandWrapperDto.makeFromDTOList(commands))
-            logger.debug("... dispatching of Regeneration-Commands successful.")
+            logger.debug("... dispatching of Regeneration-Commands completed.")
 
         } catch (e: Exception) {
             logger.error("... dispatching of Regeneration-Commands failed!")
@@ -152,7 +152,7 @@ class RobotCommandDispatcherClient @Autowired constructor(
     }
 
     private fun transmitCommandsToRobot(wrappedCommands: RobotCommandWrapperDto) {
-        logger.trace("Endpoint is: POST ${robotBaseURL}/commands")
+        logger.trace("Robot-Endpoint is: POST ${robotBaseURL}/commands")
         logger.trace(ObjectMapper().writeValueAsString(wrappedCommands))
 
         webClient.post().uri("/commands")

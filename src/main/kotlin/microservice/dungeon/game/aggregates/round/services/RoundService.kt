@@ -42,7 +42,7 @@ class RoundService @Autowired constructor (
         try {
             round = roundRepository.findById(roundId).get()
         } catch (e: Exception) {
-            logger.error("Failed to end Command-Input-Phase. Round does not exist. [roundId=$roundId]")
+            logger.error("Failed to end Command-Input-Phase. Round does not exist. [roundId={}]", roundId)
             logger.error(e.message)
             throw RoundNotFoundException("Failed to find round with roundId $roundId.")
         }
@@ -55,9 +55,10 @@ class RoundService @Autowired constructor (
         )
         eventStoreService.storeEvent(roundEvent)
         eventPublisherService.publishEvent(roundEvent)
-        logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber=${round.getRoundNumber()}, roundStatus=${RoundStatus.COMMAND_INPUT_ENDED}]")
+        logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber={}, roundStatus={}]",
+            round.getRoundNumber(), RoundStatus.COMMAND_INPUT_ENDED)
 
-        logger.info("Command-Input-Phase ended. [roundNumber=$roundId]")
+        logger.info("Command-Input-Phase ended in Round {}.", roundId)
     }
 
     fun deliverBlockingCommands(roundId: UUID) {
@@ -71,7 +72,7 @@ class RoundService @Autowired constructor (
         robotCommandDispatcherClient.sendBlockingCommands(commandDtos)
         round.deliverBlockingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Blocking-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Blocking-Command(s) dispatched in Round {}.", commandDtos.size, round.getRoundNumber())
     }
 
     fun deliverTradingCommands(roundId: UUID) {
@@ -91,7 +92,8 @@ class RoundService @Autowired constructor (
         round.deliverSellingCommandsToRobot()
         round.deliverBuyingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Trading-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Selling-Command(s) & {} Buying-Command(s) dispatched in Round {}.",
+            sellingCommandDtos.size, buyingCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverMovementCommands(roundId: UUID) {
@@ -111,7 +113,8 @@ class RoundService @Autowired constructor (
         round.deliverMovementItemUseCommandsToRobot()
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Movement-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Item-Movement-Command(s) & {} Movement-Command(s) dispatched in Round {}.",
+            itemMovementCommandDtos.size, movementCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverBattleCommands(roundId: UUID) {
@@ -131,7 +134,8 @@ class RoundService @Autowired constructor (
         round.deliverBattleItemUseCommandsToRobot()
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Battle-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Item-Battle-Command(s) & {} Battle-Command(s) dispatched in Round {}.",
+            itemFightCommandDtos.size, fightCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverMiningCommands(roundId: UUID) {
@@ -145,7 +149,7 @@ class RoundService @Autowired constructor (
         robotCommandDispatcherClient.sendMiningCommands(miningCommandDtos)
         round.deliverMiningCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Mining-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Mining-Commands dispatched in Round {}.", miningCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverRegeneratingCommands(roundId: UUID) {
@@ -165,7 +169,8 @@ class RoundService @Autowired constructor (
         round.deliverRepairItemUseCommandsToRobot()
         round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("Regeneration-Commands dispatched. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("{} Repair-Command(s) & {} Regeneration-Command(s) dispatched in Round {}.",
+            itemRepairCommandDtos.size, regenCommandDtos.size, round.getRoundNumber())
     }
 
     fun endRound(roundId: UUID) {
@@ -193,6 +198,6 @@ class RoundService @Autowired constructor (
             logger.debug("RoundStatusEvent handed off to EventStore & -Publisher. [roundNumber=${round.getRoundNumber()}, roundStatus=ROUND_ENDED]")
         }
 
-        logger.info("Round ended. [roundNumber=${round.getRoundNumber()}]")
+        logger.info("Round {} ended.", round.getRoundNumber())
     }
 }

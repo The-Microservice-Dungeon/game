@@ -1,6 +1,5 @@
 package microservice.dungeon.game.aggregates.round.web.dto
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
 import mu.KotlinLogging
@@ -23,9 +22,9 @@ class UseItemRepairCommandDto(
                     command.getCommandId()
                 )
             } catch (e: Exception) {
-                logger.error("Failed to parse Command as UseItemRepairCommandDto. [commandId=${command.getCommandId()}]")
-                logger.error(e.message)
-                logger.error(ObjectMapper().findAndRegisterModules().writeValueAsString(command))
+                logger.warn("Failed to parse Command as UseItemRepairCommandDto. [commandId={}]", command.getCommandId())
+                logger.warn{e.message}
+                logger.warn{command.toString()}
                 throw CommandParsingException("Failed to parse Command as UseItemRepairCommandDto.")
             }
         }
