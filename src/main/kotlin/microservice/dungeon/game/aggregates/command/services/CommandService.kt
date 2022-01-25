@@ -37,35 +37,39 @@ class CommandService @Autowired constructor(
     @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
     fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
         val transactionId: UUID
-        val player: Player
-        val game: Game
-        val round: Round
 
+        val player: Player
         try {
             player = playerRepository.findByPlayerToken(playerToken).get()
         } catch (e: Exception) {
-            logger.warn("Command-Creation failed. Player not found.")
+            logger.debug("Command-Creation failed. Player not found. [playerToken=XXX]")
             throw PlayerNotFoundException("Player not found.")
         }
+        val game: Game
         try {
             game = gameRepository.findById(gameId).get()
         } catch (e: Exception) {
-            logger.warn("Command-Creation failed. Game not found. [gameId=${gameId}]")
+            logger.debug("Command-Creation failed. Game not found. [gameId={}, playerName={}]", gameId, player.getUserName())
             throw GameNotFoundException("Game not found.")
         }
+        val round: Round
         try {
             round = game.getCurrentRound()!!
         } catch (e: Exception) {
-            logger.warn("Command-Creation failed. Round not found.")
+            logger.debug("Command-Creation failed. Round not found. [gameId={}, gameStatus={}, playerName={}]",
+                gameId, game.getGameStatus(), player.getUserName())
+            logger.trace { game.toString() }
             throw GameStateException("Game not in a state to accept commands. [gameStatus=${game.getGameStatus()}]")
         }
         if (!game.isParticipating(player)) {
-            logger.warn("Command-Creation failed. Player is not participating in the game. [playerName=${player.getUserName()}]")
-            throw GameParticipationException("Player is not participating in the game.")
+            logger.debug("Command-Creation failed. Player is not participating in the game. [gameId={}, playerName={}]",
+                gameId, player.getUserName())
+            throw GameParticipationException("Player '${player.getUserName()}' is not participating in the game.")
         }
         val robot = try {
             robotRepository.findById(robotId!!).get()
         } catch (e: Exception) {
+            logger.debug("Robot not found. [commandType={}, playerName={}, robotId={}]", commandType, player.getUserName(), robotId)
             null
         }
 
@@ -79,10 +83,12 @@ class CommandService @Autowired constructor(
         transactionId = newCommand.getCommandId()
 
         commandRepository.deleteCommandsByRoundAndPlayerAndRobot(round, player, robot)
-        logger.debug("Previous Player-Commands for Round, Player and Robot deleted.")
+        logger.debug("Previous Player-Commands for Round {}, Player {} and Robot deleted.", round.getRoundNumber(), player.getUserName())
+
         commandRepository.save(newCommand)
-        logger.debug("Command saved. [transactionId=${newCommand.getCommandId()}]")
-        logger.info("Command successfully created. [playerName=${player.getUserName()}, roundNumber=${round.getRoundNumber()}]")
+        logger.debug("New Command saved. [transactionId={}, playerName={}]", newCommand.getCommandId())
+        logger.info("New Command successfully created. [playerName={}, commandType={}, roundNumber={}]",
+            player.getUserName(), commandType, round.getRoundNumber())
 
         return transactionId
     }

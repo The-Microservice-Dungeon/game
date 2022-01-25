@@ -53,6 +53,10 @@ class Command constructor(
 
     fun getCommandPayload(): CommandPayload = commandPayload
 
+    override fun toString(): String {
+        return "Command(commandId=$commandId, roundId=${round.getRoundId()}, roundNumber=${round.getRoundNumber()}, player=${player.getUserName()}, robot=${robot?.getRobotId()}, commandType='$commandType', commandPayload=$commandPayload)"
+    }
+
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -61,7 +65,7 @@ class Command constructor(
             commands.forEach {
                 try {
                     mappedCommands.add(mapper(it))
-                } catch (ignored: Exception) {}
+                } catch (ignored: Exception) { }
             }
             return mappedCommands.toList()
         }
@@ -69,8 +73,8 @@ class Command constructor(
         @Throws(CommandArgumentException::class)
         fun makeCommandFromDto(round: Round, player: Player, robot: Robot?, commandType: CommandType, dto: CommandRequestDto): Command {
             if (commandType != CommandType.BUYING && commandType != CommandType.SELLING  && robot == null) {
-                logger.warn("Command-Creation failed. Robot not found but is required for this type of command.")
-                logger.trace(dto.serialize())
+                logger.debug("Command-Creation failed. Robot not found but is required for this type of command. [commandType={}]", commandType)
+                logger.trace{ dto.toString() }
                 throw CommandArgumentException("Command-Creation failed. Robot not found but is required for this type of command. [commandType=$commandType]")
             }
             return Command(
