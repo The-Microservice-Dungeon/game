@@ -11,24 +11,29 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "ROUNDS")
+@Table(
+    name = "rounds",
+    uniqueConstraints = [
+        UniqueConstraint(name = "round_unique_gameIdAndRoundNumber", columnNames = ["game_id", "round_number"]),
+    ]
+)
 class Round(
     @Id
     @Type(type="uuid-char")
-    @Column(name = "ROUND_ID")
+    @Column(name = "round_id")
     private var roundId: UUID = UUID.randomUUID(),
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "GAME_ID")
+    @JoinColumn(name = "game_id")
     private var game: Game,
 
-    @Column(name = "ROUND_NUMBER")
+    @Column(name = "round_number")
     private val roundNumber: Int,
 
-    @Column(name = "ROUND_STATUS")
+    @Column(name = "round_status")
     private var roundStatus: RoundStatus = RoundStatus.COMMAND_INPUT_STARTED,
 
-    @Column(name = "ROUND_STARTED")
+    @Column(name = "round_started")
     private var roundStarted: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
 ) {
     companion object {
