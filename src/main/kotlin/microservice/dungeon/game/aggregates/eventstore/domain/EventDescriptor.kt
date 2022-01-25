@@ -10,22 +10,30 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "outbox", indexes = [
-    Index(name = "eventDescriptorIndexWithStatus", columnList = "status")
+@Table(
+    name = "outbox",
+    indexes = [
+        Index(name = "eventDescriptorIndexWithStatus", columnList = "status")
 ])
 class EventDescriptor constructor(
     event: Event
 ) {
     @Id
+    @Column(name = "id")
     @Type(type = "uuid-char")
     private val id: UUID = event.getId()
 
+    @Column(name = "type")
     private val type: String = event.getEventName()
 
+    @Column(name = "occurred_at")
     private val occurredAt: LocalDateTime = event.getOccurredAt().getTime()
+
+    @Column(name = "content")
     @Lob
     private val content: String = event.serialized()
 
+    @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
     private val status: EventDescriptorStatus = EventDescriptorStatus.CREATED
 
