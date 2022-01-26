@@ -12,6 +12,8 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -130,6 +132,7 @@ class GameController @Autowired constructor(
         }
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     @GetMapping("/games/{gameId}/time", produces = ["application/json"])
     fun getGameTime(@PathVariable(name = "gameId") gameId: UUID): ResponseEntity<GameTimeResponseDto> {
         logger.debug("REST-Request to fetch Game-Time received... [gameId={}]", gameId)
@@ -150,6 +153,7 @@ class GameController @Autowired constructor(
         }
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     @GetMapping("/games", produces = ["application/json"])
     fun getGames(): List<GameResponseDto> {
         logger.debug("REST-Request to fetch active Games received...")

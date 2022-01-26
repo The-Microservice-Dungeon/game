@@ -19,8 +19,9 @@ import microservice.dungeon.game.aggregates.round.domain.Round
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
-import javax.transaction.Transactional
 
 @Service
 class CommandService @Autowired constructor(
@@ -33,7 +34,7 @@ class CommandService @Autowired constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Throws(PlayerNotFoundException::class, GameNotFoundException::class, GameStateException::class, CommandArgumentException::class)
     fun createNewCommand(gameId: UUID, playerToken: UUID, robotId: UUID?, commandType: CommandType, commandRequestDTO: CommandRequestDto): UUID {
         val transactionId: UUID
