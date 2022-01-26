@@ -13,6 +13,7 @@ import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import microservice.dungeon.game.aggregates.robot.services.RobotService
+import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +40,8 @@ class GetAllRoundCommandsIntegrationTest @Autowired constructor(
     private val commandRepository: CommandRepository,
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
-    private val robotRepository: RobotRepository
+    private val robotRepository: RobotRepository,
+    private val roundRepository: RoundRepository,
 ){
     private var playerTokenId: UUID? = null
     private var playerId: UUID? = null
@@ -60,7 +62,11 @@ class GetAllRoundCommandsIntegrationTest @Autowired constructor(
 
     @AfterEach
     fun cleanUp() {
-
+        commandRepository.deleteAll()
+        robotRepository.deleteAll()
+        roundRepository.deleteAll()
+        gameRepository.deleteAll()
+        playerRepository.deleteAll()
     }
 
     @Test
