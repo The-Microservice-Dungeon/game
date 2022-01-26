@@ -18,7 +18,7 @@ class MovementCommandDto(
             return try {
                 MovementCommandDto(
                     command.getRobot()!!.getRobotId(),
-                    command.getCommandPayload().getPlanetId()!!,
+                    command.getCommandPayload()!!.getPlanetId()!!,
                     command.getCommandId()
                 )
             } catch (e: Exception) {

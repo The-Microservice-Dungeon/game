@@ -67,8 +67,8 @@ class RoundCommandsResponseDtoTest {
         assertThat(commandObjectDto.targetId)
             .isEqualTo(commandDto.commandObject.targetId)
         assertThat(commandObjectDto.itemName)
-            .isEqualTo(command.getCommandPayload().getItemName())
+            .isEqualTo(command.getCommandPayload()!!.getItemName())
         assertThat(commandObjectDto.itemQuantity)
-            .isEqualTo(command.getCommandPayload().getItemQuantity())
+            .isEqualTo(command.getCommandPayload()!!.getItemQuantity())
     }
 }

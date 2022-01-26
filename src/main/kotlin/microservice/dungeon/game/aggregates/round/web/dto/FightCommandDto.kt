@@ -18,7 +18,7 @@ class FightCommandDto(
             return try {
                 FightCommandDto(
                     command.getRobot()!!.getRobotId(),
-                    command.getCommandPayload().getTargetId()!!,
+                    command.getCommandPayload()!!.getTargetId()!!,
                     command.getCommandId()
                 )
             } catch (e: Exception) {
