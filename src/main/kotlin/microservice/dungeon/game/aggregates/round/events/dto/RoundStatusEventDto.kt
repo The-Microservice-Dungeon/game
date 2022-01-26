@@ -7,14 +7,15 @@ import java.lang.RuntimeException
 import java.util.*
 
 class RoundStatusEventDto (
+    val gameId: UUID,
     val roundId: UUID,
     val roundNumber: Int,
     val roundStatus: String
 
 ): EventDto {
 
-    constructor(roundId: UUID, roundNumber: Int, roundStatus: RoundStatus):
-            this(roundId, roundNumber, mapStatusToOutputStatus(roundStatus))
+    constructor(gameId: UUID, roundId: UUID, roundNumber: Int, roundStatus: RoundStatus):
+            this(gameId, roundId, roundNumber, mapStatusToOutputStatus(roundStatus))
 
     companion object {
         private fun mapStatusToOutputStatus(status: RoundStatus): String {

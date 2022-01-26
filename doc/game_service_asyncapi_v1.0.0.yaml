@@ -99,6 +99,10 @@ components:
       payload:
         type: object
         properties:
+          gameId:
+            type: string
+            format: UUID
+            example: 5bc9f935-32f1-4d7b-a90c-ff0e6e34125a
           roundId:
             type: string
             format: UUID

@@ -51,7 +51,7 @@ class RoundService @Autowired constructor (
         roundRepository.save(round)
 
         val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
-            transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_ENDED
+            transactionId, round.getGameId(), round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_ENDED
         )
         eventStoreService.storeEvent(roundEvent)
         eventPublisherService.publishEvent(roundEvent)
@@ -191,7 +191,7 @@ class RoundService @Autowired constructor (
 
         if (response) {
             val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
-                transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.ROUND_ENDED
+                transactionId, round.getGameId(), round.getRoundId(), round.getRoundNumber(), RoundStatus.ROUND_ENDED
             )
             eventStoreService.storeEvent(roundEvent)
             eventPublisherService.publishEvent(roundEvent)

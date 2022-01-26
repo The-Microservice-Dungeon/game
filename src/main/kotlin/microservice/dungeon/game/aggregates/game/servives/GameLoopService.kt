@@ -77,7 +77,7 @@ class GameLoopService(
         logger.trace("Start-Round transactionId={}", transactionId)
 
         val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
-            transactionId, round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_STARTED
+            transactionId, round.getGameId(), round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_STARTED
         )
         logger.debug("Handing RoundStatusEvent off to EventPublisher & -Store. [transactionId={}, roundNumber={}, roundStatus={}]",
             transactionId, roundEvent.roundId, roundEvent.roundStatus)

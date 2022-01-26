@@ -13,7 +13,7 @@ class RoundStatusEventTest {
     fun shouldBeLosslessSerializable() {
         // given
         val eventBuilder = RoundStatusEventBuilder("anyTopic", "anyType", 1)
-        val event = eventBuilder.makeRoundStatusEvent(UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
+        val event = eventBuilder.makeRoundStatusEvent(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 3, RoundStatus.COMMAND_INPUT_STARTED)
 
         // when
         val serialized = event.serialized()
