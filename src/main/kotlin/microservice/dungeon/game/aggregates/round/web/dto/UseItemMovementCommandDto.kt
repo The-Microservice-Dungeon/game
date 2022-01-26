@@ -18,7 +18,7 @@ class UseItemMovementCommandDto(
             return try {
                 UseItemMovementCommandDto(
                     command.getRobot()!!.getRobotId(),
-                    command.getCommandPayload().getItemName()!!,
+                    command.getCommandPayload()!!.getItemName()!!,
                     command.getCommandId()
                 )
             } catch (e: Exception) {

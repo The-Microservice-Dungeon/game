@@ -13,10 +13,10 @@ class CommandObjectRequestDto(
 ) {
     constructor(command: Command): this (
         commandType = CommandType.getStringFromType(command.getCommandType()),
-        planetId = command.getCommandPayload().getPlanetId(),
-        targetId = command.getCommandPayload().getTargetId(),
-        itemName = command.getCommandPayload().getItemName(),
-        itemQuantity = command.getCommandPayload().getItemQuantity()
+        planetId = command.getCommandPayload()?.getPlanetId(),
+        targetId = command.getCommandPayload()?.getTargetId(),
+        itemName = command.getCommandPayload()?.getItemName(),
+        itemQuantity = command.getCommandPayload()?.getItemQuantity()
     )
 
     override fun toString(): String =

@@ -39,7 +39,7 @@ class Command constructor(
     private val commandType: CommandType,
 
     @Embedded
-    private val commandPayload: CommandPayload,
+    private val commandPayload: CommandPayload?
 ) {
     fun getCommandId(): UUID = commandId
 
@@ -51,7 +51,7 @@ class Command constructor(
 
     fun getCommandType(): CommandType = commandType
 
-    fun getCommandPayload(): CommandPayload = commandPayload
+    fun getCommandPayload(): CommandPayload? = commandPayload
 
     override fun toString(): String {
         return "Command(commandId=$commandId, roundId=${round.getRoundId()}, roundNumber=${round.getRoundNumber()}, player=${player.getUserName()}, robot=${robot?.getRobotId()}, commandType='$commandType', commandPayload=$commandPayload)"

@@ -19,8 +19,8 @@ class UseItemFightCommandDto(
             return try {
                 UseItemFightCommandDto(
                     command.getRobot()!!.getRobotId(),
-                    command.getCommandPayload().getItemName()!!,
-                    command.getCommandPayload().getTargetId()!!,
+                    command.getCommandPayload()!!.getItemName()!!,
+                    command.getCommandPayload()!!.getTargetId()!!,
                     command.getCommandId()
                 )
             } catch (e: Exception) {

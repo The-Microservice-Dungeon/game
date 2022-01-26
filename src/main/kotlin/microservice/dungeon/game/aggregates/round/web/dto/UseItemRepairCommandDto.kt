@@ -18,7 +18,7 @@ class UseItemRepairCommandDto(
             return try {
                 UseItemRepairCommandDto(
                     command.getRobot()!!.getRobotId(),
-                    command.getCommandPayload().getItemName()!!,
+                    command.getCommandPayload()!!.getItemName()!!,
                     command.getCommandId()
                 )
             } catch (e: Exception) {

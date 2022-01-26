@@ -44,7 +44,7 @@ class Game constructor (
     @JoinTable(
         name = "game_participations",
         joinColumns = [JoinColumn(name = "game_id")],
-        inverseJoinColumns = [JoinColumn(name = "round_id")])
+        inverseJoinColumns = [JoinColumn(name = "round_id")]) // should be playerId
     private var participatingPlayers: MutableSet<Player>,
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
