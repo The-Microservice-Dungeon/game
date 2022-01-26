@@ -10,6 +10,8 @@ import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -42,6 +44,7 @@ class RobotService @Autowired constructor(
         logger.info("Robot created. [robotId=${robotId}, playerName=${player.getUserName()}]")
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     fun destroyRobot(robotId: UUID) {
         val transactionId = UUID.randomUUID()
         val robot: Robot

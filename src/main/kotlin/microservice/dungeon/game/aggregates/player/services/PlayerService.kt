@@ -6,6 +6,7 @@ import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -16,7 +17,6 @@ class PlayerService @Autowired constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    @Transactional
     @Throws(PlayerAlreadyExistsException::class)
     fun createNewPlayer(userName: String, mailAddress: String): Player {
         if(!playerRepository.findByUserNameOrMailAddress(userName, mailAddress).isEmpty) {

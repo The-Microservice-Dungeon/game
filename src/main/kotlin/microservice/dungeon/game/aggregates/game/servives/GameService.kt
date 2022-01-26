@@ -20,8 +20,9 @@ import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
-import javax.transaction.Transactional
 import kotlin.concurrent.thread
 
 
@@ -42,7 +43,7 @@ class GameService @Autowired constructor(
     )
     private val logger = KotlinLogging.logger {}
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Throws(GameStateException::class)
     fun createNewGame(maxPlayers: Int, maxRounds: Int): Pair<UUID, Game> {
         if (gameRepository.existsByGameStatusIn(listOf(GameStatus.CREATED, GameStatus.GAME_RUNNING))) {
@@ -65,7 +66,7 @@ class GameService @Autowired constructor(
         return Pair(transactionId, newGame)
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Throws(GameStateException::class, GameNotFoundException::class, PlayerNotFoundException::class)
     fun joinGame(playerToken: UUID, gameId: UUID): UUID {
         val transactionId = UUID.randomUUID()
@@ -128,7 +129,7 @@ class GameService @Autowired constructor(
         return transactionId;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Throws(GameStateException::class, GameNotFoundException::class)
     fun endGame(gameId: UUID): UUID {
         val transactionId: UUID = UUID.randomUUID()
@@ -148,7 +149,7 @@ class GameService @Autowired constructor(
         return transactionId
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Throws(GameNotFoundException::class, GameStateException::class, IllegalArgumentException::class)
     fun changeMaximumNumberOfRounds(gameId: UUID, maxRounds: Int): UUID {
         val transactionId = UUID.randomUUID()
@@ -168,7 +169,7 @@ class GameService @Autowired constructor(
         return transactionId
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Throws(GameNotFoundException::class, GameStateException::class, IllegalArgumentException::class)
     fun changeRoundDuration(gameId: UUID, duration: Long): UUID {
         val transactional = UUID.randomUUID()
