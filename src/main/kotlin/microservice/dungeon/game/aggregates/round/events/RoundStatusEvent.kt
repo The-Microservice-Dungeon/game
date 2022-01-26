@@ -14,6 +14,7 @@ class RoundStatusEvent (
     topic: String,
     version: Int,
 
+    val gameId: UUID,
     val roundId: UUID,
     val roundNumber: Int,
     val roundStatus: RoundStatus
@@ -26,7 +27,7 @@ class RoundStatusEvent (
     topic = topic,
     version = version
 ) {
-    override fun toDTO(): RoundStatusEventDto = RoundStatusEventDto(roundId, roundNumber, roundStatus)
+    override fun toDTO(): RoundStatusEventDto = RoundStatusEventDto(gameId, roundId, roundNumber, roundStatus)
 
     override fun equals(other: Any?): Boolean =
         (other is RoundStatusEvent)
@@ -36,6 +37,7 @@ class RoundStatusEvent (
                 && getEventName() == other.getEventName()
                 && getTopic() == other.getTopic()
                 && getVersion() == other.getVersion()
+                && gameId == other.gameId
                 && roundId == other.roundId
                 && roundNumber == other.roundNumber
                 && roundStatus == other.roundStatus

@@ -29,7 +29,7 @@ class RoundStatusEventBuilder @Autowired constructor(
         return objectMapper.readValue(serialized, RoundStatusEvent::class.java)
     }
 
-    fun makeRoundStatusEvent(transactionId: UUID, roundId: UUID, roundNumber: Int, roundStatus: RoundStatus): RoundStatusEvent {
+    fun makeRoundStatusEvent(transactionId: UUID, gameId: UUID, roundId: UUID, roundNumber: Int, roundStatus: RoundStatus): RoundStatusEvent {
         return RoundStatusEvent(
             id = UUID.randomUUID(),
             transactionId = transactionId,
@@ -37,6 +37,7 @@ class RoundStatusEventBuilder @Autowired constructor(
             eventName = eventType,
             topic = topic,
             version = version,
+            gameId = gameId,
             roundId = roundId,
             roundNumber = roundNumber,
             roundStatus = roundStatus
