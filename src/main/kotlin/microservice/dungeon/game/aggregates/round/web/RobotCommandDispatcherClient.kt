@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
 class RobotCommandDispatcherClient @Autowired constructor(
@@ -157,10 +158,11 @@ class RobotCommandDispatcherClient @Autowired constructor(
 
         webClient.post().uri("/commands")
             .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
             .bodyValue(wrappedCommands)
             .exchangeToMono{ clientResponse ->
                 if (clientResponse.statusCode() == HttpStatus.ACCEPTED) {
-                    clientResponse.bodyToMono(JsonNode::class.java)
+                    clientResponse.bodyToMono(String::class.java)
                 }
                 else {
                     throw Exception("Connection failed w/ status-code: ${clientResponse.statusCode()}")

@@ -36,6 +36,8 @@ class RobotCommandDispatcherClientIntegrationTest {
         )
         val mockResponse = MockResponse()
             .setResponseCode(202)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("Command batch accepted");
         mockWebServer!!.enqueue(mockResponse)
 
         //when
