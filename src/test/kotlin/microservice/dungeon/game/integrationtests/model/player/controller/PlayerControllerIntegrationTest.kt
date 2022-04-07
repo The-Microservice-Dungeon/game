@@ -33,7 +33,7 @@ class PlayerControllerIntegrationTest {
     @Test
     fun shouldAllowToCreateNewPlayer() {
         // given
-        val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
+        val requestEntity = PlayerResponseDto(UUID.randomUUID(), UUID.randomUUID(), "SOME_NAME", "SOME_MAIL")
         whenever(mockPlayerService!!.createNewPlayer(anyString(), anyString()))
             .thenReturn(Player(requestEntity.name, requestEntity.email))
 
@@ -55,13 +55,15 @@ class PlayerControllerIntegrationTest {
             .isEqualTo(requestEntity.name)
         assertThat(responseBody.email)
             .isEqualTo(requestEntity.email)
+        assertThat(responseBody.playerId)
+            .isNotNull
         verify(mockPlayerService!!).createNewPlayer(requestEntity.name, requestEntity.email)
     }
 
     @Test
     fun shouldRespondForbiddenWhenPlayerAlreadyExistsWhileCreatingNew() {
         // given
-        val requestEntity = PlayerResponseDto(null, "SOME_NAME", "SOME_MAIL")
+        val requestEntity = PlayerResponseDto(UUID.randomUUID(), UUID.randomUUID(), "SOME_NAME", "SOME_MAIL")
         doThrow(PlayerAlreadyExistsException::class)
             .whenever(mockPlayerService!!)
             .createNewPlayer(any(), any())
@@ -102,6 +104,8 @@ class PlayerControllerIntegrationTest {
             .isEqualTo(responsePlayer.getUserName())
         assertThat(responseBody.email)
             .isEqualTo(responsePlayer.getMailAddress())
+        assertThat(responseBody.playerId)
+            .isEqualTo(responsePlayer.getPlayerId())
 
         // and then
         verify(mockPlayerRepository!!).findByUserNameAndMailAddress(userName, userMail)
