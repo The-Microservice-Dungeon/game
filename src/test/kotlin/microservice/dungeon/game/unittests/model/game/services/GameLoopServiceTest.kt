@@ -8,7 +8,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
-import microservice.dungeon.game.aggregates.game.servives.GameLoopService
+import microservice.dungeon.game.aggregates.game.services.GameLoopService
 import microservice.dungeon.game.aggregates.round.domain.Round
 import microservice.dungeon.game.aggregates.round.domain.RoundStatus
 import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent

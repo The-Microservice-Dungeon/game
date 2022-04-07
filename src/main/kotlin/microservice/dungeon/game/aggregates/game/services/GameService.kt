@@ -1,4 +1,4 @@
-package microservice.dungeon.game.aggregates.game.servives
+package microservice.dungeon.game.aggregates.game.services
 
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService

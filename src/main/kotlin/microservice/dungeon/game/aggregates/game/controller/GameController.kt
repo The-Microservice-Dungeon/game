@@ -6,7 +6,7 @@ import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
 import microservice.dungeon.game.aggregates.game.domain.GameStateException
 import microservice.dungeon.game.aggregates.game.domain.GameStatus
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
-import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.game.services.GameService
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
