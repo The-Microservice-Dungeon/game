@@ -21,7 +21,7 @@ class GameLoopClock(
     fun run() {
         logger.debug { "Running game loop" }
         running.set(true)
-        while (true) {
+        while (running.get()) {
             if (!running.get()) {
                 break
             }
