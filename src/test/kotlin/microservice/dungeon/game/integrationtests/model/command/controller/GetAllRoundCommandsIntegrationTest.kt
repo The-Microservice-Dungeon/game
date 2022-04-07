@@ -8,7 +8,7 @@ import microservice.dungeon.game.aggregates.command.domain.CommandType
 import microservice.dungeon.game.aggregates.command.repositories.CommandRepository
 import microservice.dungeon.game.aggregates.command.services.CommandService
 import microservice.dungeon.game.aggregates.game.repositories.GameRepository
-import microservice.dungeon.game.aggregates.game.servives.GameService
+import microservice.dungeon.game.aggregates.game.services.GameService
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
 import microservice.dungeon.game.aggregates.player.services.PlayerService
 import microservice.dungeon.game.aggregates.robot.repositories.RobotRepository
