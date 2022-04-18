@@ -1,8 +1,13 @@
 stages:
   - test
+  - analyze
   - containerize
 
+
 variables:
+  # This forces GitLab to only clone the latest commit of the current branch when running the pipeline.
+  # This improves speed and reliability because it limits the amount of stuff that needs to be cloned on every run.
+  GIT_DEPTH: 1
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
@@ -11,7 +16,7 @@ variables:
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-# This template uses jdk16 for verifying and deploying images
+# This template uses jdk17 for verifying and deploying images
 image: maven:3.8.5-eclipse-temurin-17
 
 # Cache downloaded dependencies and plugins between builds.
@@ -20,28 +25,75 @@ cache:
   paths:
     - .m2/repository
 
+
+# Test stage
+
 # run unit tests (also on merge requests)
 .test: &test
   stage: test
+  except:
+    changes:
+      - README.md
   script:
     - 'mvn $MAVEN_CLI_OPTS test'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - cat target/site/jacoco/index.html | grep -o '<tfoot>.*</tfoot>'
+  artifacts:
+    name: 'Test reports'
+    when: always
+    paths:
+      - target/site/jacoco/
+      - target/surefire-reports/TEST-*.xml
+  coverage: '/Total.*?([0-9]{1,3})%/'
 
-# Verify merge requests using JDK8
 test:jdk17:
   <<: *test
 
+
+# Analyze stage
+
+# Analyze the project using qodana and prepare the result to be deployed to gitlab pages
+# If there are more problems than defined as the failThreshold in qodana.yml this job will fail and stop the pipe
+.qodana: &qodana
+  except:
+    changes:
+      - README.md
+  image:
+    name: jetbrains/qodana-jvm
+    entrypoint: [ "" ]
+  script:
+    - /opt/idea/bin/entrypoint --results-dir=$CI_PROJECT_DIR/qodana --save-report --report-dir=$CI_PROJECT_DIR/public
+  artifacts:
+    paths:
+      - public
+    expose_as: 'Qodana report'
+
+# This job runs qodana as a static analysis tool, but only on changes to the main branch.
+# It has to be named `pages` so gitlab can deploy the results.
+# This will run in parallel to other jobs in the pipe and start instantly.
+pages:
+  <<: *qodana
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs: [ ]
+  stage: analyze
+
+
+# containerize stage
+
+# Use Jib to build an image
 containerize:jdk17:
   stage: containerize
-  script: 
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  except:
+    changes:
+      - README.md
+  script:
     - >
       mvn compile com.google.cloud.tools:jib-maven-plugin:3.1.4:build
       -Djib.to.image=${CI_REGISTRY_IMAGE}:latest
       -Djib.from.image=eclipse-temurin:17-alpine
       -Djib.to.auth.username=${CI_REGISTRY_USER}
       -Djib.to.auth.password=${CI_REGISTRY_PASSWORD}
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
