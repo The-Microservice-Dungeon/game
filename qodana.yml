@@ -1,2 +1,7 @@
 version: 1.0
-failThreshold: 128
+failThreshold: 51
+include:
+  - name: KotlinUnusedImport
+  - name: RedundantSemicolon
+  - name: RemoveEmptyClassBody
+  - name: UnusedSymbol
