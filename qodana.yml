@@ -1,5 +1,5 @@
 version: 1.0
-failThreshold: 51
+failThreshold: 100
 include:
   - name: KotlinUnusedImport
   - name: RedundantSemicolon
