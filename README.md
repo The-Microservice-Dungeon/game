@@ -1,3 +1,10 @@
+[![pipeline status](https://gitlab.com/the-microservice-dungeon/game/badges/main/pipeline.svg)](https://gitlab.com/the-microservice-dungeon/game/-/commits/main) |
+[![coverage report](https://gitlab.com/the-microservice-dungeon/game/badges/main/coverage.svg)](https://gitlab.com/the-microservice-dungeon/game/-/commits/main) |
+[Test Coverage Report](https://gitlab.com/the-microservice-dungeon/game/-/jobs/artifacts/main/file/target/site/jacoco/index.html?job=test:jdk17) |
+[Code Quality Report](https://the-microservice-dungeon.gitlab.io/game)
+
+___
+
 # game
 
 This README file should be adapted to include the following information:
