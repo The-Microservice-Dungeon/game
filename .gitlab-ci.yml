@@ -31,9 +31,6 @@ cache:
 # run unit tests (also on merge requests)
 .test: &test
   stage: test
-  except:
-    changes:
-      - README.md
   script:
     - 'mvn $MAVEN_CLI_OPTS test'
     - cat target/site/jacoco/index.html | grep -o '<tfoot>.*</tfoot>'
@@ -54,9 +51,6 @@ test:jdk17:
 # Analyze the project using qodana and prepare the result to be deployed to gitlab pages
 # If there are more problems than defined as the failThreshold in qodana.yml this job will fail and stop the pipe
 .qodana: &qodana
-  except:
-    changes:
-      - README.md
   image:
     name: jetbrains/qodana-jvm
     entrypoint: [ "" ]
@@ -87,9 +81,6 @@ containerize:jdk17:
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  except:
-    changes:
-      - README.md
   script:
     - >
       mvn compile com.google.cloud.tools:jib-maven-plugin:3.1.4:build
