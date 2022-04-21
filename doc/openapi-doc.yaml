@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Game Service API
-  version: 1.3.2
+  version: 3.3.0
 servers:
   - url: http://{defaultHost}
     variables:
@@ -551,6 +551,10 @@ components:
         - name
         - email
       properties:
+        playerId:
+          allOf:
+            - description: The Player ID
+            - $ref: "#/components/schemas/uuid"
         bearerToken:
           allOf:
             - description: This field is left blank during registration. The player receives the token as a confirmation in response to his successful registration.

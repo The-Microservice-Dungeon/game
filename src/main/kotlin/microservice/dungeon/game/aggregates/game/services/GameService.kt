@@ -1,11 +1,8 @@
-package microservice.dungeon.game.aggregates.game.servives
+package microservice.dungeon.game.aggregates.game.services
 
 import microservice.dungeon.game.aggregates.eventpublisher.EventPublisherService
 import microservice.dungeon.game.aggregates.eventstore.services.EventStoreService
-import microservice.dungeon.game.aggregates.game.domain.Game
-import microservice.dungeon.game.aggregates.game.domain.GameNotFoundException
-import microservice.dungeon.game.aggregates.game.domain.GameStateException
-import microservice.dungeon.game.aggregates.game.domain.GameStatus
+import microservice.dungeon.game.aggregates.game.domain.*
 import microservice.dungeon.game.aggregates.game.events.GameStatusEvent
 import microservice.dungeon.game.aggregates.game.events.GameStatusEventBuilder
 import microservice.dungeon.game.aggregates.game.events.PlayerStatusEvent
@@ -15,6 +12,9 @@ import microservice.dungeon.game.aggregates.game.web.MapGameWorldsClient
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerNotFoundException
 import microservice.dungeon.game.aggregates.player.repository.PlayerRepository
+import microservice.dungeon.game.aggregates.round.domain.Round
+import microservice.dungeon.game.aggregates.round.domain.RoundStatus
+import microservice.dungeon.game.aggregates.round.events.RoundStatusEvent
 import microservice.dungeon.game.aggregates.round.events.RoundStatusEventBuilder
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import mu.KotlinLogging
@@ -38,10 +38,8 @@ class GameService @Autowired constructor(
     private val playerStatusEventBuilder: PlayerStatusEventBuilder,
     private val roundStatusEventBuilder: RoundStatusEventBuilder
 ) {
-    private val gameLoopService: GameLoopService = GameLoopService(
-        gameRepository, roundService, gameStatusEventBuilder, roundStatusEventBuilder, eventStoreService, eventPublisherService
-    )
     private val logger = KotlinLogging.logger {}
+    private val gameClocks = mutableMapOf<UUID, GameLoopClock>()
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Throws(GameStateException::class)
@@ -53,6 +51,9 @@ class GameService @Autowired constructor(
 
         val transactionId = UUID.randomUUID()
         val newGame: Game = Game(maxPlayers, maxRounds)
+
+        // Create a GameClock, but don't start it yet.
+        gameClocks[newGame.getGameId()] = GameLoopClock(TimeFrame(newGame))
 
         gameRepository.save(newGame)
         logger.info("New Game created. [transactionId=$transactionId]")
@@ -99,6 +100,7 @@ class GameService @Autowired constructor(
         return transactionId
     }
 
+    @Transactional
     @Throws(GameStateException::class, GameNotFoundException::class)
     fun startGame(gameId: UUID): UUID {
         val transactionId: UUID = UUID.randomUUID()
@@ -116,15 +118,46 @@ class GameService @Autowired constructor(
         gameRepository.save(game)
         logger.info("Game started. [gameId=$gameId]")
 
+        var maybeClock = gameClocks[gameId]
+        if (maybeClock == null) {
+            maybeClock = GameLoopClock(TimeFrame(game))
+            gameClocks[gameId] = maybeClock
+        }
+        val clock = maybeClock
+
+        clock.registerOnRoundEnd {
+            endRound(game.getCurrentRound()!!)
+        }
+        clock.registerOnRoundStart {
+            try {
+                game.startNewRound()
+            }
+            // TODO: Exception is also thrown when the game ends naturally... We don't want to throw
+            //  exceptions when everything works as intend. And even if, make this case catchable.
+            catch (e: Exception) {
+                logger.debug("Failed to start next Round: {}", e.message)
+                logger.debug("Stopping clock")
+                clock.stop()
+                this.gameClocks.remove(game.getGameId())
+            }
+            gameRepository.save(game)
+            startRound(game.getCurrentRound()!!)
+        }
+        clock.registerOnCommandInputEnded {
+            val round = game.getCurrentRound()!!
+            executeCommandsInOrder(round.getRoundId())
+        }
+
+        // Thread will be interrupted when clock stops.
+        thread(start = true, isDaemon = false) {
+            Thread.sleep(1000)
+            clock.run()
+        }
+
         val gameStartedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, gameId, GameStatus.GAME_RUNNING)
         eventStoreService.storeEvent(gameStartedEvent)
         eventPublisherService.publishEvent(gameStartedEvent)
         logger.debug("GameStatusEvent handed to publisher & store. [transactionId=$transactionId, gameId=${gameId}, gameStatus=${GameStatus.GAME_RUNNING}]")
-
-        thread(start = true, isDaemon = false) {
-            Thread.sleep(1000)
-            gameLoopService.runGameLoop(game.getGameId())
-        }
 
         return transactionId;
     }
@@ -144,8 +177,17 @@ class GameService @Autowired constructor(
 
         game.endGame()
         gameRepository.save(game)
-        logger.info("Game ended. Game will shutdown after round is completed. [gameId=$gameId]")
 
+        gameClocks[gameId]?.let { it.stop() }
+        gameClocks.remove(gameId)
+
+        val gameEndedEvent: GameStatusEvent = gameStatusEventBuilder.makeGameStatusEvent(transactionId, game.getGameId(), GameStatus.GAME_FINISHED)
+        logger.debug("Handing GameStatusEvent off to EventPublisher & -Store. [transactionId={}, gameId={}, gameStatus={}]",
+            transactionId, gameId, GameStatus.GAME_FINISHED)
+        eventStoreService.storeEvent(gameEndedEvent)
+        eventPublisherService.publishEvent(gameEndedEvent)
+
+        logger.info("Game ended. Game will shutdown after round is completed. [gameId=$gameId]")
         return transactionId
     }
 
@@ -173,20 +215,50 @@ class GameService @Autowired constructor(
     @Throws(GameNotFoundException::class, GameStateException::class, IllegalArgumentException::class)
     fun changeRoundDuration(gameId: UUID, duration: Long): UUID {
         val transactional = UUID.randomUUID()
-        val game: Game
-
-        try {
-            game = gameRepository.findById(gameId).get()
-        } catch (e: Exception) {
-            logger.warn("Game not found while trying to change its round duration. [gameId=$gameId]")
-            throw GameNotFoundException("Game not found. [gameId=$gameId]")
-        }
-
+        val game = gameRepository.findById(gameId).orElseThrow { GameNotFoundException("Game not found. [gameId=$gameId]") }
         game.changeRoundDuration(duration)
         gameRepository.save(game)
-        logger.debug("saved game with updated round duration.")
+        val clock = gameClocks[gameId];
+        if (clock != null) {
+            clock.patchTimeFrame(TimeFrame(game))
+        } else {
+            logger.warn { "A Game clock for $gameId cannot be found. This should not occur unless the game is not created properly or maybe the service crashed?" }
+        }
         logger.info("Updated round duration. [newDurationInMillis=$duration, gameId=$gameId]")
         return transactional
+    }
+
+    private fun executeCommandsInOrder(roundId: UUID) {
+        logger.info("Dispatching commands in order...")
+        // TODO: This thingy here publishes the command input ended - but everything else is done here
+        roundService.endCommandInputs(roundId)
+
+        roundService.deliverBlockingCommands(roundId)
+        roundService.deliverTradingCommands(roundId)
+        roundService.deliverMovementCommands(roundId)
+        roundService.deliverBattleCommands(roundId)
+        roundService.deliverMiningCommands(roundId)
+        roundService.deliverRegeneratingCommands(roundId)
+        logger.info("Command dispatching completed.")
+    }
+
+    private fun startRound(round: Round) {
+        val transactionId = UUID.randomUUID()
+        logger.trace("Start-Round transactionId={}", transactionId)
+
+        val roundEvent: RoundStatusEvent = roundStatusEventBuilder.makeRoundStatusEvent(
+            transactionId, round.getGameId(), round.getRoundId(), round.getRoundNumber(), RoundStatus.COMMAND_INPUT_STARTED
+        )
+        logger.debug("Handing RoundStatusEvent off to EventPublisher & -Store. [transactionId={}, roundNumber={}, roundStatus={}]",
+            transactionId, roundEvent.roundId, roundEvent.roundStatus)
+        eventStoreService.storeEvent(roundEvent)
+        eventPublisherService.publishEvent(roundEvent)
+
+        logger.info("Round {} started.", round.getRoundNumber())
+    }
+
+    private fun endRound(round: Round) {
+        this.roundService.endRound(round.getRoundId())
     }
 }
 
