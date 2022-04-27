@@ -1,5 +1,6 @@
 package microservice.dungeon.game.aggregates.player.controller
 
+import microservice.dungeon.game.aggregates.player.controller.dtos.CreatePlayerRequestDto
 import microservice.dungeon.game.aggregates.player.controller.dtos.PlayerResponseDto
 import microservice.dungeon.game.aggregates.player.domain.Player
 import microservice.dungeon.game.aggregates.player.domain.PlayerAlreadyExistsException
@@ -21,7 +22,7 @@ class PlayerController @Autowired constructor(
     }
 
     @PostMapping("/players", consumes = ["application/json"], produces = ["application/json"])
-    fun createNewPlayer(@RequestBody requestPlayer: PlayerResponseDto): ResponseEntity<PlayerResponseDto> {
+    fun createNewPlayer(@RequestBody requestPlayer: CreatePlayerRequestDto): ResponseEntity<PlayerResponseDto> {
         logger.debug("REST-Request to create new Player received ... [playerName={}]", requestPlayer.name)
 
         return try {
