@@ -99,43 +99,43 @@ class RoundService @Autowired constructor (
     fun deliverMovementCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        val itemMovementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEITEMUSE)
-        val itemMovementCommandDtos: List<UseItemMovementCommandDto> = Command.parseCommandsToDto(itemMovementCommands) {
+        //val itemMovementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEITEMUSE)
+      /*  val itemMovementCommandDtos: List<UseItemMovementCommandDto> = Command.parseCommandsToDto(itemMovementCommands) {
             UseItemMovementCommandDto.makeFromCommand(it)
         }
-        val movementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEMENT)
+       */ val movementCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.MOVEMENT)
         val movementCommandDtos: List<MovementCommandDto> = Command.parseCommandsToDto(movementCommands) {
             MovementCommandDto.makeFromCommand(it)
         }
 
-        robotCommandDispatcherClient.sendMovementItemUseCommands(itemMovementCommandDtos)
+     //   robotCommandDispatcherClient.sendMovementItemUseCommands(itemMovementCommandDtos)
         robotCommandDispatcherClient.sendMovementCommands(movementCommandDtos)
-        round.deliverMovementItemUseCommandsToRobot()
+      //  round.deliverMovementItemUseCommandsToRobot()
         round.deliverMovementCommandsToRobot()
         roundRepository.save(round)
-        logger.info("{} Item-Movement-Command(s) & {} Movement-Command(s) dispatched in Round {}.",
-            itemMovementCommandDtos.size, movementCommandDtos.size, round.getRoundNumber())
+     //   logger.info("{} Item-Movement-Command(s) & {} Movement-Command(s) dispatched in Round {}.",
+      //      itemMovementCommandDtos.size, movementCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverBattleCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        val itemFightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLEITEMUSE)
+     /*   val itemFightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLEITEMUSE)
         val itemFightCommandDtos: List<UseItemFightCommandDto> = Command.parseCommandsToDto(itemFightCommands) {
             UseItemFightCommandDto.makeFromCommand(it)
         }
-        val fightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLE)
+     */   val fightCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.BATTLE)
         val fightCommandDtos: List<FightCommandDto> = Command.parseCommandsToDto(fightCommands) {
             FightCommandDto.makeFromCommand(it)
         }
 
-        robotCommandDispatcherClient.sendBattleItemUseCommands(itemFightCommandDtos)
+//        robotCommandDispatcherClient.sendBattleItemUseCommands(itemFightCommandDtos)
         robotCommandDispatcherClient.sendBattleCommands(fightCommandDtos)
-        round.deliverBattleItemUseCommandsToRobot()
+      //  round.deliverBattleItemUseCommandsToRobot()
         round.deliverBattleCommandsToRobot()
         roundRepository.save(round)
-        logger.info("{} Item-Battle-Command(s) & {} Battle-Command(s) dispatched in Round {}.",
-            itemFightCommandDtos.size, fightCommandDtos.size, round.getRoundNumber())
+     //   logger.info("{} Item-Battle-Command(s) & {} Battle-Command(s) dispatched in Round {}.",
+     //       itemFightCommandDtos.size, fightCommandDtos.size, round.getRoundNumber())
     }
 
     fun deliverMiningCommands(roundId: UUID) {
@@ -155,22 +155,22 @@ class RoundService @Autowired constructor (
     fun deliverRegeneratingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
-        val itemRepairCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REPAIRITEMUSE)
+      /*  val itemRepairCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REPAIRITEMUSE)
         val itemRepairCommandDtos: List<UseItemRepairCommandDto> = Command.parseCommandsToDto(itemRepairCommands) {
             UseItemRepairCommandDto.makeFromCommand(it)
         }
-        val regenCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REGENERATE)
+      */  val regenCommands: List<Command> = commandRepository.findAllCommandsByRoundAndCommandType(round, CommandType.REGENERATE)
         val regenCommandDtos: List<RegenerateCommandDto> = Command.parseCommandsToDto(regenCommands) {
             RegenerateCommandDto.makeFromCommands(it)
         }
 
-        robotCommandDispatcherClient.sendRepairItemUseCommands(itemRepairCommandDtos)
+      //  robotCommandDispatcherClient.sendRepairItemUseCommands(itemRepairCommandDtos)
         robotCommandDispatcherClient.sendRegeneratingCommands(regenCommandDtos)
-        round.deliverRepairItemUseCommandsToRobot()
+       // round.deliverRepairItemUseCommandsToRobot()
         round.deliverRegeneratingCommandsToRobot()
         roundRepository.save(round)
-        logger.info("{} Repair-Command(s) & {} Regeneration-Command(s) dispatched in Round {}.",
-            itemRepairCommandDtos.size, regenCommandDtos.size, round.getRoundNumber())
+      //  logger.info("{} Repair-Command(s) & {} Regeneration-Command(s) dispatched in Round {}.",
+    //        itemRepairCommandDtos.size, regenCommandDtos.size, round.getRoundNumber())
     }
 
     fun endRound(roundId: UUID) {

@@ -6,7 +6,7 @@ import microservice.dungeon.game.contracts.RestProducerContract
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import org.springframework.http.MediaType
 import java.util.*
-
+/*
 class SendItemUseRepairCommandsToRobotSuccessful: RestProducerContract {
 
     // for
@@ -48,3 +48,4 @@ class SendItemUseRepairCommandsToRobotSuccessful: RestProducerContract {
 
     override fun getExpectedResponseBody() = expectedResponseBody
 }
+*/

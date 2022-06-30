@@ -6,7 +6,7 @@ import microservice.dungeon.game.contracts.RestProducerContract
 import microservice.dungeon.game.contracts.round.web.robot.resources.RobotCommandInput
 import org.springframework.http.MediaType
 import java.util.*
-
+/*
 class SendItemUseBattleCommandsToRobotSuccessful: RestProducerContract {
 
     // for
@@ -21,7 +21,7 @@ class SendItemUseBattleCommandsToRobotSuccessful: RestProducerContract {
         robotId = UUID.randomUUID(),
         itemName = "ANY_NAME",
         targetId = UUID.randomUUID(),
-        commandType = CommandType.BATTLEITEMUSE
+       commandType = CommandType.BATTLEITEMUSE
     )
     fun makeCommandFromContract(builder: (RobotCommandInput) -> Command): Command = builder(commandInput)
 
@@ -49,3 +49,4 @@ class SendItemUseBattleCommandsToRobotSuccessful: RestProducerContract {
 
     override fun getExpectedResponseBody() = expectedResponseBody
 }
+*/

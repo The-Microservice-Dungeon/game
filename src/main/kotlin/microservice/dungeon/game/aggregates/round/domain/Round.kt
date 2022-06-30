@@ -76,7 +76,7 @@ class Round(
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
-    fun deliverMovementItemUseCommandsToRobot() {
+ /*   fun deliverMovementItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.BUYING_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BUYING_COMMANDS_DISPATCHED}")
@@ -84,7 +84,7 @@ class Round(
         roundStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+*/
     fun deliverMovementCommandsToRobot() {
         if (roundStatus != RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to MOVEMENT_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
@@ -93,7 +93,7 @@ class Round(
         roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+/*
     fun deliverBattleItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.MOVEMENT_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to BATTLE_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
@@ -102,7 +102,7 @@ class Round(
         roundStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+*/
     fun deliverBattleCommandsToRobot() {
         if (roundStatus != RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to BATTLE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
@@ -120,7 +120,7 @@ class Round(
         roundStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+/*
     fun deliverRepairItemUseCommandsToRobot() {
         if (roundStatus != RoundStatus.MINING_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to REPAIR_ITEM_USE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
@@ -129,7 +129,7 @@ class Round(
         roundStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+*/
     fun deliverRegeneratingCommandsToRobot() {
         if (roundStatus != RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to REGENERATING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")

@@ -7,10 +7,10 @@ enum class CommandType {
     BATTLE,
     BUYING,
     SELLING,
-    REGENERATE,
-    BATTLEITEMUSE,
-    REPAIRITEMUSE,
-    MOVEITEMUSE;
+    REGENERATE;
+   // BATTLEITEMUSE,
+   // REPAIRITEMUSE,
+   // MOVEITEMUSE;
 
     companion object {
         @Throws(IllegalArgumentException::class)
@@ -23,9 +23,9 @@ enum class CommandType {
                 "battle" -> BATTLE
                 "mining" -> MINING
                 "regeneration" -> REGENERATE
-                "battleItemUse" -> BATTLEITEMUSE
-                "repairItemUse" -> REPAIRITEMUSE
-                "moveItemUse" -> MOVEITEMUSE
+             //   "battleItemUse" -> BATTLEITEMUSE
+             //   "repairItemUse" -> REPAIRITEMUSE
+             //   "moveItemUse" -> MOVEITEMUSE
                 else -> {
                     throw IllegalArgumentException("$input is not a valid CommandType.")
                 }
@@ -41,9 +41,9 @@ enum class CommandType {
                 BATTLE -> "battle"
                 MINING -> "mining"
                 REGENERATE -> "regeneration"
-                BATTLEITEMUSE -> "battleItemUse"
-                REPAIRITEMUSE -> "repairItemUse"
-                MOVEITEMUSE -> "moveItemUse"
+           //     BATTLEITEMUSE -> "battleItemUse"
+           //     REPAIRITEMUSE -> "repairItemUse"
+           //     MOVEITEMUSE -> "moveItemUse"
             }
         }
     }

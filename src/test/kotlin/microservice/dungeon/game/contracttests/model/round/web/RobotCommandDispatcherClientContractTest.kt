@@ -165,6 +165,7 @@ class RobotCommandDispatcherClientContractTest {
             .conformsWithRequestBody(recordedRequestBody)
     }
 
+    /*
     @Test
     fun shouldConformToSendItemUseBattleCommandsSuccessful() {
         // given
@@ -246,7 +247,7 @@ class RobotCommandDispatcherClientContractTest {
             .conformsWithRequestBody(recordedRequestBody)
     }
 
-
+*/
 
     private fun buildRobotCommand(): (RobotCommandInput) -> Command = { input ->
         Command(

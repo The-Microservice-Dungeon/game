@@ -125,7 +125,7 @@ class RoundTest {
         }
     }
 
-    @Test
+  /*  @Test
     fun shouldAllowToDeliverMovementItemUseCommandsToRobot() {
         val expectedStatus = RoundStatus.BUYING_COMMANDS_DISPATCHED
         val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
@@ -148,7 +148,7 @@ class RoundTest {
             round.deliverMovementItemUseCommandsToRobot()
         }
     }
-
+*/
     @Test
     fun deliverMovementCommandsToRobotShouldSetStatusToMovementCommandsDispatched() {
         val expectedStatus = RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED
@@ -173,7 +173,7 @@ class RoundTest {
         }
     }
 
-    @Test
+ /*   @Test
     fun shouldAllowToDeliverBattleItemUseCommandsToRobot() {
         val expectedStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
         val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
@@ -196,7 +196,7 @@ class RoundTest {
             round.deliverBattleItemUseCommandsToRobot()
         }
     }
-
+*/
     @Test
     fun deliverBattleCommandsToRobotShouldSetStatusToBattleCommandsDispatched() {
         val expectedStatus = RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED
@@ -245,7 +245,7 @@ class RoundTest {
         }
     }
 
-    @Test
+  /*  @Test
     fun shouldAllowToDeliverRepairItemUseCommands() {
         val expectedStatus = RoundStatus.MINING_COMMANDS_DISPATCHED
         val round = Round(game = game, roundNumber = someRoundNumber, roundStatus = expectedStatus)
@@ -268,7 +268,7 @@ class RoundTest {
             round.deliverRepairItemUseCommandsToRobot()
         }
     }
-
+*/
     @Test
     fun deliverRegeneratingCommandsToRobotShouldSetStatusToRegeneratingCommandsDispatched() {
         val expectedStatus = RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED
