@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,11 +16,13 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.util.*
 
+
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29095"
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29095", "port=29095"])
+@Disabled
 class GameRepositoryIntegrationTest @Autowired constructor(
     private val gameRepository: GameRepository
 ) {

@@ -233,7 +233,7 @@ class GameService @Autowired constructor(
         // TODO: This thingy here publishes the command input ended - but everything else is done here
         roundService.endCommandInputs(roundId)
 
-        roundService.deliverBlockingCommands(roundId)
+      //  roundService.deliverBlockingCommands(roundId)
         roundService.deliverTradingCommands(roundId)
         roundService.deliverMovementCommands(roundId)
         roundService.deliverBattleCommands(roundId)

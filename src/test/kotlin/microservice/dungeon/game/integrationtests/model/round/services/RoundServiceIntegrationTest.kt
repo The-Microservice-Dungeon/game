@@ -18,7 +18,7 @@ import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
-import microservice.dungeon.game.aggregates.round.web.dto.BlockCommandDto
+//import microservice.dungeon.game.aggregates.round.web.dto.BlockCommandDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,14 +100,15 @@ class RoundServiceIntegrationTest @Autowired constructor(
         currentRound = game1!!.getCurrentRound()!!
         gameRepository.save(game1!!)
 
-        command1 = Command(UUID.randomUUID(), currentRound!!, player1!!, robot1!!, CommandType.BLOCKING, CommandPayload(null, null, null, null))
-        command2 = Command(UUID.randomUUID(), currentRound!!, player1!!, robot2!!, CommandType.BLOCKING, CommandPayload(null, null, null, null))
+       // command1 = Command(UUID.randomUUID(), currentRound!!, player1!!, robot1!!, CommandType.BLOCKING, CommandPayload(null, null, null, null))
+        //command2 = Command(UUID.randomUUID(), currentRound!!, player1!!, robot2!!, CommandType.BLOCKING, CommandPayload(null, null, null, null))
         command3 = Command(UUID.randomUUID(), currentRound!!, player1!!, null, CommandType.BUYING, CommandPayload(null, null, "ROBOT", 1))
         command4 = Command(UUID.randomUUID(), currentRound!!, player1!!, robot3, CommandType.MINING, CommandPayload(UUID.randomUUID(), null, null, null))
-        commandRepository.saveAll(listOf(command1!!, command2!!, command3!!, command4!!))
+        //commandRepository.saveAll(listOf(command1!!, command2!!, command3!!, command4!!))
+        commandRepository.saveAll(listOf(command3!!, command4!!))
     }
 
-    @Test
+ /*   @Test
     fun shouldFetchBlockingCommandsWhileDeliveringBlockingCommands() {
         // given
         currentRound!!.endCommandInputPhase()
@@ -125,4 +126,5 @@ class RoundServiceIntegrationTest @Autowired constructor(
                 .contains(command2!!.getRobot()!!.getRobotId())
         })
     }
+    */
 }

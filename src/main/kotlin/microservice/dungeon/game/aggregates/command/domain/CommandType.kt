@@ -1,7 +1,7 @@
 package microservice.dungeon.game.aggregates.command.domain
 
 enum class CommandType {
-    BLOCKING,
+  //  BLOCKING,
     MINING,
     MOVEMENT,
     BATTLE,
@@ -16,7 +16,7 @@ enum class CommandType {
         @Throws(IllegalArgumentException::class)
         fun getTypeFromString(input: String): CommandType {
             return when (input) {
-                "blocking" -> BLOCKING
+             //   "blocking" -> BLOCKING
                 "buying" -> BUYING
                 "selling" -> SELLING
                 "movement" -> MOVEMENT
@@ -34,7 +34,7 @@ enum class CommandType {
 
         fun getStringFromType(input: CommandType): String {
             return when (input) {
-                BLOCKING -> "blocking"
+            //    BLOCKING -> "blocking"
                 BUYING -> "buying"
                 SELLING -> "selling"
                 MOVEMENT -> "movement"

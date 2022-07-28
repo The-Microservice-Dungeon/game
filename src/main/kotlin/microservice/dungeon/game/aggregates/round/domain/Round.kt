@@ -49,7 +49,7 @@ class Round(
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
-    fun deliverBlockingCommandsToRobot() {
+    /*   fun deliverBlockingCommandsToRobot() {
         if (roundStatus != RoundStatus.COMMAND_INPUT_ENDED) {
             logger.warn("Failed to set Round-Status to BLOCKING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.COMMAND_INPUT_ENDED}")
@@ -57,13 +57,13 @@ class Round(
         roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
-
+*/
     fun deliverSellingCommandsToRobot() {
-        if (roundStatus != RoundStatus.BLOCKING_COMMANDS_DISPATCHED) {
+     /*   if (roundStatus != RoundStatus.BLOCKING_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to SELLING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BLOCKING_COMMANDS_DISPATCHED}")
         }
-        roundStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
+       */ roundStatus = RoundStatus.SELLING_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
@@ -86,11 +86,11 @@ class Round(
     }
 */
     fun deliverMovementCommandsToRobot() {
-        if (roundStatus != RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED) {
+      /*  if (roundStatus != RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to MOVEMENT_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.MOVEMENT_ITEM_USE_COMMANDS_DISPATCHED}")
         }
-        roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
+      */  roundStatus = RoundStatus.MOVEMENT_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 /*
@@ -104,11 +104,11 @@ class Round(
     }
 */
     fun deliverBattleCommandsToRobot() {
-        if (roundStatus != RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED) {
+     /*   if (roundStatus != RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to BATTLE_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.BATTLE_ITEM_USE_COMMANDS_DISPATCHED}")
         }
-        roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED
+     */   roundStatus = RoundStatus.BATTLE_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 
@@ -131,11 +131,11 @@ class Round(
     }
 */
     fun deliverRegeneratingCommandsToRobot() {
-        if (roundStatus != RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED) {
+    /*    if (roundStatus != RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED) {
             logger.warn("Failed to set Round-Status to REGENERATING_COMMANDS_DISPATCHED. [roundNumber=$roundNumber, roundStatus=$roundStatus]")
             throw MethodNotAllowedForStatusException("Round Status is $roundStatus but requires ${RoundStatus.REPAIR_ITEM_USE_COMMANDS_DISPATCHED}")
         }
-        roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
+     */   roundStatus = RoundStatus.REGENERATING_COMMANDS_DISPATCHED
         logger.debug("Round-Status set to $roundStatus. [roundNumber=$roundNumber]")
     }
 

@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.*
+import org.junit.jupiter.api.Disabled
 
+@Disabled
 class TradingCommandDispatcherClientContractTest {
     private var mockWebServer: MockWebServer? = null
     private var tradingCommandDispatcherClient: TradingCommandDispatcherClient? = null

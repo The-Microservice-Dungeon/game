@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.*
+import org.junit.jupiter.api.Disabled
 
+@Disabled
 @SpringBootTest(properties = [
     "kafka.bootstrapAddress=localhost:29097"
 ])

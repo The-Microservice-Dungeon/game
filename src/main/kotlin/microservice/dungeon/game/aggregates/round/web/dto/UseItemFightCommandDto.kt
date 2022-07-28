@@ -4,7 +4,7 @@ import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
 import mu.KotlinLogging
 import java.util.*
-
+/*
 class UseItemFightCommandDto(
     val robotId: UUID,
     val itemName: String,
@@ -55,4 +55,4 @@ class UseItemFightCommandDto(
                 && itemName == other.itemName
                 && targetId == other.targetId
                 && transactionId == other.transactionId
-}
+}*/

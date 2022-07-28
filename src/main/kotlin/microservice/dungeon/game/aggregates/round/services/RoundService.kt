@@ -60,7 +60,7 @@ class RoundService @Autowired constructor (
 
         logger.info("Command-Input-Phase ended in Round {}.", roundId)
     }
-
+/*
     fun deliverBlockingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 
@@ -74,7 +74,7 @@ class RoundService @Autowired constructor (
         roundRepository.save(round)
         logger.info("{} Blocking-Command(s) dispatched in Round {}.", commandDtos.size, round.getRoundNumber())
     }
-
+*/
     fun deliverTradingCommands(roundId: UUID) {
         val round: Round = roundRepository.findById(roundId).get()
 

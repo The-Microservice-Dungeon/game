@@ -27,7 +27,7 @@ class RobotCommandDispatcherClientIntegrationTest {
     }
 
 
-    @Test
+  /*  @Test
     fun shouldAllowToSendBlockingCommands() {
         //given
         val inputCommands = listOf(
@@ -65,7 +65,8 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedBlockingCommandDTOs)
             .isEqualTo(inputCommands)
     }
-
+*/
+    /*
     @Test
     fun shouldAllowToSendMovementItemUseCommands() {
         //given
@@ -102,7 +103,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedMovementItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
-
+*/
     @Test
     fun shouldAllowToSendMovementCommands() {
         //given
@@ -139,7 +140,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedMovementCommandDtos)
             .isEqualTo(inputCommands)
     }
-
+/*
     @Test
     fun shouldAllowToSendBattleItemUseCommands() {
         //given
@@ -176,7 +177,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedBattleItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
-
+*/
     @Test
     fun shouldAllowToSendBattleCommands() {
         //given
@@ -250,7 +251,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedMiningCommandDTOs)
             .isEqualTo(inputCommands)
     }
-
+/*
     @Test
     fun shouldAllowToSendRepairItemUseCommands() {
         //given
@@ -287,7 +288,7 @@ class RobotCommandDispatcherClientIntegrationTest {
         assertThat(recordedRepairItemUseCommandDTOs)
             .isEqualTo(inputCommands)
     }
-
+*/
     @Test
     fun shouldAllowToSendRegeneratingCommands() {
         //given

@@ -30,7 +30,7 @@ class RobotCommandDispatcherClientContractTest {
     }
 
 
-    @Test
+  /*  @Test
     fun shouldConformToSendBlockingCommandsSuccessful() {
         // given
         val contract = SendBlockingCommandsToRobotSuccessful()
@@ -56,7 +56,7 @@ class RobotCommandDispatcherClientContractTest {
         assertThat(contract)
             .conformsWithRequestBody(recordedRequestBody)
     }
-
+*/
     @Test
     fun shouldConformToSendMovementCommandsSuccessful() {
         // given

@@ -18,7 +18,7 @@ import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import microservice.dungeon.game.aggregates.round.services.RoundService
 import microservice.dungeon.game.aggregates.round.web.RobotCommandDispatcherClient
 import microservice.dungeon.game.aggregates.round.web.TradingCommandDispatcherClient
-import microservice.dungeon.game.aggregates.round.web.dto.BlockCommandDto
+//import microservice.dungeon.game.aggregates.round.web.dto.BlockCommandDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -149,7 +149,7 @@ class RoundServiceTest {
 
     // Dispatch BLOCKING Commands
 
-    @Test
+   /* @Test
     fun shouldAllowToDispatchBlockingCommands() {
         // given
         val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
@@ -163,7 +163,8 @@ class RoundServiceTest {
         verify(spyRound).deliverBlockingCommandsToRobot()
         verify(mockRoundRepository!!).save(isA<Round>())
     }
-
+*/
+    /*
     @Test
     fun shouldNotAllowToDispatchBlockingCommandsWhenRoundNotExists() {
         // given
@@ -176,7 +177,8 @@ class RoundServiceTest {
         }
         verify(mockRoundRepository!!, never()).save(any())
     }
-
+*/
+    /*
     @Test
     fun shouldSendBlockingCommandsToRobotWhenDispatchingBlockingCommands() {
         // given
@@ -194,7 +196,8 @@ class RoundServiceTest {
         verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BLOCKING)
         verify(mockRobotCommandDispatcherClient!!).sendBlockingCommands(any())
     }
-
+*/
+    /*
     @Test
     fun shouldIgnoreConversionErrorsFromCommandToDtoWhenDispatchingBlockingCommands() {
         // given
@@ -217,7 +220,7 @@ class RoundServiceTest {
         })
     }
 
-
+*/
 
 
 
@@ -226,7 +229,7 @@ class RoundServiceTest {
     @Test
     fun shouldAllowToDispatchTradingCommands() {
         // given
-        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_GAMEID))
             .thenReturn(Optional.of(spyRound))
 
@@ -252,11 +255,12 @@ class RoundServiceTest {
         verify(mockRoundRepository!!, never()).save(any())
     }
 
+
     @Test
     fun shouldSendSellingCommandsToRobotWhenDispatchingTradingCommands() {
         // given
         val commands: List<Command> = getListOfCommands(CommandType.SELLING)
-        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.SELLING))
@@ -274,7 +278,7 @@ class RoundServiceTest {
     fun shouldSendBuyingCommandsToRobotWhenDispatchingTradingCommandsAfterSendingSellingCommands() {
         // given
         val commands: List<Command> = getListOfCommands(CommandType.BUYING)
-        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.BLOCKING_COMMANDS_DISPATCHED))
+        val spyRound = spy(Round(game = GAME, roundNumber = ANY_ROUND_NUMBER, roundId = ANY_ROUND_ID, roundStatus = RoundStatus.COMMAND_INPUT_ENDED))
         whenever(mockRoundRepository!!.findById(ANY_ROUND_ID))
             .thenReturn(Optional.of(spyRound))
         whenever(mockCommandRepository!!.findAllCommandsByRoundAndCommandType(spyRound, CommandType.BUYING))
@@ -429,7 +433,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.BATTLE)
-        verify(mockRobotCommandDispatcherClient!!).sendBattleItemUseCommands(any())
+       // verify(mockRobotCommandDispatcherClient!!).sendBattleItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendBattleCommands(any())
     }
 
@@ -553,7 +557,7 @@ class RoundServiceTest {
 
         // then
         verify(mockCommandRepository!!).findAllCommandsByRoundAndCommandType(spyRound, CommandType.REGENERATE)
-        verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
+      //  verify(mockRobotCommandDispatcherClient!!).sendRepairItemUseCommands(any())
         verify(mockRobotCommandDispatcherClient!!).sendRegeneratingCommands(any())
     }
 

@@ -7,7 +7,7 @@ import microservice.dungeon.game.contracts.round.web.robot.resources.RobotComman
 import microservice.dungeon.game.contracts.round.web.trading.resources.TradingCommandInput
 import org.springframework.http.MediaType
 import java.util.*
-
+/*
 class SendBlockingCommandsToRobotSuccessful: RestProducerContract {
 
     // for
@@ -47,4 +47,4 @@ class SendBlockingCommandsToRobotSuccessful: RestProducerContract {
     override fun getExpectedResponseCode() = expectedResponseCode
 
     override fun getExpectedResponseBody() = expectedResponseBody
-}
+}*/

@@ -1,5 +1,5 @@
 package microservice.dungeon.game.aggregates.round.web.dto
-
+/*
 import microservice.dungeon.game.aggregates.command.domain.Command
 import microservice.dungeon.game.aggregates.command.domain.CommandParsingException
 import mu.KotlinLogging
@@ -51,4 +51,4 @@ class UseItemRepairCommandDto(
                 && robotId == other.robotId
                 && itemName == other.itemName
                 && transactionId == other.transactionId
-}
+}*/

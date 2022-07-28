@@ -17,6 +17,7 @@ import microservice.dungeon.game.aggregates.round.repositories.RoundRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,6 +32,7 @@ import java.util.*
 ])
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29104", "port=29104"])
+@Disabled
 class GetAllRoundCommandsIntegrationTest @Autowired constructor(
     private val commandController: CommandController,
     private val commandService: CommandService,

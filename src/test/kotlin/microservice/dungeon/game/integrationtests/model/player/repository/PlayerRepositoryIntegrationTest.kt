@@ -6,6 +6,7 @@ import microservice.dungeon.game.assertions.CustomAssertions.Companion.assertTha
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
@@ -19,6 +20,7 @@ import java.util.*
     "kafka.bootstrapAddress=localhost:29101"
 ])
 @EmbeddedKafka(partitions = 1, brokerProperties = ["listeners=PLAINTEXT://localhost:29101", "port=29101"])
+@Disabled
 class PlayerRepositoryIntegrationTest @Autowired constructor(
     private val playerRepository: PlayerRepository
 ) {
